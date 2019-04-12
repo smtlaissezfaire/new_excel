@@ -1,0 +1,4 @@
+Range:
+  = subtract(simple_high_low.high, simple_high_low.low)
+Plus:
+  = add(simple_high_low.high, simple_high_low.low)

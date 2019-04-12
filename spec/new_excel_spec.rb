@@ -1,9 +1,7 @@
-RSpec.describe NewExcel do
-  it "has a version number" do
-    expect(NewExcel::VERSION).not_to be nil
-  end
+require 'spec_helper'
 
-  it "does something useful" do
-    expect(false).to eq(true)
+describe NewExcel do
+  it "has a version number" do
+    NewExcel::VERSION.should_not be_nil
   end
 end
