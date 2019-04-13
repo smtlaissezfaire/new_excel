@@ -77,4 +77,52 @@ describe NewExcel::BuiltInFunctions do
       concat(["one", "two"], [" dog", " cat"]).should == ["one dog", "two cat"]
     end
   end
+
+  context "left" do
+    it "should return the number of characters specified" do
+      left("Google Sheets", 2).should == "Go"
+    end
+
+    it "should work on a vectors" do
+      left(["One", "Two"], [1, 2]).should == ["O", "Tw"]
+    end
+
+    it "should work with two vectors and a number" do
+      left(["One", "Two"], 2).should == ["On", "Tw"]
+    end
+  end
+
+  context "mid" do
+    it "should return the middle" do
+      mid("get this", 5, 4).should == "this"
+    end
+
+    it "should be able to work in an array context" do
+      mid(["get this", "get that"], 5, 4).should == ["this", "that"]
+    end
+  end
+
+  context "right" do
+    it "should extract from the right" do
+      right("Google Sheets", 2).should == "ts"
+    end
+
+    it "should work with lists" do
+      right(["Hello", "World"], 1).should == ["o", "d"]
+    end
+  end
+
+  context "search" do
+    it "should find the index (+1, of course) of the search" do
+      search("def", "abcdefg").should == 4
+    end
+
+    it "should search starting an an index" do
+      search("def", "abcdefgdefg", 6).should == 8
+    end
+
+    it "should work with arrays" do
+      search("def", ["abcdef", "abcxyzdef"]).should == [4, 7]
+    end
+  end
 end
