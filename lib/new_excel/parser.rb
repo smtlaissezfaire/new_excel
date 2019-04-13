@@ -1,6 +1,6 @@
-module NewExcel
-  Treetop.load File.join(File.expand_path(File.dirname(__FILE__)), 'new_excel_grammar')
+Treetop.load File.join(File.expand_path(File.dirname(__FILE__)), 'new_excel_grammar')
 
+module NewExcel
   class Parser
     def parse(str)
       parser = NewExcelGrammarParser.new

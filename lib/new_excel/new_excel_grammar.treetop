@@ -63,7 +63,7 @@ grammar NewExcelGrammar
        cell_name = cell.text_value.strip
 
        # NewExcel::Map.new(context.file_path)
-       file_path = File.join($context_file_path, "#{sheet_name}.csv")
+       file_path = ::File.join($context_file_path, "#{sheet_name}.csv")
        NewExcel::Data.new(file_path, 'csv').evaluate(cell_name)
      end
     }

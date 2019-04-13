@@ -9,6 +9,7 @@ gem 'rspec-autotest'
 gem 'byebug'
 gem 'chronic'
 gem 'treetop'
+gem 'fakefs'
 
 #
 # # Specify your gem's dependencies in new_excel.gemspec

@@ -2,14 +2,14 @@ module NewExcel
   class Data
     def initialize(file_path, type)
       @file = file_path
-      @file_path = File.dirname(@file)
+      @file_path = ::File.dirname(@file)
       parse
     end
 
     attr_reader :file_path
 
     def raw_map
-      @raw_map ||= File.read(@file)
+      @raw_map ||= ::File.read(@file)
     end
 
     def parse

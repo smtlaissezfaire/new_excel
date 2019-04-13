@@ -2,7 +2,7 @@ module NewExcel
   class Map
     def initialize(file)
       @file = file
-      @file_path = File.dirname(@file)
+      @file_path = ::File.dirname(@file)
       @column_names = []
       @values = {}
       parse!
@@ -38,7 +38,7 @@ module NewExcel
     alias_method :columns, :column_names
 
     def raw_map
-      @raw_map ||= File.read(@file)
+      @raw_map ||= ::File.read(@file)
     end
 
     def get(column_name)

@@ -1,5 +1,6 @@
 require "bundler/setup"
 require "new_excel"
+require 'fakefs/spec_helpers'
 
 require 'byebug'
 
