@@ -20,6 +20,11 @@ module NewExcel
       raw_map.each_line do |line|
         if line =~ /^[A-Za-z0-9]/
           column_name = line.gsub(/\:$/, '').strip
+
+          if @column_names.include?(column_name)
+            raise "Duplicate column name: #{column_name.inspect}"
+          end
+
           @column_names << column_name
           @values[column_name] ||= ""
           last_column_name = column_name

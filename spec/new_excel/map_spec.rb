@@ -125,6 +125,14 @@ describe NewExcel::Map do
   end
 
   describe "data integrity" do
-    it "should only allow unique columns"
+    before do
+      @file = File.join("spec", "fixtures", "file.ne", "invalid_double_column.map")
+    end
+
+    it "should only allow unique columns" do
+      lambda {
+        @obj = NewExcel::Map.new(@file)
+      }.should raise_error
+    end
   end
 end
