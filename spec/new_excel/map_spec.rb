@@ -116,7 +116,8 @@ describe NewExcel::Map do
     end
 
     it "should be able to use primitives" do
-      @obj.evaluate("Plus with Primitive", 1).should == 1 + 1
+      # @obj.evaluate("Plus with Primitive", 1).should == 1 + 1
+      @obj.evaluate("Plus with Primitive").should == 1 + 1
     end
 
     it "should be able to evaluate one formula after another" do

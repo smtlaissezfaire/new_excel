@@ -13,7 +13,7 @@ Close:
 Volume:
   = original_data.Volume
 NumberOfTrades:
-  = original_data.NumberOfTrades
+  = multiply(original_data.NumberOfTrades, 2)
 BidVolume:
   = original_data.BidVolume
 AskVolume:

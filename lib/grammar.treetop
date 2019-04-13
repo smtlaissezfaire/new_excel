@@ -25,18 +25,7 @@ grammar MyGrammar
       def evaluate
         fn = function_name.text_value
         evaluated_arguments = args.evaluate
-
-        evaluated_arguments = evaluated_arguments.map do |el|
-          Array(el)
-        end
-
-        new_map = []
-
-        evaluated_arguments[0].each_with_index do |_, index|
-          new_map << NewExcel::BuiltInFunctions.public_send(fn, *evaluated_arguments.map { |x| x[index] })
-        end
-
-        new_map
+        NewExcel::BuiltInFunctions.public_send(fn, *evaluated_arguments)
       end
     }
   end

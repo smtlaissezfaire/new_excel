@@ -11,14 +11,13 @@ RSpec.configure do |config|
   # config.disable_monkey_patching!
   #
   # config.expect_with :rspec do |c|
-  #   debugger
   #   c.syntax = :should
   # end
 
   config.expect_with :rspec do |expectations|
     expectations.syntax = :should
   end
-  
+
   config.mock_with :rspec do |mocks|
     mocks.syntax = :should
   end

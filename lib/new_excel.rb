@@ -72,26 +72,65 @@ module NewExcel
       Evaluator.evaluate(self, "= #{str}")
     end
 
-    def add(*list)
-      list.sum
+    require 'matrix'
+
+    def to_list(*list)
+      if list.any? { |list| list.is_a?(Array) }
+        longest_list_length = list.map { |l| l.is_a?(Array) ? l.length : 0 }.max
+
+        list = list.map do |sublist|
+          if sublist.is_a?(Array)
+            sublist
+          else
+            [sublist] * longest_list_length
+          end
+        end
+
+        l1 = list.shift
+        l1.zip(*list)
+      else
+        Array(list)
+      end
     end
 
+    def apply(*list, fn)
+      res = to_list(*list)
+
+      if res.is_a?(Array) && res[0].is_a?(Array)
+        res.map { |x| x.inject(&fn) }
+      else
+        res.inject(&fn)
+      end
+    end
+
+    def add(*list)
+      apply(*list, :+)
+    end
+
+    alias_method :sum, :add
+
     def subtract(n1, n2)
-      n1 - n2
+      apply(n1, n2, :-)
     end
 
     def multiply(*list)
-      list.inject(&:*)
+      apply(*list, :*)
     end
 
     def divide(num, denom)
-      num / denom
+      apply(num, denom, :/)
     rescue ZeroDivisionError
       "DIV!"
     end
 
     def concat(*args)
-      args.join
+      res = to_list(*args)
+
+      if res.is_a?(Array) && res[0].is_a?(Array)
+        res.map { |x| x.join }
+      else
+        res.join
+      end
     end
   end
 
