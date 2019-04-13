@@ -15,7 +15,8 @@ grammar NewExcelGrammar
   rule formula_body
     function /
     remote_cell_reference /
-    primitive
+    local_cell_reference /
+    primitive_cell_body
   end
 
   rule function
@@ -69,20 +70,23 @@ grammar NewExcelGrammar
     }
   end
 
-  rule tmp_dot
-    "."
+  rule local_cell_reference
+    ID
   end
 
-  rule id2
-    "Date"
+  rule primitive_cell_body
+    time / float / integer / string / date
   end
 
   rule primitive
-    date / time / float / integer / string
+    date / time / float / integer / text
   end
 
   rule date
-    (INT / "-" / ":" / " " / "/")+ &{|s| val = s[0].text_value; (val =~ /\d/ && (val =~ /\// || val =~ /\-/)) && Chronic.parse(val, hours24: true, guess: :begin)}
+    (([0-9] / "-" / ":" / " " / "/")+) &{ |s|
+      val = input
+      (val =~ /\d/ && (val =~ /\// || val =~ /\-/)) && !Chronic.parse(val, hours24: true, guess: :begin).nil?
+    }
     {
       def evaluate
         Chronic.parse(text_value, hours24: true, guess: :begin)
@@ -91,7 +95,7 @@ grammar NewExcelGrammar
   end
 
   rule time
-    INT+ (":" INT+)+
+    [0-9]+ (":" [0-9]+)+
 
     {
       def evaluate
@@ -101,7 +105,7 @@ grammar NewExcelGrammar
   end
 
   rule float
-    i1:INT+ DOT i2:INT+
+    i1:[0-9]+ DOT i2:[0-9]+
     {
       def evaluate
         Float(i1.text_value + "." + i2.text_value)
@@ -110,19 +114,10 @@ grammar NewExcelGrammar
   end
 
   rule integer
-    i:(INT+)
+    i:[0-9]+ &{|s| s[0].text_value =~ /^[0-9]+$/ } # wtf?
     {
       def evaluate
         Integer(i.text_value)
-      end
-    }
-  end
-
-  rule INT
-    [0-9]
-    {
-      def evaluate
-        text_value
       end
     }
   end
@@ -140,7 +135,17 @@ grammar NewExcelGrammar
     [a-zA-Z\_]+
   end
 
+  # see http://cjheath.github.io/treetop/pitfalls_and_advanced_techniques.html
   rule string
+    '"' inner_part:('\"' / !'"' .)* '"'
+    {
+      def evaluate
+        inner_part.text_value
+      end
+    }
+  end
+
+  rule text
     .+
     {
       def evaluate

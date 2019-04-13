@@ -1,0 +1,20 @@
+Date:
+  = zf_original_data.Date
+Time:
+  = zf_original_data.Time
+Open:
+  = zf_original_data.Open
+High:
+  = zf_original_data.High
+Low:
+  = zf_original_data.Low
+Close:
+  = zf_original_data.Close
+Volume:
+  = zf_original_data.Volume
+NumberOfTrades:
+  = zf_original_data.NumberOfTrades
+BidVolume:
+  = zf_original_data.BidVolume
+AskVolume:
+  = zf_original_data.AskVolume

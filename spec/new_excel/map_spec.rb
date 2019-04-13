@@ -99,6 +99,54 @@ describe NewExcel::Map do
       @obj.evaluate("Time", 1).should == "0:00:00"
       @obj.evaluate("Time", 2).should == "0:05:00"
     end
+
+    it "should be able to get multiple columns of the data (unevaluated)" do
+      @obj.get(["Date", "Time"]).should == [
+        "= original_data.Date",
+        "= original_data.Time",
+      ]
+    end
+
+    it "should return all columns if none specified" do
+      @obj.get().should == [
+        "= original_data.Date",
+        "= original_data.Time",
+        "= original_data.Open",
+        "= original_data.High",
+        "= original_data.Low",
+        "= original_data.Close",
+        "= original_data.Volume",
+        "= multiply(original_data.NumberOfTrades, 2)",
+        "= original_data.BidVolume",
+        "= original_data.AskVolume",
+      ]
+    end
+
+    it "should be able to evaluate two columns" do
+      @obj.evaluate(["Time", "Volume"]).should == [
+        [
+          "0:00:00",
+          "0:05:00",
+          "0:10:00",
+          "0:15:00",
+          "0:20:00",
+          "0:25:00",
+          "0:30:00",
+          "0:35:00",
+          "0:40:00",
+        ],
+        [653, 4, 404, 1021, 521, 256, 226, 938, 262]
+      ]
+
+      @obj.evaluate(["Time", "Volume"], 1).should == ["0:00:00", 653]
+      @obj.evaluate(["Time", "Volume"], 2).should == ["0:05:00", 4]
+
+      @obj.evaluate(["Time", "Volume"], [2, 3]).should == ["0:05:00", 404]
+    end
+
+    it "should be able to load all data with read()" do
+      @obj.read.should == []
+    end
   end
 
   describe "with simple formulas" do
@@ -122,6 +170,10 @@ describe NewExcel::Map do
 
     it "should be able to evaluate one formula after another" do
       @obj.evaluate("Plus with Minus", 1).should == 100 + 25 - 1
+    end
+
+    it "should be able to read a simple string value evaluated" do
+      @obj.evaluate("String Evaluated").should == "a string evaluated"
     end
   end
 

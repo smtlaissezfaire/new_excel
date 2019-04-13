@@ -6,3 +6,5 @@ Plus with Primitive:
   = add(1, 1)
 Plus with Minus:
   = subtract(add(simple_high_low.high, simple_high_low.low), 1)
+String Evaluated:
+  = "a string evaluated"

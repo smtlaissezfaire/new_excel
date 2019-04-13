@@ -6,7 +6,7 @@ describe NewExcel::Parser do
   end
 
   context "primitives" do
-    it "should be able to parse a string" do
+    it "should be able to parse text" do
       @obj.parse("string").should == "string"
     end
 
@@ -32,6 +32,10 @@ describe NewExcel::Parser do
 
     it "should be able to parse a date with slahes" do
       @obj.parse("2019/03/01").should == Time.parse("2019-03-01 00:00:00")
+    end
+
+    it "should to parse numbers that look like numbers, but have no concrete meaning" do
+      @obj.parse("114 16.75/32").should == "114 16.75/32"
     end
   end
 end
