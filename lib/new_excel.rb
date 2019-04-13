@@ -72,7 +72,31 @@ module NewExcel
       Evaluator.evaluate(self, "= #{str}")
     end
 
-    require 'matrix'
+    def add(*list)
+      inject(*list, :+)
+    end
+
+    alias_method :sum, :add
+
+    def subtract(n1, n2)
+      inject(n1, n2, :-)
+    end
+
+    def multiply(*list)
+      inject(*list, :*)
+    end
+
+    def divide(num, denom)
+      inject(num, denom, :/)
+    rescue ZeroDivisionError
+      "DIV!"
+    end
+
+    def concat(*args)
+      map(*args, :join)
+    end
+
+  private
 
     def to_list(*list)
       if list.any? { |list| list.is_a?(Array) }
@@ -93,7 +117,7 @@ module NewExcel
       end
     end
 
-    def apply(*list, fn)
+    def inject(*list, fn)
       res = to_list(*list)
 
       if res.is_a?(Array) && res[0].is_a?(Array)
@@ -103,33 +127,13 @@ module NewExcel
       end
     end
 
-    def add(*list)
-      apply(*list, :+)
-    end
-
-    alias_method :sum, :add
-
-    def subtract(n1, n2)
-      apply(n1, n2, :-)
-    end
-
-    def multiply(*list)
-      apply(*list, :*)
-    end
-
-    def divide(num, denom)
-      apply(num, denom, :/)
-    rescue ZeroDivisionError
-      "DIV!"
-    end
-
-    def concat(*args)
-      res = to_list(*args)
+    def map(*list, fn)
+      res = to_list(*list)
 
       if res.is_a?(Array) && res[0].is_a?(Array)
-        res.map { |x| x.join }
+        res.map { |x| x.public_send(fn) }
       else
-        res.join
+        res.public_send(fn)
       end
     end
   end
