@@ -68,12 +68,30 @@ module NewExcel
   module BuiltInFunctions
     extend self
 
+    def evaluate(str)
+      Evaluator.evaluate(self, "= #{str}")
+    end
+
+    def add(*list)
+      list.sum
+    end
+
     def subtract(n1, n2)
       n1 - n2
     end
 
-    def add(n1, n2)
-      n1 + n2
+    def multiply(*list)
+      list.inject(&:*)
+    end
+
+    def divide(num, denom)
+      num / denom
+    rescue ZeroDivisionError
+      "DIV!"
+    end
+
+    def concat(*args)
+      args.join
     end
   end
 
@@ -85,7 +103,7 @@ module NewExcel
     def initialize(context, str)
       @context = context
       @str = str
-      @file_path = context.file_path # code smell - should be global-ish!
+      @file_path = context.respond_to?(:file_path) ? context.file_path : "" # code smell - should be global-ish!
       $context_file_path = @file_path # code smell!
     end
 
