@@ -1,0 +1,171 @@
+# my_grammar.treetop
+grammar MyGrammar
+  rule root
+    formula / primitive
+  end
+
+  rule formula
+    "= " formula_body
+    {
+      def evaluate
+        formula_body.evaluate
+      end
+    }
+  end
+
+  rule formula_body
+    function /
+    remote_cell_reference /
+    primitive
+  end
+
+  rule function
+    function_name "(" args:function_arguments ")"
+    {
+      def evaluate
+        fn = function_name.text_value
+        evaluated_arguments = args.evaluate
+
+        evaluated_arguments = evaluated_arguments.map do |el|
+          Array(el)
+        end
+
+        new_map = []
+
+        evaluated_arguments[0].each_with_index do |_, index|
+          new_map << NewExcel::BuiltInFunctions.public_send(fn, *evaluated_arguments.map { |x| x[index] })
+        end
+
+        new_map
+      end
+    }
+  end
+
+  rule function_name
+    ID
+  end
+
+  rule function_arguments
+    head:function_argument remaining:(s "," s function_argument)*
+    {
+      def evaluate
+        list = []
+        list << head.evaluate
+        remaining.elements[0].elements.each do |el|
+          if el.respond_to?(:evaluate)
+            list << el.evaluate
+          end
+        end
+        list
+      end
+    }
+  end
+
+  rule function_argument
+    function /
+    remote_cell_reference /
+    primitive
+  end
+
+  rule remote_cell_reference
+    sheet:ID DOT cell:ID
+    {
+      def evaluate
+       sheet_name = sheet.text_value.strip
+       cell_name = cell.text_value.strip
+
+       # NewExcel::Map.new(context.file_path)
+       file_path = File.join($context_file_path, "#{sheet_name}.csv")
+       NewExcel::Data.new(file_path, 'csv').evaluate(cell_name)
+     end
+    }
+  end
+
+  rule tmp_dot
+    "."
+  end
+
+  rule id2
+    "Date"
+  end
+
+  rule primitive
+    date / time / float / integer / string
+  end
+
+  rule date
+    (INT / "-" / ":" / " " / "/")+ &{|s| val = s[0].text_value; (val =~ /\d/ && (val =~ /\// || val =~ /\-/)) && Chronic.parse(val, hours24: true, guess: :begin)}
+    {
+      def evaluate
+        Chronic.parse(text_value, hours24: true, guess: :begin)
+      end
+    }
+  end
+
+  rule time
+    INT+ (":" INT+)+
+
+    {
+      def evaluate
+        text_value
+      end
+    }
+  end
+
+  rule float
+    i1:INT+ DOT i2:INT+
+    {
+      def evaluate
+        Float(i1.text_value + "." + i2.text_value)
+      end
+    }
+  end
+
+  rule integer
+    i:(INT+)
+    {
+      def evaluate
+        Integer(i.text_value)
+      end
+    }
+  end
+
+  rule INT
+    [0-9]
+    {
+      def evaluate
+        text_value
+      end
+    }
+  end
+
+  rule DOT
+    "."
+    {
+      def evaluate
+        text_value
+      end
+    }
+  end
+
+  rule ID
+    [a-zA-Z\_]+
+  end
+
+  rule string
+    .+
+    {
+      def evaluate
+        text_value
+      end
+    }
+  end
+
+  rule s
+    S?
+  end
+
+  rule S
+    [ \t]+
+  end
+end

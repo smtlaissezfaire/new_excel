@@ -114,6 +114,14 @@ describe NewExcel::Map do
     it "should be able to evaluate a simple plus formula" do
       @obj.evaluate("Plus", 1).should == 100 + 25
     end
+
+    it "should be able to use primitives" do
+      @obj.evaluate("Plus with Primitive", 1).should == 1 + 1
+    end
+
+    it "should be able to evaluate one formula after another" do
+      @obj.evaluate("Plus with Minus", 1).should == 100 + 25 - 1
+    end
   end
 
   describe "data integrity" do

@@ -81,6 +81,7 @@ module NewExcel
       @context = context
       @str = str
       @file_path = context.file_path # code smell - should be global-ish!
+      $context_file_path = @file_path # code smell!
     end
 
     attr_reader :file_path
@@ -91,37 +92,9 @@ module NewExcel
           self.class.evaluate(self, el)
         end
       elsif @str.is_a?(String)
-        if @str =~ /\=\s*([a-zA-Z\_]+)\((.*)\)/ # assume it's a function
-          fn = $1
-          args = $2.split(",").map { |r| r.strip }
-
-          evaluated_values = args.map do |arg|
-            Evaluator.evaluate(self, "= #{arg}")
-          end
-
-          new_map = []
-
-          evaluated_values[0].each_with_index do |_, index|
-            new_map << BuiltInFunctions.public_send(fn, *evaluated_values.map { |x| x[index] })
-          end
-
-          new_map
-        elsif @str =~ /\=(.*)/
-          file, column = $1.split(".")
-          # NewExcel::Map.new(context.file_path)
-          file_path = File.join(@file_path, "#{file.strip}.csv")
-          Data.new(file_path, 'csv').evaluate(column)
-        else
-          if @str =~ /^[0-9\.]+$/
-            Float(@str)
-          elsif @str =~ /^[0-9]+$/
-            Integer(@str)
-          elsif (@str =~ /\d/ && @str =~ /\// || @str =~ /\-/) && date = Chronic.parse(@str, hours24: true, guess: :begin)
-            date
-          else
-            @str
-          end
-        end
+        Parser.new.parse(@str)
+      else
+        raise "unknown parsing type!"
       end
     end
   end
@@ -172,9 +145,31 @@ module NewExcel
       end
     end
 
-    # make this simpler
     def evaluate(*args)
       Evaluator.evaluate(self, get(*args))
     end
+  end
+
+  require 'treetop'
+  require 'byebug'
+
+  Treetop.load File.join(File.expand_path(File.dirname(__FILE__)), 'grammar')
+
+  class Parser
+    def parse(str)
+      parser = MyGrammarParser.new
+      res = parser.parse(str)
+
+      # pp parser.inspect
+
+      if res
+        res.evaluate
+      else
+        pp parser.inspect
+        raise parser.failure_reason
+      end
+    end
+
+    alias_method :evaluate, :parse
   end
 end
