@@ -1,5 +1,4 @@
-# my_grammar.treetop
-grammar MyGrammar
+grammar NewExcelGrammar
   rule root
     formula / primitive
   end
