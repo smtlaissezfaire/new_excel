@@ -131,9 +131,11 @@ describe NewExcel::Map do
     end
 
     it "should only allow unique columns" do
+      @obj = NewExcel::Map.new(@file)
+
       lambda {
-        @obj = NewExcel::Map.new(@file)
-      }.should raise_error
+        @obj.parse
+      }.should raise_error(RuntimeError)
     end
   end
 end

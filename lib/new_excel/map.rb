@@ -5,12 +5,13 @@ module NewExcel
       @file_path = ::File.dirname(@file)
       @column_names = []
       @values = {}
-      parse!
     end
 
     attr_reader :file_path
 
-    def parse!
+    def parse
+      return if @parsed
+
       last_column_name = nil
 
       raw_map.each_line do |line|
@@ -32,9 +33,15 @@ module NewExcel
       @values.each do |key, value|
         value.strip!
       end
+
+      @parsed = true
     end
 
-    attr_reader :column_names
+    def column_names
+      parse
+      @column_names
+    end
+
     alias_method :columns, :column_names
 
     def raw_map
@@ -42,6 +49,8 @@ module NewExcel
     end
 
     def get(column_name)
+      parse
+
       raise "Column #{column_name.inspect} not found!" if !@values.has_key?(column_name)
       @values[column_name]
     end

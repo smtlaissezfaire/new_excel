@@ -3,7 +3,6 @@ module NewExcel
     def initialize(file_path, type)
       @file = file_path
       @file_path = ::File.dirname(@file)
-      parse
     end
 
     attr_reader :file_path
@@ -13,16 +12,23 @@ module NewExcel
     end
 
     def parse
-      @parsed_file ||= CSV.parse(raw_map)
+      return if @parsed
+
+      @parsed_file = CSV.parse(raw_map)
       @columns = @parsed_file.shift
       @all_rows = @parsed_file
+
+      @parsed = true
     end
 
     def columns
+      parse
       @columns
     end
 
     def get(val=nil)
+      parse
+
       if val.is_a?(String) || val.is_a?(Integer)
         index = if val.is_a?(String)
           @columns.index(val)
