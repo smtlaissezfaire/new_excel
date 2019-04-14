@@ -51,5 +51,69 @@ module NewExcel
     def evaluate(*a, &b)
       raise NotImplementedError, "must be implemented in subclasses"
     end
+
+    def print(*args)
+      all_values = evaluate(*args)
+
+      width_per_column = []
+
+      str = ""
+
+      column_names.each_with_index do |column_name, index|
+        max_length = column_name.length
+
+        lengths = all_values.map do |row|
+          row[index].to_s.length
+        end
+        max_body_length = lengths.max
+
+        max_length = max_body_length if max_body_length > max_length
+
+        width_per_column << max_length + 1
+      end
+
+      last_index = width_per_column.length - 1
+
+      column_names.each_with_index do |column_name, index|
+        length = width_per_column[index]
+        to_print = column_name.strip
+
+        if index == last_index
+          str << to_print
+        else
+          str << "%-#{length}s" % to_print
+        end
+      end
+      str << "\n"
+
+      column_names.each_with_index do |column_name, index|
+        length = width_per_column[index]
+        to_print = ("-" * (length - 1))
+
+        if index == last_index
+          str << to_print
+        else
+          str << "%-#{length}s" % to_print
+        end
+      end
+      str << "\n"
+
+      all_values.each do |row|
+        row.each_with_index do |cell, index|
+          to_print = cell.to_s.strip
+
+          if index == last_index
+            str << to_print
+          else
+            length = width_per_column[index]
+            str << "%-#{length}s" % to_print
+          end
+        end
+        str << "\n"
+      end
+
+      str
+    end
+
   end
 end

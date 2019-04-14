@@ -83,4 +83,18 @@ describe NewExcel::Data do
       ]
     end
   end
+
+  context "printing" do
+    it "should print" do
+      @file = File.join("spec", "fixtures", "file.ne", "rows_for_printing.csv")
+      @obj = NewExcel::Data.new(@file)
+
+      @obj.print.should == <<-CODE
+One       Two        Three Four Five
+--------- ---------- ---------------------
+123123131 1          something really long
+12        here there here there
+CODE
+    end
+  end
 end

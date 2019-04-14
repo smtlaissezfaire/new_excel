@@ -205,4 +205,37 @@ describe NewExcel::Map do
       }.should raise_error(RuntimeError)
     end
   end
+
+#   describe "printing" do
+#     it "should print" do
+#       @file = File.join("spec", "fixtures", "file.ne", "simple_text.map")
+#       @obj = NewExcel::Map.new(@file)
+#
+#       @obj.print.should == <<-STR
+# String   Integer Float   Date                      Time  DateTime                  List of Strings List of Ints
+# -------- ------- ------- ------------------------- ----- ------------------------- --------------- ------------
+# a string 123     123.456 2018-01-01 00:00:00 -0800 11:00 2018-01-01 11:00:00 -0800 a b c           1 2 3
+#   STR
+#
+#     end
+#
+#     it "should print a referenced map correctly" do
+#       @file = File.join("spec", "fixtures", "file.ne", "one_column_map.map")
+#       @obj = NewExcel::Map.new(@file)
+#
+#       @obj.print.should == <<-STR
+# Date
+# -------------------------
+# 2019-03-01 00:00:00 -0800
+# 2019-03-01 00:00:00 -0800
+# 2019-03-01 00:00:00 -0800
+# 2019-03-01 00:00:00 -0800
+# 2019-03-01 00:00:00 -0800
+# 2019-03-01 00:00:00 -0800
+# 2019-03-01 00:00:00 -0800
+# 2019-03-01 00:00:00 -0800
+# 2019-03-01 00:00:00 -0800
+# STR
+#     end
+#   end
 end
