@@ -8,7 +8,7 @@ gem "rspec"
 gem 'rspec-autotest'
 gem 'byebug'
 gem 'chronic'
-gem 'treetop'
+gem 'racc'
 gem 'fakefs'
 
 #

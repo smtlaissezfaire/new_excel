@@ -4,6 +4,10 @@ module NewExcel
       new(*args).evaluate
     end
 
+    def self.parser
+      @parser = Parser.new
+    end
+
     def initialize(context, str)
       @context = context
       @str = str
@@ -13,13 +17,18 @@ module NewExcel
 
     attr_reader :file_path
 
+    def parser
+      self.class.parser
+    end
+
     def evaluate
       if @str.is_a?(Array)
         @str.map do |el|
           self.class.evaluate(self, el)
         end
       elsif @str.is_a?(String)
-        Parser.new.parse(@str)
+        ast = parser.parse(@str)
+        ast.value
       else
         raise "unknown parsing type!"
       end

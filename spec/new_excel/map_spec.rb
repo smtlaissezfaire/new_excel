@@ -145,7 +145,22 @@ describe NewExcel::Map do
     end
 
     it "should be able to load all data with read()" do
-      @obj.read.should == []
+      result = @obj.read
+      result.length.should == 10
+      result[0].length.should == 9
+
+      firsts = result.map { |r| r.first }
+
+      firsts[0].should be_a_kind_of(Time)
+      firsts[1].should == "0:00:00"
+      firsts[2].should == "114 16.75/32"
+      firsts[3].should == "114 17/32"
+      firsts[4].should == "114 16.75/32"
+      firsts[5].should == "114 16.75/32"
+      firsts[6].should == 653
+      firsts[7].should == 214
+      firsts[8].should == 524
+      firsts[9].should == 129
     end
   end
 
