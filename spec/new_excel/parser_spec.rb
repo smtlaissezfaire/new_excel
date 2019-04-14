@@ -52,7 +52,7 @@ describe NewExcel::Parser do
     it "should parse remote cell references" do
       str = "= other_sheet.other_column"
 
-      NewExcel::Parser.get_tokens(str).should == [
+      NewExcel::Tokenizer.get_tokens(str).should == [
         [:EQ, "="],
         [:ID, "other_sheet"],
         [:DOT, "."],
@@ -71,7 +71,7 @@ describe NewExcel::Parser do
     #
     #   str = "= other_sheet.other_column"
     #
-    #   NewExcel::Parser.get_tokens(str).should == [
+    #   NewExcel::Tokenizer.get_tokens(str).should == [
     #     [:EQ, "="],
     #     [:ID, "other_sheet"],
     #     [:DOT, "."],
