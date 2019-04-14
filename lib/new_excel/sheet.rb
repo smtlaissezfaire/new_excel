@@ -33,6 +33,17 @@ module NewExcel
       raise NotImplementedError, "must be implemented in subclasses"
     end
 
+    # ***DESIRED*** interface:
+    #
+    # get = all unevaluated content
+    # get() = all columns
+    # get(col1, col2, col3)
+    # get(1) => col 1
+    # get(1, 2) => row 1, col 2
+    # get(column_name, 2) => col with column_name, row 2
+    # get([col1, col2], 2) => col1 + col2, both with only row 2
+    # get(with_header: true) # include the headers
+    # get(col1, with_header: true)
     def get(*a, &b)
       raise NotImplementedError, "must be implemented in subclasses"
     end
