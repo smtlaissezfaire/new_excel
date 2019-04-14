@@ -6,6 +6,7 @@ require 'chronic'
 require 'csv'
 require 'racc'
 
+require 'new_excel/ast'
 require 'new_excel/new_excel_grammar'
 require "new_excel/list_helpers"
 require "new_excel/built_in_functions"

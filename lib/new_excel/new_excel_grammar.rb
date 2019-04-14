@@ -192,7 +192,7 @@ module_eval(<<'.,.,', 'new_excel_grammar.y', 5)
 
 module_eval(<<'.,.,', 'new_excel_grammar.y', 10)
   def _reduce_7(val, _values, result)
-        ref = NewExcel::Parser::FunctionCall.new(val.join)
+        ref = NewExcel::AST::FunctionCall.new(val.join)
     ref.name = val[0]
     ref.arguments = Array(val[2]).compact.flatten
     result = ref
@@ -232,7 +232,7 @@ module_eval(<<'.,.,', 'new_excel_grammar.y', 22)
 
 module_eval(<<'.,.,', 'new_excel_grammar.y', 28)
   def _reduce_15(val, _values, result)
-          ref = NewExcel::Parser::CellReference.new(val.join)
+          ref = NewExcel::AST::CellReference.new(val.join)
       ref.sheet_name = val[0]
       ref.cell_name = val[2]
       result = ref
@@ -255,7 +255,7 @@ module_eval(<<'.,.,', 'new_excel_grammar.y', 39)
         v.respond_to?(:string) ? v.string : v
       end
 
-      result = NewExcel::Parser::UnquotedString.new(strings.join)
+      result = NewExcel::AST::UnquotedString.new(strings.join)
     
     result
   end
@@ -263,10 +263,10 @@ module_eval(<<'.,.,', 'new_excel_grammar.y', 39)
 
 module_eval(<<'.,.,', 'new_excel_grammar.y', 46)
   def _reduce_21(val, _values, result)
-          ref = if val[0].is_a?(NewExcel::Parser::BaseAST)
+          ref = if val[0].is_a?(NewExcel::AST::BaseAST)
         val[0]
       else
-        NewExcel::Parser::UnquotedString.new(val.join)
+        NewExcel::AST::UnquotedString.new(val.join)
       end
 
       result = ref
@@ -285,28 +285,28 @@ module_eval(<<'.,.,', 'new_excel_grammar.y', 46)
 
 module_eval(<<'.,.,', 'new_excel_grammar.y', 57)
   def _reduce_26(val, _values, result)
-     result = NewExcel::Parser::QuotedString.new(val[0]) 
+     result = NewExcel::AST::QuotedString.new(val[0]) 
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'new_excel_grammar.y', 58)
   def _reduce_27(val, _values, result)
-     result = NewExcel::Parser::DateTime.new(val[0]) 
+     result = NewExcel::AST::DateTime.new(val[0]) 
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'new_excel_grammar.y', 59)
   def _reduce_28(val, _values, result)
-     result = NewExcel::Parser::PrimitiveFloat.new(val[0]) 
+     result = NewExcel::AST::PrimitiveFloat.new(val[0]) 
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'new_excel_grammar.y', 60)
   def _reduce_29(val, _values, result)
-     result = NewExcel::Parser::PrimitiveInteger.new(val[0]) 
+     result = NewExcel::AST::PrimitiveInteger.new(val[0]) 
     result
   end
 .,.,

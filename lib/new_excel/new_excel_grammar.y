@@ -8,7 +8,7 @@ rule
   formula_body: function_call | remote_cell_reference | primitive_value
 
   function_call: ID OPEN_PAREN function_body CLOSE_PAREN {
-    ref = NewExcel::Parser::FunctionCall.new(val.join)
+    ref = NewExcel::AST::FunctionCall.new(val.join)
     ref.name = val[0]
     ref.arguments = Array(val[2]).compact.flatten
     result = ref
@@ -26,7 +26,7 @@ rule
 
   remote_cell_reference:
     ID DOT ID {
-      ref = NewExcel::Parser::CellReference.new(val.join)
+      ref = NewExcel::AST::CellReference.new(val.join)
       ref.sheet_name = val[0]
       ref.cell_name = val[2]
       result = ref
@@ -41,13 +41,13 @@ rule
         v.respond_to?(:string) ? v.string : v
       end
 
-      result = NewExcel::Parser::UnquotedString.new(strings.join)
+      result = NewExcel::AST::UnquotedString.new(strings.join)
     } |
     any_primitive_type {
-      ref = if val[0].is_a?(NewExcel::Parser::BaseAST)
+      ref = if val[0].is_a?(NewExcel::AST::BaseAST)
         val[0]
       else
-        NewExcel::Parser::UnquotedString.new(val.join)
+        NewExcel::AST::UnquotedString.new(val.join)
       end
 
       result = ref
@@ -55,10 +55,10 @@ rule
 
   any_primitive_type: datetime | float | integer | TEXT
 
-  quoted_string: QUOTED_STRING { result = NewExcel::Parser::QuotedString.new(val[0]) }
-  datetime: DATE_TIME { result = NewExcel::Parser::DateTime.new(val[0]) }
-  float: FLOAT { result = NewExcel::Parser::PrimitiveFloat.new(val[0]) }
-  integer: INTEGER { result = NewExcel::Parser::PrimitiveInteger.new(val[0]) }
+  quoted_string: QUOTED_STRING { result = NewExcel::AST::QuotedString.new(val[0]) }
+  datetime: DATE_TIME { result = NewExcel::AST::DateTime.new(val[0]) }
+  float: FLOAT { result = NewExcel::AST::PrimitiveFloat.new(val[0]) }
+  integer: INTEGER { result = NewExcel::AST::PrimitiveInteger.new(val[0]) }
 end
 
 ---- inner

@@ -8,38 +8,38 @@ describe NewExcel::Parser do
   context "functions" do
     it "should be able to parse a function" do
       res = @obj.parse("=add()")
-      res.should be_a_kind_of(NewExcel::Parser::FunctionCall)
+      res.should be_a_kind_of(NewExcel::AST::FunctionCall)
       res.name.should == "add"
       res.arguments.should == []
     end
 
     it "should be able to parse a function with an argument" do
       res = @obj.parse("=add(1)")
-      res.should be_a_kind_of(NewExcel::Parser::FunctionCall)
+      res.should be_a_kind_of(NewExcel::AST::FunctionCall)
       res.name.should == "add"
       res.arguments.length.should == 1
       arg = res.arguments.first
 
-      arg.should be_a_kind_of(NewExcel::Parser::PrimitiveInteger)
+      arg.should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
       arg.string.should == "1"
       arg.value.should == 1
     end
 
     it "should be able to parse a function with multiple arguments" do
       res = @obj.parse("=add(1, 2, 3)")
-      res.should be_a_kind_of(NewExcel::Parser::FunctionCall)
+      res.should be_a_kind_of(NewExcel::AST::FunctionCall)
       res.name.should == "add"
       res.arguments.length.should == 3
 
-      res.arguments[0].should be_a_kind_of(NewExcel::Parser::PrimitiveInteger)
+      res.arguments[0].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
       res.arguments[0].string.should == "1"
       res.arguments[0].value.should == 1
 
-      res.arguments[1].should be_a_kind_of(NewExcel::Parser::PrimitiveInteger)
+      res.arguments[1].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
       res.arguments[1].string.should == "2"
       res.arguments[1].value.should == 2
 
-      res.arguments[2].should be_a_kind_of(NewExcel::Parser::PrimitiveInteger)
+      res.arguments[2].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
       res.arguments[2].string.should == "3"
       res.arguments[2].value.should == 3
     end
@@ -61,7 +61,7 @@ describe NewExcel::Parser do
       ]
 
       res = @obj.parse("= other_sheet.other_column")
-      res.should be_a_kind_of(NewExcel::Parser::CellReference)
+      res.should be_a_kind_of(NewExcel::AST::CellReference)
       res.sheet_name.should == "other_sheet"
       res.cell_name.should == "other_column"
     end
@@ -80,7 +80,7 @@ describe NewExcel::Parser do
     #   ]
     #
     #   res = @obj.parse("= other_sheet.other_column")
-    #   res.should be_a_kind_of(NewExcel::Parser::CellReference)
+    #   res.should be_a_kind_of(NewExcel::AST::CellReference)
     #   res.sheet_name.should == "other_sheet"
     #   res.cell_name.should == "other_column"
     #
@@ -90,11 +90,11 @@ describe NewExcel::Parser do
       str = "= trim(\" foo \")"
 
       res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::Parser::FunctionCall)
+      res.should be_a_kind_of(NewExcel::AST::FunctionCall)
       res.arguments.length.should == 1
 
       arg = res.arguments[0]
-      arg.should be_a_kind_of(NewExcel::Parser::QuotedString)
+      arg.should be_a_kind_of(NewExcel::AST::QuotedString)
       arg.value.should == " foo "
     end
 
@@ -102,13 +102,13 @@ describe NewExcel::Parser do
       str = "some"
 
       res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::Parser::UnquotedString)
+      res.should be_a_kind_of(NewExcel::AST::UnquotedString)
       res.value.should == "some"
 
       str = "some string text"
 
       res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::Parser::UnquotedString)
+      res.should be_a_kind_of(NewExcel::AST::UnquotedString)
       res.value.should == "some string text"
     end
   end
