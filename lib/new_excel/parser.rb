@@ -8,7 +8,7 @@ require 'racc/parser.rb'
 module NewExcel
   class Parser < Racc::Parser
 
-module_eval(<<'...end parser.y/module_eval...', 'parser.y', 65)
+module_eval(<<'...end parser.y/module_eval...', 'parser.y', 89)
 
   def parse(str)
     @q = Tokenizer.get_tokens(str)
@@ -27,97 +27,119 @@ module_eval(<<'...end parser.y/module_eval...', 'parser.y', 65)
 ##### State transition tables begin ###
 
 racc_action_table = [
-     4,    26,    25,    13,    27,    19,     9,    34,    10,    11,
-    12,    24,    10,    11,    12,    19,    35,    36,   nil,    19,
-   nil,    24,    10,    11,    12,    24,    10,    11,    12,     9,
-   nil,    10,    11,    12 ]
+     5,    36,    35,     8,    37,    33,    27,    17,    13,    45,
+    14,    15,    16,    32,    14,    15,    16,    27,    46,    21,
+    21,    27,    47,   nil,    32,    14,    15,    16,    32,    14,
+    15,    16,     8,   nil,   nil,   nil,   nil,    13,   nil,    14,
+    15,    16,    13,   nil,    14,    15,    16 ]
 
 racc_action_check = [
-     0,    19,    13,     1,    19,    36,     0,    27,     0,     0,
-     0,    36,    36,    36,    36,     4,    28,    29,   nil,    26,
-   nil,     4,     4,     4,     4,    26,    26,    26,    26,     3,
-   nil,     3,     3,     3 ]
+     0,    27,    20,     0,    27,    17,    47,     1,     0,    37,
+     0,     0,     0,    47,    47,    47,    47,     8,    39,     5,
+    18,    36,    40,   nil,     8,     8,     8,     8,    36,    36,
+    36,    36,    35,   nil,   nil,   nil,   nil,    35,   nil,    35,
+    35,    35,     7,   nil,     7,     7,     7 ]
 
 racc_action_pointer = [
-    -2,     3,   nil,    21,    12,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,     2,   nil,   nil,   nil,   nil,   nil,    -3,
-   nil,   nil,   nil,   nil,   nil,   nil,    16,     4,    11,    11,
-   nil,   nil,   nil,   nil,   nil,   nil,     2,   nil ]
+    -2,     7,   nil,   nil,   nil,    15,   nil,    32,    13,   nil,
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,     5,    16,   nil,
+    -1,   nil,   nil,   nil,   nil,   nil,   nil,    -5,   nil,   nil,
+   nil,   nil,   nil,   nil,   nil,    27,    17,     5,   nil,    11,
+    14,   nil,   nil,   nil,   nil,   nil,   nil,     2,   nil ]
 
 racc_action_default = [
-   -30,   -30,    -1,    -2,   -30,   -21,   -22,   -23,   -24,   -25,
-   -27,   -28,   -29,   -30,   -20,    -3,    -4,    -5,    -6,   -30,
-   -16,   -17,   -18,   -19,   -26,    38,    -8,   -30,   -30,    -9,
-   -11,   -12,   -13,   -14,   -15,    -7,   -30,   -10 ]
+   -38,   -38,    -1,    -2,    -3,   -38,    -9,   -10,   -38,   -29,
+   -30,   -31,   -32,   -33,   -35,   -36,   -37,   -38,    -4,    -6,
+   -38,    -8,   -28,   -11,   -12,   -13,   -14,   -38,   -24,   -25,
+   -26,   -27,   -34,    49,    -5,   -38,   -16,   -38,    -7,   -38,
+   -17,   -19,   -20,   -21,   -22,   -23,   -15,   -38,   -18 ]
 
 racc_goto_table = [
-    30,     6,     8,     7,     6,     8,     7,    17,     5,    18,
-    37,    14,     1,    29,    28,     2,     3,    15,    16 ]
+    29,    30,    31,     3,    19,    41,    25,    26,    39,    40,
+     1,    22,     2,     4,    18,    23,    48,    34,    24,   nil,
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    29,    30,
+    31,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    38,    29,
+    30,    31 ]
 
 racc_goto_check = [
-    10,    12,    13,    14,    12,    13,    14,     6,    15,     7,
-    10,    15,     1,     9,     8,     2,     3,     4,     5 ]
+    18,    19,    20,     3,     6,    16,    12,    13,    14,    15,
+     1,    21,     2,     4,     5,    10,    16,     6,    11,   nil,
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    18,    19,
+    20,   nil,   nil,   nil,   nil,   nil,   nil,   nil,     3,    18,
+    19,    20 ]
 
 racc_goto_pointer = [
-   nil,    12,    15,    16,    13,    14,     3,     5,   -12,   -13,
-   -26,   nil,     1,     2,     3,     8 ]
+   nil,    10,    12,     3,    13,     9,    -1,   nil,   nil,   nil,
+     7,    10,    -2,    -1,   -28,   -27,   -31,   nil,    -8,    -7,
+    -6,     4 ]
 
 racc_goto_default = [
-   nil,   nil,   nil,   nil,   nil,    31,    32,    33,   nil,   nil,
-   nil,    20,    21,    22,    23,   nil ]
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,    20,     6,     7,
+   nil,    42,    43,    44,   nil,   nil,   nil,    28,    10,    12,
+    11,     9 ]
 
 racc_reduce_table = [
   0, 0, :racc_error,
-  1, 14, :_reduce_none,
-  1, 14, :_reduce_none,
-  2, 15, :_reduce_3,
+  1, 16, :_reduce_none,
+  1, 16, :_reduce_none,
   1, 17, :_reduce_none,
-  1, 17, :_reduce_none,
-  1, 17, :_reduce_none,
-  4, 18, :_reduce_7,
-  0, 21, :_reduce_none,
-  1, 21, :_reduce_9,
-  3, 22, :_reduce_10,
-  1, 22, :_reduce_11,
-  1, 23, :_reduce_none,
-  1, 23, :_reduce_none,
-  1, 23, :_reduce_none,
-  3, 19, :_reduce_15,
-  1, 20, :_reduce_none,
-  1, 20, :_reduce_none,
-  1, 20, :_reduce_none,
-  1, 20, :_reduce_none,
-  2, 16, :_reduce_20,
-  1, 16, :_reduce_21,
+  2, 19, :_reduce_4,
+  2, 20, :_reduce_5,
+  1, 20, :_reduce_6,
+  3, 21, :_reduce_7,
+  1, 22, :_reduce_none,
+  1, 18, :_reduce_none,
+  1, 18, :_reduce_none,
+  2, 23, :_reduce_11,
+  1, 25, :_reduce_none,
+  1, 25, :_reduce_none,
+  1, 25, :_reduce_none,
+  4, 26, :_reduce_15,
+  0, 29, :_reduce_none,
+  1, 29, :_reduce_17,
+  3, 30, :_reduce_18,
+  1, 30, :_reduce_19,
+  1, 31, :_reduce_none,
+  1, 31, :_reduce_none,
+  1, 31, :_reduce_none,
+  3, 27, :_reduce_23,
   1, 28, :_reduce_none,
   1, 28, :_reduce_none,
   1, 28, :_reduce_none,
   1, 28, :_reduce_none,
-  1, 24, :_reduce_26,
-  1, 25, :_reduce_27,
-  1, 27, :_reduce_28,
-  1, 26, :_reduce_29 ]
+  2, 24, :_reduce_28,
+  1, 24, :_reduce_29,
+  1, 36, :_reduce_none,
+  1, 36, :_reduce_none,
+  1, 36, :_reduce_none,
+  1, 36, :_reduce_none,
+  1, 32, :_reduce_34,
+  1, 33, :_reduce_35,
+  1, 35, :_reduce_36,
+  1, 34, :_reduce_37 ]
 
-racc_reduce_n = 30
+racc_reduce_n = 38
 
-racc_shift_n = 38
+racc_shift_n = 49
 
 racc_token_table = {
   false => 0,
   :error => 1,
-  :EQ => 2,
-  :ID => 3,
-  :OPEN_PAREN => 4,
-  :CLOSE_PAREN => 5,
-  :COMMA => 6,
-  :DOT => 7,
-  :TEXT => 8,
-  :QUOTED_STRING => 9,
-  :DATE_TIME => 10,
-  :FLOAT => 11,
-  :INTEGER => 12 }
+  :MAP => 2,
+  :COLON => 3,
+  :ID => 4,
+  :EQ => 5,
+  :OPEN_PAREN => 6,
+  :CLOSE_PAREN => 7,
+  :COMMA => 8,
+  :DOT => 9,
+  :TEXT => 10,
+  :QUOTED_STRING => 11,
+  :DATE_TIME => 12,
+  :FLOAT => 13,
+  :INTEGER => 14 }
 
-racc_nt_base = 13
+racc_nt_base = 15
 
 racc_use_result_var = true
 
@@ -140,8 +162,10 @@ Racc_arg = [
 Racc_token_to_s_table = [
   "$end",
   "error",
-  "EQ",
+  "MAP",
+  "COLON",
   "ID",
+  "EQ",
   "OPEN_PAREN",
   "CLOSE_PAREN",
   "COMMA",
@@ -153,6 +177,12 @@ Racc_token_to_s_table = [
   "INTEGER",
   "$start",
   "root",
+  "file",
+  "cell_contents",
+  "map",
+  "key_value_pairs",
+  "key_value_pair",
+  "key",
   "formula",
   "primitive",
   "formula_body",
@@ -178,24 +208,38 @@ Racc_debug_parser = false
 
 # reduce 2 omitted
 
-module_eval(<<'.,.,', 'parser.y', 5)
-  def _reduce_3(val, _values, result)
-     result = val[1] 
+# reduce 3 omitted
+
+module_eval(<<'.,.,', 'parser.y', 7)
+  def _reduce_4(val, _values, result)
+        result = val[1]
+  
     result
   end
 .,.,
 
-# reduce 4 omitted
+module_eval(<<'.,.,', 'parser.y', 11)
+  def _reduce_5(val, _values, result)
+      
+    result
+  end
+.,.,
 
-# reduce 5 omitted
+module_eval(<<'.,.,', 'parser.y', 13)
+  def _reduce_6(val, _values, result)
+        ref = AST::Map.new(val.join)
+    ref.add_pair(val[0])
+    result = ref
+  
+    result
+  end
+.,.,
 
-# reduce 6 omitted
-
-module_eval(<<'.,.,', 'parser.y', 10)
+module_eval(<<'.,.,', 'parser.y', 19)
   def _reduce_7(val, _values, result)
-        ref = AST::FunctionCall.new(val.join)
-    ref.name = val[0]
-    ref.arguments = Array(val[2]).compact.flatten
+        ref = AST::KeyValuePair.new(val.join)
+    ref.hash_key = val[0].to_sym
+    ref.hash_value = val[2]
     result = ref
   
     result
@@ -204,23 +248,13 @@ module_eval(<<'.,.,', 'parser.y', 10)
 
 # reduce 8 omitted
 
-module_eval(<<'.,.,', 'parser.y', 18)
-  def _reduce_9(val, _values, result)
-     result = val 
-    result
-  end
-.,.,
+# reduce 9 omitted
 
-module_eval(<<'.,.,', 'parser.y', 21)
-  def _reduce_10(val, _values, result)
-     result = [val[0], val[2]] 
-    result
-  end
-.,.,
+# reduce 10 omitted
 
-module_eval(<<'.,.,', 'parser.y', 22)
+module_eval(<<'.,.,', 'parser.y', 29)
   def _reduce_11(val, _values, result)
-     result = val[0] 
+     result = val[1] 
     result
   end
 .,.,
@@ -231,8 +265,48 @@ module_eval(<<'.,.,', 'parser.y', 22)
 
 # reduce 14 omitted
 
-module_eval(<<'.,.,', 'parser.y', 28)
+module_eval(<<'.,.,', 'parser.y', 34)
   def _reduce_15(val, _values, result)
+        ref = AST::FunctionCall.new(val.join)
+    ref.name = val[0]
+    ref.arguments = Array(val[2]).compact.flatten
+    result = ref
+  
+    result
+  end
+.,.,
+
+# reduce 16 omitted
+
+module_eval(<<'.,.,', 'parser.y', 42)
+  def _reduce_17(val, _values, result)
+     result = val 
+    result
+  end
+.,.,
+
+module_eval(<<'.,.,', 'parser.y', 45)
+  def _reduce_18(val, _values, result)
+     result = [val[0], val[2]] 
+    result
+  end
+.,.,
+
+module_eval(<<'.,.,', 'parser.y', 46)
+  def _reduce_19(val, _values, result)
+     result = val[0] 
+    result
+  end
+.,.,
+
+# reduce 20 omitted
+
+# reduce 21 omitted
+
+# reduce 22 omitted
+
+module_eval(<<'.,.,', 'parser.y', 52)
+  def _reduce_23(val, _values, result)
           ref = AST::CellReference.new(val.join)
       ref.sheet_name = val[0]
       ref.cell_name = val[2]
@@ -242,16 +316,16 @@ module_eval(<<'.,.,', 'parser.y', 28)
   end
 .,.,
 
-# reduce 16 omitted
+# reduce 24 omitted
 
-# reduce 17 omitted
+# reduce 25 omitted
 
-# reduce 18 omitted
+# reduce 26 omitted
 
-# reduce 19 omitted
+# reduce 27 omitted
 
-module_eval(<<'.,.,', 'parser.y', 39)
-  def _reduce_20(val, _values, result)
+module_eval(<<'.,.,', 'parser.y', 63)
+  def _reduce_28(val, _values, result)
           strings = val.map do |v|
         v.respond_to?(:string) ? v.string : v
       end
@@ -262,8 +336,8 @@ module_eval(<<'.,.,', 'parser.y', 39)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 46)
-  def _reduce_21(val, _values, result)
+module_eval(<<'.,.,', 'parser.y', 70)
+  def _reduce_29(val, _values, result)
           ref = if val[0].is_a?(AST::BaseAST)
         val[0]
       else
@@ -276,37 +350,37 @@ module_eval(<<'.,.,', 'parser.y', 46)
   end
 .,.,
 
-# reduce 22 omitted
+# reduce 30 omitted
 
-# reduce 23 omitted
+# reduce 31 omitted
 
-# reduce 24 omitted
+# reduce 32 omitted
 
-# reduce 25 omitted
+# reduce 33 omitted
 
-module_eval(<<'.,.,', 'parser.y', 57)
-  def _reduce_26(val, _values, result)
+module_eval(<<'.,.,', 'parser.y', 81)
+  def _reduce_34(val, _values, result)
      result = AST::QuotedString.new(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 58)
-  def _reduce_27(val, _values, result)
+module_eval(<<'.,.,', 'parser.y', 82)
+  def _reduce_35(val, _values, result)
      result = AST::DateTime.new(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 59)
-  def _reduce_28(val, _values, result)
+module_eval(<<'.,.,', 'parser.y', 83)
+  def _reduce_36(val, _values, result)
      result = AST::PrimitiveFloat.new(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 60)
-  def _reduce_29(val, _values, result)
+module_eval(<<'.,.,', 'parser.y', 84)
+  def _reduce_37(val, _values, result)
      result = AST::PrimitiveInteger.new(val[0]) 
     result
   end

@@ -12,6 +12,38 @@ module NewExcel
       end
     end
 
+    class Map < BaseAST
+      def initialize(*args)
+        super
+        @key_value_pairs = []
+      end
+
+      def add_pair(pair)
+        @key_value_pairs << pair
+      end
+
+      def pairs
+        @key_value_pairs
+      end
+
+      def columns
+        @key_value_pairs.map(&:hash_key)
+      end
+
+      def value
+        @key_value_pairs.map(&:value)
+      end
+    end
+
+    class KeyValuePair < BaseAST
+      attr_accessor :hash_key
+      attr_accessor :hash_value
+
+      def value
+        [hash_key, hash_value.value]
+      end
+    end
+
     class FunctionCall < BaseAST
       attr_accessor :name
       attr_accessor :arguments

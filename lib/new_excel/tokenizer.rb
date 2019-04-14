@@ -7,7 +7,7 @@ module NewExcel
     def initialize(str)
       str = str.strip
       @str = str
-      @is_formula = str[0] == "="
+      @non_basic_type = str[0] == "=" || str =~ /^Map\!/
       # thank you - https://martinfowler.com/bliki/HelloRacc.html
       @scanner = StringScanner.new(str)
       @q = []
@@ -19,10 +19,12 @@ module NewExcel
       @q = []
 
       until scanner.eos?
-        if @is_formula
+        if @non_basic_type
           case
           when match = scanner.scan(/\"(\\.|[^"\\])*\"/)
             @q << [:QUOTED_STRING, match]
+          when match = scanner.scan(/Map\!/)
+            @q << [:MAP, match]
           when match = scanner.scan(/\=/)
             @q << [:EQ, match]
           when match = scanner.scan(/\,/)
@@ -43,9 +45,12 @@ module NewExcel
             @q << [:ID, match]
           when match = scanner.scan(/\./)
             @q << [:DOT, match]
+          when match = scanner.scan(/\:/)
+            @q << [:COLON, match]
+
           when scanner.scan(/\s+/)
             #ignore whitespace
-          when match = scanner.scan(/.+/)
+          when match = scanner.scan(/(.+)\n?/)
             @q << [:TEXT, match]
           else
             raise "Unknown token!"
@@ -58,8 +63,11 @@ module NewExcel
             @q << [:FLOAT, match]
           when match = scanner.scan(/\d+/)
             @q << [:INTEGER, match]
-          when match = scanner.scan(/.+/)
+          when match = scanner.scan(/(.+)\n?/)
             @q << [:TEXT, match]
+          else
+            debugger
+            raise "Unknown token: #{scanner.inspect}!"
           end
         end
       end

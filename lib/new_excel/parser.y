@@ -1,7 +1,31 @@
 class NewExcel::Parser
 rule
-  root: formula |
-    primitive
+  root: file | cell_contents
+
+  file: map
+
+  map: MAP key_value_pairs {
+    result = val[1]
+  }
+
+  key_value_pairs: key_value_pairs key_value_pair {
+  } |
+  key_value_pair {
+    ref = AST::Map.new(val.join)
+    ref.add_pair(val[0])
+    result = ref
+  }
+
+  key_value_pair: key COLON cell_contents {
+    ref = AST::KeyValuePair.new(val.join)
+    ref.hash_key = val[0].to_sym
+    ref.hash_value = val[2]
+    result = ref
+  }
+
+  key: ID
+
+  cell_contents: formula | primitive
 
   formula: EQ formula_body { result = val[1] }
 

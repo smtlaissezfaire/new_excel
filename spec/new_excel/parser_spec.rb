@@ -111,6 +111,29 @@ describe NewExcel::Parser do
       res.should be_a_kind_of(NewExcel::AST::UnquotedString)
       res.value.should == "some string text"
     end
+
+    it "should be able to parse a Map" do
+      str = <<-CODE
+Map!
+One:
+  1
+CODE
+
+      res = @obj.parse(str)
+      res.should be_a_kind_of(NewExcel::AST::Map)
+      res.columns.should == [:One]
+
+      res.value.should == [
+        [:One, 1]
+      ]
+
+      res.pairs.length.should == 1
+      pair = res.pairs.first
+      pair.should be_a_kind_of(NewExcel::AST::KeyValuePair)
+
+      pair.hash_key.should == :One
+      pair.hash_value.should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
+    end
   end
 
   context "primitives - evaluating" do
