@@ -43,7 +43,7 @@ module NewExcel
       if type == MAP
         Map.new(file)
       elsif type == CSV
-        Data.new(file, 'csv')
+        Data.new(file)
       end
     end
 

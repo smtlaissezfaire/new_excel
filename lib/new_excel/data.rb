@@ -1,6 +1,6 @@
 module NewExcel
   class Data
-    def initialize(file_path, type)
+    def initialize(file_path)
       @file = file_path
       @file_path = ::File.dirname(@file)
     end

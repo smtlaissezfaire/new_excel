@@ -28,7 +28,7 @@ module NewExcel
 
       def value
         file_path = ::File.join($context_file_path, "#{sheet_name}.csv")
-        NewExcel::Data.new(file_path, 'csv').evaluate(cell_name)
+        NewExcel::Data.new(file_path).evaluate(cell_name)
       end
     end
 

@@ -4,7 +4,7 @@ describe NewExcel::Data do
   describe "with a csv map" do
     before do
       @file = File.join("spec", "fixtures", "file.ne", "original_data.csv")
-      @obj = NewExcel::Data.new(@file, 'csv')
+      @obj = NewExcel::Data.new(@file)
     end
 
     it "should be able to read a map" do
