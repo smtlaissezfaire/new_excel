@@ -1,15 +1,9 @@
 module NewExcel
-  class Map
-    include ListHelpers
-
+  class Map < Sheet
     def initialize(file)
-      @file = file
-      @file_path = ::File.dirname(@file)
-      @column_names = []
+      super(file)
       @values = {}
     end
-
-    attr_reader :file_path
 
     def parse
       return if @parsed
@@ -39,17 +33,6 @@ module NewExcel
       @parsed = true
     end
 
-    def column_names
-      parse
-      @column_names
-    end
-
-    alias_method :columns, :column_names
-
-    def raw_content
-      @raw_content ||= ::File.read(@file)
-    end
-
     def get(column_or_column_names = column_names)
       parse
 
@@ -65,8 +48,6 @@ module NewExcel
       end
     end
 
-    alias_method :raw_value_for, :get
-
     def evaluate(*args)
       if args.empty?
         args = [column_names]
@@ -81,10 +62,6 @@ module NewExcel
           val
         end
       end
-    end
-
-    def read
-      evaluate
     end
   end
 end

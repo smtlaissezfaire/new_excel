@@ -1,12 +1,5 @@
 module NewExcel
-  class Data
-    def initialize(file_path)
-      @file = file_path
-      @file_path = ::File.dirname(@file)
-    end
-
-    attr_reader :file_path
-
+  class Data < Sheet
     def raw_content
       @raw_content ||= ::File.read(@file)
     end
@@ -15,15 +8,10 @@ module NewExcel
       return if @parsed
 
       @parsed_file = CSV.parse(raw_content)
-      @columns = @parsed_file.shift
+      @column_names = @parsed_file.shift
       @all_rows = @parsed_file
 
       @parsed = true
-    end
-
-    def columns
-      parse
-      @columns
     end
 
     def get(val=nil)
@@ -31,7 +19,7 @@ module NewExcel
 
       if val.is_a?(String) || val.is_a?(Integer)
         index = if val.is_a?(String)
-          @columns.index(val)
+          @column_names.index(val)
         else
           val-1
         end
@@ -42,7 +30,7 @@ module NewExcel
       elsif val.is_a?(Hash) || val.nil?
         array = []
         if val && val[:with_header]
-          array << @columns
+          array << @column_names
         end
         array += @all_rows
         array
