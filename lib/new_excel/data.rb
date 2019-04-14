@@ -7,14 +7,14 @@ module NewExcel
 
     attr_reader :file_path
 
-    def raw_map
-      @raw_map ||= ::File.read(@file)
+    def raw_content
+      @raw_content ||= ::File.read(@file)
     end
 
     def parse
       return if @parsed
 
-      @parsed_file = CSV.parse(raw_map)
+      @parsed_file = CSV.parse(raw_content)
       @columns = @parsed_file.shift
       @all_rows = @parsed_file
 

@@ -16,7 +16,7 @@ module NewExcel
 
       last_column_name = nil
 
-      raw_map.each_line do |line|
+      raw_content.each_line do |line|
         if line =~ /^[A-Za-z0-9]/
           column_name = line.gsub(/\:$/, '').strip
 
@@ -46,8 +46,8 @@ module NewExcel
 
     alias_method :columns, :column_names
 
-    def raw_map
-      @raw_map ||= ::File.read(@file)
+    def raw_content
+      @raw_content ||= ::File.read(@file)
     end
 
     def get(column_or_column_names = column_names)

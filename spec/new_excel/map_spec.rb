@@ -47,7 +47,7 @@ describe NewExcel::Map do
     end
 
     it "should be able to read a map" do
-      @obj.raw_map.should == File.read(@file)
+      @obj.raw_content.should == File.read(@file)
     end
 
     it "should be able to list the columns" do
