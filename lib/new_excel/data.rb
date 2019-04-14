@@ -3,9 +3,14 @@ module NewExcel
     def parse
       return if @parsed
 
-      @parsed_file = CSV.parse(raw_content)
-      @column_names = @parsed_file.shift
-      @all_rows = @parsed_file
+      # @parsed_file = CSV.parse(raw_content)
+      # @column_names = @parsed_file.shift
+      # @all_rows = @parsed_file
+
+      @ast = parser.parse("DataFile!\n" + raw_content)
+
+      @column_names = @ast.columns
+      @all_rows = @ast.body_csv
 
       @parsed = true
     end
@@ -29,12 +34,19 @@ module NewExcel
           array << @column_names
         end
         array += @all_rows
+        # array += @ast.print
         array
       end
     end
 
     def evaluate(*args)
       Evaluator.evaluate(self, get(*args))
+    end
+
+  private
+
+    def parser
+      @parser ||= Parser.new
     end
   end
 end

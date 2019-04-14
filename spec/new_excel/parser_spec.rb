@@ -162,6 +162,30 @@ CODE
       res = @obj.parse(str)
       res.should be_a_kind_of(NewExcel::AST::Map)
     end
+
+    it "should be able to accept a data file (as parsed csv)" do
+      csv = CSV.generate do |csv|
+        csv << ["header 1", "header 2", "header 3"]
+        csv << ["row 1", "row 2", "row 3"]
+        csv << ["row 1", "row 2", "row 3"]
+      end
+
+      data = CSV.parse(csv)
+
+      str = "DataFile!\n" + csv
+
+      res = @obj.parse(str)
+      res.should be_a_kind_of(NewExcel::AST::DataFile)
+
+      res.body.should == csv.chomp
+      res.columns.should == ["header 1", "header 2", "header 3"]
+      res.body_csv.should == [
+        ["row 1", "row 2", "row 3"],
+        ["row 1", "row 2", "row 3"],
+      ]
+
+      res.value.should == data
+    end
   end
 
   context "primitives - evaluating" do

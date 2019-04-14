@@ -7,6 +7,7 @@ module NewExcel
     def initialize(str)
       str = str.strip
       @str = str
+      @is_data_file = str =~ /^DataFile\!/
       @is_map = str =~ /^Map\!/
       @is_formula = str[0] == "="
       # thank you - https://martinfowler.com/bliki/HelloRacc.html
@@ -20,7 +21,15 @@ module NewExcel
       @q = []
 
       until scanner.eos?
-        if @is_map || @is_formula
+        if @is_data_file
+          case
+          when match = scanner.scan(/DataFile\!\n/)
+            @q << [:DATA_FILE, match]
+          else
+            @q << [:DATA_FILE_CONTENTS, scanner.rest]
+            scanner.terminate
+          end
+        elsif @is_map || @is_formula
           case
           when match = scanner.scan(/\"(\\.|[^"\\])*\"/)
             @q << [:QUOTED_STRING, match]

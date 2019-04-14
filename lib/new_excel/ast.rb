@@ -16,6 +16,56 @@ module NewExcel
       end
     end
 
+    class DataFile < BaseAST
+      attr_accessor :body
+
+      def csv
+        parse_csv!
+        @csv
+      end
+
+      def columns
+        parse_csv!
+        @columns
+      end
+
+      def body_csv
+        parse_csv!
+        @body_csv
+      end
+
+      def value(options={})
+        # is this crazy?
+        @value ||= begin
+          [].tap do |value|
+            if options[:with_header] || !options.has_key?(:with_header)
+              value << columns
+            end
+
+            body_csv.each do |row|
+              value << row.map do |cell|
+                parser.parse(cell).value
+              end
+            end
+          end
+        end
+      end
+
+    private
+
+      def parser
+        @parser ||= NewExcel::Parser.new
+      end
+
+      def parse_csv!
+        @csv ||= begin
+          full_csv = CSV.parse(body)
+          @columns = full_csv.shift
+          @body_csv = full_csv
+        end
+      end
+    end
+
     class Map < BaseAST
       def initialize(*args)
         super

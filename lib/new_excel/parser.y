@@ -2,10 +2,16 @@ class NewExcel::Parser
 rule
   root: file | cell_contents
 
-  file: map
+  file: map_file | data_file
 
-  map: MAP key_value_pairs {
+  map_file: MAP key_value_pairs {
     result = val[1]
+  }
+
+  data_file: DATA_FILE DATA_FILE_CONTENTS {
+    ref = AST::DataFile.new(val.join)
+    ref.body = val[1]
+    result = ref
   }
 
   key_value_pairs: key_value_pairs key_value_pair {
