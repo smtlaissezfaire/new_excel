@@ -10,6 +10,10 @@ module NewExcel
       def value
         raise NotImplementedError, "must implement value in base classes"
       end
+
+      def print
+        string
+      end
     end
 
     class Map < BaseAST
@@ -30,8 +34,20 @@ module NewExcel
         @key_value_pairs.map(&:hash_key)
       end
 
+      def get_column(name)
+        @key_value_pairs.detect do |kv_pair|
+          kv_pair.hash_key == name
+        end
+      end
+
       def value
         @key_value_pairs.map(&:value)
+      end
+
+      def print
+        @key_value_pairs.map do |kv_pair|
+          kv_pair.print
+        end.join("\n")
       end
     end
 
@@ -41,6 +57,22 @@ module NewExcel
 
       def value
         [hash_key, hash_value.value]
+      end
+
+      def print
+        "#{hash_key}:\n#{hash_value}"
+      end
+    end
+
+    class FormulaBody < BaseAST
+      attr_accessor :body
+
+      def value
+        body.value
+      end
+
+      def print
+        "= #{body.print}"
       end
     end
 
@@ -52,6 +84,10 @@ module NewExcel
         evaluated_arguments = arguments.map(&:value)
         NewExcel::BuiltInFunctions.public_send(name, *evaluated_arguments)
       end
+
+      def print
+        "#{name}(#{arguments.map(&:print).join(", ")})"
+      end
     end
 
     class CellReference < BaseAST
@@ -61,6 +97,10 @@ module NewExcel
       def value
         file_path = ::File.join($context_file_path, "#{sheet_name}.csv")
         NewExcel::Data.new(file_path).evaluate(cell_name)
+      end
+
+      def print
+        "#{sheet_name}.#{cell_name}"
       end
     end
 
@@ -84,7 +124,7 @@ module NewExcel
 
     class UnquotedString < BaseAST
       def value
-        string
+        string.chomp
       end
     end
 

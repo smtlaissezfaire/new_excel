@@ -9,6 +9,9 @@ rule
   }
 
   key_value_pairs: key_value_pairs key_value_pair {
+    ref = val[0]
+    ref.add_pair(val[1])
+    result = ref
   } |
   key_value_pair {
     ref = AST::Map.new(val.join)
@@ -16,18 +19,23 @@ rule
     result = ref
   }
 
-  key_value_pair: key COLON cell_contents {
+  key_value_pair: KEY_WITH_COLON cell_contents {
     ref = AST::KeyValuePair.new(val.join)
-    ref.hash_key = val[0].to_sym
-    ref.hash_value = val[2]
+    key_with_colon = val[0]
+    key_without_colon = key_with_colon[0..(key_with_colon.length-2)]
+
+    ref.hash_key = key_without_colon.to_sym
+    ref.hash_value = val[1]
     result = ref
   }
 
-  key: ID
-
   cell_contents: formula | primitive
 
-  formula: EQ formula_body { result = val[1] }
+  formula: EQ formula_body {
+    ref = AST::FormulaBody.new(val.join)
+    ref.body = val[1]
+    result = ref
+  }
 
   formula_body: function_call | remote_cell_reference | primitive_value
 
@@ -56,7 +64,7 @@ rule
       result = ref
     }
 
-  primitive_value: quoted_string | datetime | integer | float
+  primitive_value: quoted_string | datetime | time | integer | float
 
   # there must be a better way?
   primitive:
@@ -77,10 +85,11 @@ rule
       result = ref
     }
 
-  any_primitive_type: datetime | float | integer | TEXT
+  any_primitive_type: datetime | time | float | integer | TEXT
 
   quoted_string: QUOTED_STRING { result = AST::QuotedString.new(val[0]) }
   datetime: DATE_TIME { result = AST::DateTime.new(val[0]) }
+  time: TIME { result = AST::UnquotedString.new(val[0]) } # TODO!
   float: FLOAT { result = AST::PrimitiveFloat.new(val[0]) }
   integer: INTEGER { result = AST::PrimitiveInteger.new(val[0]) }
 end

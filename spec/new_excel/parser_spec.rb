@@ -8,17 +8,25 @@ describe NewExcel::Parser do
   context "functions" do
     it "should be able to parse a function" do
       res = @obj.parse("=add()")
-      res.should be_a_kind_of(NewExcel::AST::FunctionCall)
-      res.name.should == "add"
-      res.arguments.should == []
+      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+
+      body = res.body
+
+      body.should be_a_kind_of(NewExcel::AST::FunctionCall)
+      body.name.should == "add"
+      body.arguments.should == []
     end
 
     it "should be able to parse a function with an argument" do
       res = @obj.parse("=add(1)")
-      res.should be_a_kind_of(NewExcel::AST::FunctionCall)
-      res.name.should == "add"
-      res.arguments.length.should == 1
-      arg = res.arguments.first
+      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+
+      body = res.body
+
+      body.should be_a_kind_of(NewExcel::AST::FunctionCall)
+      body.name.should == "add"
+      body.arguments.length.should == 1
+      arg = body.arguments.first
 
       arg.should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
       arg.string.should == "1"
@@ -27,21 +35,25 @@ describe NewExcel::Parser do
 
     it "should be able to parse a function with multiple arguments" do
       res = @obj.parse("=add(1, 2, 3)")
-      res.should be_a_kind_of(NewExcel::AST::FunctionCall)
-      res.name.should == "add"
-      res.arguments.length.should == 3
+      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
 
-      res.arguments[0].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
-      res.arguments[0].string.should == "1"
-      res.arguments[0].value.should == 1
+      body = res.body
 
-      res.arguments[1].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
-      res.arguments[1].string.should == "2"
-      res.arguments[1].value.should == 2
+      body.should be_a_kind_of(NewExcel::AST::FunctionCall)
+      body.name.should == "add"
+      body.arguments.length.should == 3
 
-      res.arguments[2].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
-      res.arguments[2].string.should == "3"
-      res.arguments[2].value.should == 3
+      body.arguments[0].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
+      body.arguments[0].string.should == "1"
+      body.arguments[0].value.should == 1
+
+      body.arguments[1].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
+      body.arguments[1].string.should == "2"
+      body.arguments[1].value.should == 2
+
+      body.arguments[2].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
+      body.arguments[2].string.should == "3"
+      body.arguments[2].value.should == 3
     end
 
     it "should be able to evaluate the function" do
@@ -61,9 +73,13 @@ describe NewExcel::Parser do
       ]
 
       res = @obj.parse("= other_sheet.other_column")
-      res.should be_a_kind_of(NewExcel::AST::CellReference)
-      res.sheet_name.should == "other_sheet"
-      res.cell_name.should == "other_column"
+      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+
+      body = res.body
+
+      body.should be_a_kind_of(NewExcel::AST::CellReference)
+      body.sheet_name.should == "other_sheet"
+      body.cell_name.should == "other_column"
     end
 
     # it "should be able to evaluate a remote cell refernece" do
@@ -90,10 +106,12 @@ describe NewExcel::Parser do
       str = "= trim(\" foo \")"
 
       res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::AST::FunctionCall)
-      res.arguments.length.should == 1
+      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      body = res.body
+      body.should be_a_kind_of(NewExcel::AST::FunctionCall)
+      body.arguments.length.should == 1
 
-      arg = res.arguments[0]
+      arg = body.arguments[0]
       arg.should be_a_kind_of(NewExcel::AST::QuotedString)
       arg.value.should == " foo "
     end
@@ -133,6 +151,16 @@ CODE
 
       pair.hash_key.should == :One
       pair.hash_value.should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
+    end
+
+    it "should be able to parse a known file" do
+      str = File.read("spec/fixtures/file.ne/simple_text.map")
+      str = "Map!\n" + str
+
+      # NewExcel::Tokenizer.get_tokens(str).should == []
+
+      res = @obj.parse(str)
+      res.should be_a_kind_of(NewExcel::AST::Map)
     end
   end
 

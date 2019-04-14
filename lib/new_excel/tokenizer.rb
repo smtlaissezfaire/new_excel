@@ -7,7 +7,8 @@ module NewExcel
     def initialize(str)
       str = str.strip
       @str = str
-      @non_basic_type = str[0] == "=" || str =~ /^Map\!/
+      @is_map = str =~ /^Map\!/
+      @is_formula = str[0] == "="
       # thank you - https://martinfowler.com/bliki/HelloRacc.html
       @scanner = StringScanner.new(str)
       @q = []
@@ -19,12 +20,16 @@ module NewExcel
       @q = []
 
       until scanner.eos?
-        if @non_basic_type
+        if @is_map || @is_formula
           case
           when match = scanner.scan(/\"(\\.|[^"\\])*\"/)
             @q << [:QUOTED_STRING, match]
+          # when match = scanner.scan(/Map\!/)
+          #   @q << [:MAP, match]
           when match = scanner.scan(/Map\!/)
             @q << [:MAP, match]
+          when match = scanner.scan(/[a-zA-Z][a-zA-Z0-9\_\- ]+\:/)
+            @q << [:KEY_WITH_COLON, match]
           when match = scanner.scan(/\=/)
             @q << [:EQ, match]
           when match = scanner.scan(/\,/)
@@ -33,21 +38,20 @@ module NewExcel
             @q << [:OPEN_PAREN, match]
           when match = scanner.scan(/\)/)
             @q << [:CLOSE_PAREN, match]
-          when match = scanner.scan(/\d+[-]\d+[-]\d+/)
+          when match = scanner.scan(/\d+[-\/]\d+[-\/]\d+( \d+\:\d+(\:\d+)?)?/)
             @q << [:DATE_TIME, match]
+          when match = scanner.scan(/\d+\:\d+/)
+            @q << [:TIME, match]
           when match = scanner.scan(/\d+\.\d+/)
             @q << [:FLOAT, match]
           when match = scanner.scan(/\d+/)
             @q << [:INTEGER, match]
-          when match = scanner.scan(/\d+\:\d+/)
-            @q << [:TIME, match]
           when match = scanner.scan(/[a-zA-Z][a-zA-Z0-9\_\-]+/)
             @q << [:ID, match]
           when match = scanner.scan(/\./)
             @q << [:DOT, match]
-          when match = scanner.scan(/\:/)
-            @q << [:COLON, match]
-
+          # when match = scanner.scan(/\:/)
+          #   @q << [:COLON, match]
           when scanner.scan(/\s+/)
             #ignore whitespace
           when match = scanner.scan(/(.+)\n?/)
@@ -59,6 +63,8 @@ module NewExcel
           case
           when match = scanner.scan(/\d+[-\/]\d+[-\/]\d+( \d+\:\d+(\:\d+)?)?/)
             @q << [:DATE_TIME, match]
+          when match = scanner.scan(/\d+\:\d+/)
+            @q << [:TIME, match]
           when match = scanner.scan(/\d+\.\d+/)
             @q << [:FLOAT, match]
           when match = scanner.scan(/\d+/)
@@ -66,7 +72,6 @@ module NewExcel
           when match = scanner.scan(/(.+)\n?/)
             @q << [:TEXT, match]
           else
-            debugger
             raise "Unknown token: #{scanner.inspect}!"
           end
         end
