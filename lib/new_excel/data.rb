@@ -1,9 +1,5 @@
 module NewExcel
   class Data < Sheet
-    def raw_content
-      @raw_content ||= ::File.read(@file)
-    end
-
     def parse
       return if @parsed
 
