@@ -210,4 +210,37 @@ describe NewExcel::Map do
     end
   end
 
+  describe "printing" do
+    it "should print" do
+      @file = File.join("spec", "fixtures", "file.ne", "simple_text.map")
+      @obj = NewExcel::Map.new(@file)
+
+      @obj.print.should == <<-STR
+String   Integer Float   Date Time  DateTime List of Strings List of Ints
+-------- ------- ------- ---- ----- -------- --------------- ------------
+a string 123     123.456 0    11:00 0        a b c           123
+  STR
+
+    end
+
+    it "should print a referenced map correctly" do
+      @file = File.join("spec", "fixtures", "file.ne", "one_column_map.map")
+      @obj = NewExcel::Map.new(@file)
+
+      @obj.print.should == <<-STR
+Date
+-------------------------
+2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800
+STR
+    end
+  end
+
 end
