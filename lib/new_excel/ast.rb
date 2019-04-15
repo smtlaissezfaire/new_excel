@@ -19,37 +19,86 @@ module NewExcel
     class DataFile < BaseAST
       attr_accessor :body
 
-      def csv
-        parse_csv!
-        @csv
+      def columns
+        body.rows.first
       end
 
-      def columns
-        parse_csv!
-        @columns
+      def column_names
+        columns.value
       end
 
       def body_csv
-        parse_csv!
-        @body_csv
+        body.rows[1..(body.rows.length)]
       end
 
       def value(options={})
-        # is this crazy?
-        @value ||= begin
-          [].tap do |value|
-            if options[:with_header] || !options.has_key?(:with_header)
-              value << columns
-            end
+        options[:with_header] = true unless options.has_key?(:with_header)
+        with_header = options[:with_header]
+        only_rows = options[:only_rows]
 
-            body_csv.each do |row|
-              value << row.map do |cell|
-                parser.parse(cell).value
-              end
+        if only_rows
+          row_indexes = only_rows.map do |row|
+            if row.is_a?(String)
+              column_names.index(row)
+            elsif row.is_a?(Integer)
+              row - 1
+            else
+              raise "Unknown row type!"
             end
           end
         end
+
+        # is this crazy?
+        [].tap do |value|
+          if with_header
+            value << column_names
+          end
+
+          @body_values ||= body_csv.map(&:value)
+
+          @body_values.each_with_index do |val, index|
+            to_add = if row_indexes
+              row_indexes.map { |i| val[i] }
+            else
+              val
+            end
+
+            value << to_add
+          end
+        end
       end
+
+      # def csv
+      #   parse_csv!
+      #   @csv
+      # end
+      #
+      # def columns
+      #   parse_csv!
+      #   @columns
+      # end
+      #
+      # def body_csv
+      #   parse_csv!
+      #   @body_csv
+      # end
+      #
+      # def value(options={})
+      #   # is this crazy?
+      #   @value ||= begin
+      #     [].tap do |value|
+      #       if options[:with_header] || !options.has_key?(:with_header)
+      #         value << columns
+      #       end
+      #
+      #       body_csv.each do |row|
+      #         value << row.map do |cell|
+      #           parser.parse(cell).value
+      #         end
+      #       end
+      #     end
+      #   end
+      # end
 
     private
 
@@ -63,6 +112,46 @@ module NewExcel
           @columns = full_csv.shift
           @body_csv = full_csv
         end
+      end
+    end
+
+    class DataBody < BaseAST
+      def initialize(*args)
+        @rows = []
+      end
+
+      def add_row(row)
+        @rows << row
+      end
+
+      attr_reader :rows
+
+      def value
+        rows.map(&:value)
+      end
+    end
+
+    class DataRow < BaseAST
+      def initialize(*args)
+        @cells = []
+      end
+
+      def add_cell(cell)
+        @cells << cell
+      end
+
+      attr_reader :cells
+
+      def value
+        cells.map(&:value)
+      end
+    end
+
+    class DataCell < BaseAST
+      attr_accessor :cell_value
+
+      def value
+        cell_value.value
       end
     end
 
@@ -84,15 +173,84 @@ module NewExcel
         @key_value_pairs.map(&:hash_key)
       end
 
+      alias_method :column_names, :columns
+
       def get_column(name)
         @key_value_pairs.detect do |kv_pair|
           kv_pair.hash_key == name
         end
       end
 
-      def value
-        @key_value_pairs.map(&:value)
+      def value(options={})
+        options[:with_header] = true unless options.has_key?(:with_header)
+        with_header = options[:with_header]
+        only_rows = options[:only_rows]
+
+        if only_rows
+          row_indexes = only_rows.map do |row|
+            if row.is_a?(String)
+              column_names.index(row)
+            elsif row.is_a?(Integer)
+              row - 1
+            else
+              raise "Unknown row type!"
+            end
+          end
+        end
+
+        # is this crazy?
+        [].tap do |value|
+          if with_header
+            value << column_names
+          end
+
+          # @body_values ||= body_csv.map(&:value)
+          # require 'matrix';
+          # body_values ||= begin
+          #   pair_values = pairs.map { |pair| pair.pair_value }
+          #   Matrix[*pair_values].transpose.to_a
+          # end
+          # @body_values ||= pairs.map { |pair| pair.hash_value.value }
+
+          values_by_column = pairs.map(&:pair_value)
+          row_length = values_by_column[0].length
+          # want them row by row
+          body_values = []
+
+          # transpose!
+          1.upto(row_length) do |num|
+            body_values << values_by_column.map { |v| v[num - 1] }
+          end
+
+          # columns.each_with_index do |col, index|
+          #   1.up
+          #   body_values << values_by_column
+          # end
+
+
+          body_values.each_with_index do |val, index|
+            to_add = if row_indexes
+              row_indexes.map { |i| val[i] }
+            else
+              val
+            end
+
+            value << to_add if to_add
+          end
+        end
       end
+
+
+      # def value
+      #   []/ta[]
+      #   @key_value_pairs.map do |kv_pair|
+      #     kv_pair.hash_value.value
+      #   end
+      #
+      #   # columns.each_with_index do |column, index|
+      #   #   @key_value_pairs.map(&:value)
+      #   # end
+      # end
 
       def print
         @key_value_pairs.map do |kv_pair|
@@ -106,7 +264,15 @@ module NewExcel
       attr_accessor :hash_value
 
       def value
-        [hash_key, hash_value.value]
+        [pair_key, pair_value]
+      end
+
+      def pair_key
+        hash_key
+      end
+
+      def pair_value
+        Array(hash_value.value)
       end
 
       def print
@@ -146,7 +312,7 @@ module NewExcel
 
       def value
         file_path = ::File.join($context_file_path, "#{sheet_name}.csv")
-        NewExcel::Data.new(file_path).evaluate(cell_name)
+        NewExcel::Data.new(file_path).evaluate(cell_name).flatten
       end
 
       def print

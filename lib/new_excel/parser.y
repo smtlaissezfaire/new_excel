@@ -8,9 +8,41 @@ rule
     result = val[1]
   }
 
-  data_file: DATA_FILE DATA_FILE_CONTENTS {
+  data_file: DATA_FILE csv_file_contents {
     ref = AST::DataFile.new(val.join)
     ref.body = val[1]
+    result = ref
+  }
+
+  csv_file_contents: csv_file_body CSV_END_OF_FILE { result = val[0] }
+
+  csv_file_body: csv_file_body csv_row {
+    ref = val[0]
+    ref.add_row(val[1])
+    result = ref
+  } |
+  csv_row {
+   ref = AST::DataBody.new(val.join)
+   ref.add_row(val[0])
+   result = ref
+ }
+
+  csv_row: csv_cells CSV_END_OF_ROW { result = val[0] }
+
+  csv_cells: csv_cells csv_cell {
+    ref = val[0]
+    ref.add_cell(val[1])
+    result = ref
+  } |
+  csv_cell {
+    ref = AST::DataRow.new(val.join)
+    ref.add_cell(val[0])
+    result = ref
+  }
+
+  csv_cell: any_primitive_type {
+    ref = AST::DataCell.new(val.join)
+    ref.cell_value = val[0]
     result = ref
   }
 
@@ -30,7 +62,7 @@ rule
     key_with_colon = val[0]
     key_without_colon = key_with_colon[0..(key_with_colon.length-2)]
 
-    ref.hash_key = key_without_colon.to_sym
+    ref.hash_key = key_without_colon
     ref.hash_value = val[1]
     result = ref
   }
@@ -73,31 +105,31 @@ rule
   primitive_value: quoted_string | datetime | time | integer | float
 
   # there must be a better way?
-  primitive:
-    primitive any_primitive_type {
-      strings = val.map do |v|
-        v.respond_to?(:string) ? v.string : v
-      end
+  primitive: primitive any_primitive_type {
+    strings = val.map do |v|
+      v.respond_to?(:string) ? v.string : v
+    end
 
-      result = AST::UnquotedString.new(strings.join)
-    } |
-    any_primitive_type {
-      ref = if val[0].is_a?(AST::BaseAST)
-        val[0]
-      else
-        AST::UnquotedString.new(val.join)
-      end
+    result = AST::UnquotedString.new(strings.join)
+  }
+  | any_primitive_type {
+    ref = if val[0].is_a?(AST::BaseAST)
+      val[0]
+    else
+      AST::UnquotedString.new(val.join)
+    end
 
-      result = ref
-    }
+    result = ref
+  }
 
-  any_primitive_type: datetime | time | float | integer | TEXT
+  any_primitive_type: datetime | time | float | integer | text
 
   quoted_string: QUOTED_STRING { result = AST::QuotedString.new(val[0]) }
   datetime: DATE_TIME { result = AST::DateTime.new(val[0]) }
   time: TIME { result = AST::UnquotedString.new(val[0]) } # TODO!
   float: FLOAT { result = AST::PrimitiveFloat.new(val[0]) }
   integer: INTEGER { result = AST::PrimitiveInteger.new(val[0]) }
+  text: TEXT { result = AST::UnquotedString.new(val[0]) }
 end
 
 ---- inner

@@ -139,17 +139,18 @@ CODE
 
       res = @obj.parse(str)
       res.should be_a_kind_of(NewExcel::AST::Map)
-      res.columns.should == [:One]
+      res.columns.should == ["One"]
 
       res.value.should == [
-        [:One, 1]
+        ["One"],
+        [1],
       ]
 
       res.pairs.length.should == 1
       pair = res.pairs.first
       pair.should be_a_kind_of(NewExcel::AST::KeyValuePair)
 
-      pair.hash_key.should == :One
+      pair.hash_key.should == "One"
       pair.hash_value.should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
     end
 
@@ -174,15 +175,13 @@ CODE
 
       str = "DataFile!\n" + csv
 
+      # puts NewExcel::Tokenizer.get_tokens(str)
+
       res = @obj.parse(str)
       res.should be_a_kind_of(NewExcel::AST::DataFile)
 
-      res.body.should == csv.chomp
-      res.columns.should == ["header 1", "header 2", "header 3"]
-      res.body_csv.should == [
-        ["row 1", "row 2", "row 3"],
-        ["row 1", "row 2", "row 3"],
-      ]
+      # res.body.should == csv.chomp'
+      res.column_names.should == ["header 1", "header 2", "header 3"]
 
       res.value.should == data
     end

@@ -26,8 +26,33 @@ module NewExcel
           when match = scanner.scan(/DataFile\!\n/)
             @q << [:DATA_FILE, match]
           else
-            @q << [:DATA_FILE_CONTENTS, scanner.rest]
+            remaining = scanner.rest
             scanner.terminate
+
+            csv = CSV.parse(remaining)
+            csv.each do |row|
+              row.each do |cell_text|
+                cell_scanner = StringScanner.new(cell_text)
+
+                # primitives
+                case
+                when match = cell_scanner.scan(/\d+[-\/]\d+[-\/]\d+( \d+\:\d+(\:\d+)?)?/)
+                  @q << [:DATE_TIME, match]
+                when match = cell_scanner.scan(/\d+\:\d+/)
+                  @q << [:TIME, match]
+                when match = cell_scanner.scan(/\d+\.\d+/)
+                  @q << [:FLOAT, match]
+                when match = cell_scanner.scan(/\d+/)
+                  @q << [:INTEGER, match]
+                else # when match = scanner.scan(/(.+)\n?/)
+                  @q << [:TEXT, cell_text]
+                end
+              end
+
+              @q << [:CSV_END_OF_ROW, true]
+            end
+
+            @q << [:CSV_END_OF_FILE, true]
           end
         elsif @is_map || @is_formula
           case

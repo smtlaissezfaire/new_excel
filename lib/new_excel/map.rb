@@ -55,7 +55,7 @@ module NewExcel
         # raise "Column #{column_name.inspect} not found!" if !@values.has_key?(column_name)
         # @values[column_name]
 
-        @ast.get_column(column_name.to_sym).hash_value.print
+        @ast.get_column(column_name).hash_value.print
       end
     end
 
@@ -65,20 +65,25 @@ module NewExcel
       # FIXME: hack hack hack
       $context_file_path = @file_path
 
-      if args.empty?
-        args = [column_names]
+      options = args.last.is_a?(Hash) ? args.pop : {}
+      options[:with_header] = false unless options[:with_header]
+
+      if args && args.any?
+        options[:only_rows] = args
       end
 
-      ambiguous_map(*args) do |column_name, index|
-        val = @ast.get_column(column_name.to_sym).hash_value.value
-        # val = Evaluator.evaluate(self, get(column_name, index))
+      @ast.value(options)
 
-        if index
-          val[index-1]
-        else
-          val
-        end
-      end
+      # ambiguous_map(*args) do |column_name, index|
+      #   val = @ast.get_column(column_name).hash_value.value
+      #   # val = Evaluator.evaluate(self, get(column_name, index))
+      #
+      #   if index
+      #     val[index-1]
+      #   else
+      #     val
+      #   end
+      # end
     end
 
   private
