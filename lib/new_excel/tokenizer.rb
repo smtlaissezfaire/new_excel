@@ -36,14 +36,8 @@ module NewExcel
 
                 # primitives
                 case
-                when match = cell_scanner.scan(/\d+[-\/]\d+[-\/]\d+( \d+\:\d+(\:\d+)?)?/)
-                  @q << [:DATE_TIME, match]
-                when match = cell_scanner.scan(/\d+\:\d+/)
-                  @q << [:TIME, match]
-                when match = cell_scanner.scan(/\d+\.\d+/)
-                  @q << [:FLOAT, match]
-                when match = cell_scanner.scan(/\d+/)
-                  @q << [:INTEGER, match]
+                when token_pair = tokens_for_primitive_match(cell_scanner)
+                  @q << token_pair
                 else # when match = scanner.scan(/(.+)\n?/)
                   @q << [:TEXT, cell_text]
                 end
@@ -72,14 +66,8 @@ module NewExcel
             @q << [:OPEN_PAREN, match]
           when match = scanner.scan(/\)/)
             @q << [:CLOSE_PAREN, match]
-          when match = scanner.scan(/\d+[-\/]\d+[-\/]\d+( \d+\:\d+(\:\d+)?)?/)
-            @q << [:DATE_TIME, match]
-          when match = scanner.scan(/\d+\:\d+/)
-            @q << [:TIME, match]
-          when match = scanner.scan(/\d+\.\d+/)
-            @q << [:FLOAT, match]
-          when match = scanner.scan(/\d+/)
-            @q << [:INTEGER, match]
+          when token_pair = tokens_for_primitive_match(scanner)
+            @q << token_pair
           when match = scanner.scan(/[a-zA-Z][a-zA-Z0-9\_\-]+/)
             @q << [:ID, match]
           when match = scanner.scan(/\./)
@@ -88,23 +76,17 @@ module NewExcel
           #   @q << [:COLON, match]
           when scanner.scan(/\s+/)
             #ignore whitespace
-          when match = scanner.scan(/(.+)\n?/)
-            @q << [:TEXT, match]
+          when token_pair = tokens_for_text_scan(scanner)
+            @q << token_pair
           else
             raise "Unknown token!"
           end
         else
           case
-          when match = scanner.scan(/\d+[-\/]\d+[-\/]\d+( \d+\:\d+(\:\d+)?)?/)
-            @q << [:DATE_TIME, match]
-          when match = scanner.scan(/\d+\:\d+/)
-            @q << [:TIME, match]
-          when match = scanner.scan(/\d+\.\d+/)
-            @q << [:FLOAT, match]
-          when match = scanner.scan(/\d+/)
-            @q << [:INTEGER, match]
-          when match = scanner.scan(/(.+)\n?/)
-            @q << [:TEXT, match]
+          when token_pair = tokens_for_primitive_match(scanner)
+            @q << token_pair
+          when token_pair = tokens_for_text_scan(scanner)
+            @q << token_pair
           else
             raise "Unknown token: #{scanner.inspect}!"
           end
@@ -113,6 +95,27 @@ module NewExcel
 
       @q.push [false, '$end']
       @q
+    end
+
+  private
+
+    def tokens_for_primitive_match(scanner)
+      case
+      when match = scanner.scan(/\d+[-\/]\d+[-\/]\d+( \d+\:\d+(\:\d+)?)?/)
+        [:DATE_TIME, match]
+      when match = scanner.scan(/\d+\:\d+/)
+        [:TIME, match]
+      when match = scanner.scan(/\d+\.\d+/)
+        [:FLOAT, match]
+      when match = scanner.scan(/\d+/)
+        [:INTEGER, match]
+      end
+    end
+
+    def tokens_for_text_scan(scanner)
+      if match = scanner.scan(/(.+)\n?/)
+        [:TEXT, match]
+      end
     end
   end
 end
