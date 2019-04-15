@@ -21,19 +21,24 @@ module NewExcel
         options[:with_header] = true unless options.has_key?(:with_header)
         with_header = options[:with_header]
         only_columns = options[:only_columns]
+        only_rows = options[:only_rows]
 
         if only_columns
-          column_indexes = only_columns.map do |row|
-            if row.is_a?(String)
-              val = column_names.index(row)
-              raise "Unknown row: #{row.inspect}" if !val
+          column_indexes = only_columns.map do |column|
+            if column.is_a?(String)
+              val = column_names.index(column)
+              raise "Unknown column: #{column.inspect}" if !val
               val
-            elsif row.is_a?(Integer)
-              row - 1
+            elsif column.is_a?(Integer)
+              column - 1
             else
-              raise "Unknown row type!"
+              raise "Unknown column type!"
             end
           end
+        end
+
+        if only_rows
+          row_indexes = only_rows
         end
 
         # is this crazy?
@@ -42,13 +47,13 @@ module NewExcel
             value << column_names
           end
 
-          get_body_values(column_indexes).each do |val|
+          get_body_values(column_indexes, row_indexes).each do |val|
             value << val
           end
         end
       end
 
-      def get_body_values(column_indexes)
+      def get_body_values(column_indexes, row_indexes)
         raise NotImplementedError, "Must be implemented in subclass"
       end
     end
@@ -68,16 +73,24 @@ module NewExcel
         body.rows[1..(body.rows.length)]
       end
 
-      def get_body_values(column_indexes)
-        body_values = body_csv.map do |row|
-          values_for_row = row.value
+      def get_body_values(column_indexes, row_indexes)
+        body_values = body_csv.map do |column|
+          values_for_column = column.value
 
           if column_indexes
-            column_indexes.map { |i| values_for_row[i] }
-          else
-            values_for_row
+            values_for_column = column_indexes.map { |i| values_for_column[i] }
+          end
+
+          values_for_column
+        end
+
+        if row_indexes
+          body_values = row_indexes.map do |row_index|
+            body_values[row_index-1]
           end
         end
+
+        body_values
       end
 
     private
@@ -161,23 +174,45 @@ module NewExcel
         end
       end
 
-      def get_body_values(column_indexes)
+      def get_body_values(column_indexes, row_indexes)
         index = 0
 
+        # select only the columns that match column_indexes
         kv_pairs = pairs.select do |kv_pair|
           val = !column_indexes || column_indexes.include?(index)
           index += 1
           val
         end
 
+        # get their values
         values_by_column = kv_pairs.map(&:pair_value)
-        row_length = values_by_column[0].length
 
-        # want them row by row
-        body_values = []
+        # select only the values that match row_indexes
+        if row_indexes
+          values_by_column = values_by_column.map do |values_for_one_column|
+            row_indexes.map do |row_index|
+              values_for_one_column[row_index-1]
+            end
+          end
+        end
+
+        column_length = values_by_column[0].length
 
         # transpose!
-        1.upto(row_length) do |num|
+        # normally in
+        # [
+        #   ["col1", "col 1 val 1", "col 1 val 2"],
+        #   ["col2", "col 2 val 1", "col 2 val 2"]
+        # ]
+        # we want it in:
+        # [
+        #   ["col1",        "col2"],
+        #   ["col 1 val 1", "col 2 val 1"],
+        #   ["col 1 val 2", "col 2 val 2"],
+        # ]
+        body_values = []
+
+        1.upto(column_length) do |num|
           body_values << values_by_column.map { |v| v[num - 1] }
         end
 

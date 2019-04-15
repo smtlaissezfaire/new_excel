@@ -136,14 +136,12 @@ describe NewExcel::Map do
     end
 
     it "should be able to evaluate two columns with an index" do
-      pending "FIXME"
-      @obj.evaluate(["Time", "Volume"], 1).should == ["0:00:00", 653]
-      @obj.evaluate(["Time", "Volume"], 2).should == ["0:05:00", 4]
+      @obj.evaluate(["Time", "Volume"], 1).should == [["0:00", 653]]
+      @obj.evaluate(["Time", "Volume"], 2).should == [["0:05", 4]]
     end
 
     it "should be able to evaluate two columns with two indexes" do
-      pending "FIXME"
-      @obj.evaluate(["Time", "Volume"], [2, 3]).should == ["0:05:00", 404]
+      @obj.evaluate(["Time", "Volume"], [2, 3]).should == [["0:05", 4], ["0:10", 404]]
     end
 
     it "should be able to load all data with read()" do
@@ -251,7 +249,7 @@ STR
     it "should raise when handling an invalid column reference through the own sheet" do
       lambda {
         @obj.evaluate("ReferencingOneIndirectlyBadColumnValue")
-      }.should raise_error(RuntimeError, "Unknown row: \"InvalidColumnReference\"")
+      }.should raise_error(RuntimeError, "Unknown column: \"InvalidColumnReference\"")
     end
 
     it "should be able to refer to one of it's own columns without the sheet" do

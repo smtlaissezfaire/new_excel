@@ -57,6 +57,29 @@ describe NewExcel::Data do
       ]
     end
 
+    it "should be able to evaluate two columns" do
+      @obj.evaluate("Date", "Volume").should == [
+        [ Time.parse("2019/03/01"), 653, ],
+        [ Time.parse("2019/03/01"), 4, ],
+        [ Time.parse("2019/03/01"), 404, ],
+        [ Time.parse("2019/03/01"), 1021, ],
+        [ Time.parse("2019/03/01"), 521, ],
+        [ Time.parse("2019/03/01"), 256, ],
+        [ Time.parse("2019/03/01"), 226, ],
+        [ Time.parse("2019/03/01"), 938, ],
+        [ Time.parse("2019/03/01"), 262 ],
+      ]
+    end
+
+    it "should be able to evaluate two columns with an index" do
+      @obj.evaluate(["Date", "Volume"], 1).should == [[ Time.parse("2019/03/01"), 653, ],]
+      @obj.evaluate(["Date", "Volume"], 2).should == [[ Time.parse("2019/03/01"), 4, ],]
+    end
+
+    it "should be able to evaluate two columns with two indexes" do
+      @obj.evaluate(["Date", "Volume"], [2, 3]).should == [[ Time.parse("2019/03/01"), 4], [Time.parse("2019/03/01"), 404]]
+    end
+
     it "should be able to get all the rows" do
       rows = @obj.evaluate
 

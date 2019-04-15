@@ -61,7 +61,13 @@ module NewExcel
       options[:with_header] = false unless options[:with_header]
 
       if args && args.any?
-        options[:only_columns] = args
+        if args.length >= 2 && (args.last.is_a?(Integer) || args.last.is_a?(Array))
+          row_indexes = args.pop
+          row_indexes = [row_indexes] if !row_indexes.is_a?(Array)
+          options[:only_rows] = row_indexes
+        end
+
+        options[:only_columns] = args.flatten
       end
 
       @ast.value(options)
