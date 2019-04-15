@@ -18,8 +18,9 @@ BidVolume:
   = zf_original_data.BidVolume
 AskVolume:
   = zf_original_data.AskVolume
-Open:
-  = OriginalOpen
+Open Whole:
+  = right(OriginalOpen, 2)
+
 
 # Open Whole:
 #   =value(left($C2, search(" ", $C2, 1)))

@@ -75,7 +75,9 @@ rule
     result = ref
   }
 
-  formula_body: function_call | remote_cell_reference | local_cell_reference | primitive_value
+  expression: function_call | remote_cell_reference | local_cell_reference | primitive_value
+
+  formula_body: expression
 
   function_call: ID OPEN_PAREN function_body CLOSE_PAREN {
     ref = AST::FunctionCall.new(val.join)
@@ -92,7 +94,7 @@ rule
     function_arguments COMMA function_argument  { result = [val[0], val[2]] } |
     function_argument { result = val[0] }
 
-  function_argument: function_call | remote_cell_reference | primitive_value
+  function_argument: expression
 
   remote_cell_reference:
     ID DOT ID {

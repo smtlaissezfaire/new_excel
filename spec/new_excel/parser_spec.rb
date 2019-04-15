@@ -203,6 +203,39 @@ CODE
 
       res.value.should == data
     end
+
+    it "should be able to parse a function that calls another column" do
+      str = File.read("spec/fixtures/file.ne/function_on_column.map")
+      str = "Map!\n" + str
+
+      res = @obj.parse(str)
+      res.should be_a_kind_of(NewExcel::AST::Map)
+      res.columns.should == ["String1", "String2"]
+
+      # +#<NewExcel::AST::KeyValuePair:0x00007ff19b934a60
+      # + @hash_key="String2",
+      # + @hash_value=
+      # +  #<NewExcel::AST::FormulaBody:0x00007ff19b934b28
+      # +   @body=
+      # +    #<NewExcel::AST::FunctionCall:0x00007ff19b934c90
+      # +     @arguments=
+      # +      [#<NewExcel::AST::CellReference:0x00007ff19b934f38
+      # +        @cell_name="OriginalOpen",
+      # +        @string="OriginalOpen">,
+      # +       #<NewExcel::AST::PrimitiveInteger:0x00007ff19b934e98 @string="2">],
+      # +     @name="right",
+      # +     @string=
+      # +      "right(#<NewExcel::AST::CellReference:0x00007ff19b934f38>#<NewExcel::AST::PrimitiveInteger:0x00007ff19b934e98>)">,
+      # +   @string="=#<NewExcel::AST::FunctionCall:0x00007ff19b934c90>">,
+      # + @string="String2:#<NewExcel::AST::FormulaBody:0x00007ff19b934b28>">
+
+      string_2_value = res.pairs[1].hash_value
+      string_2_value.should_not be_nil
+      string_2_value.should be_a(NewExcel::AST::FormulaBody)
+
+      string_2_value.body.should be_a_kind_of(NewExcel::AST::FunctionCall)
+      string_2_value.body.arguments[0].should be_a(NewExcel::AST::CellReference)
+    end
   end
 
   context "primitives - evaluating" do

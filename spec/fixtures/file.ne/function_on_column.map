@@ -1,0 +1,4 @@
+String1:
+  = "foo"
+String2:
+  = right(OriginalOpen, 2)
