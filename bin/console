@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+$LOAD_PATH << "./lib"
+
 require "bundler/setup"
 require "new_excel"
 
