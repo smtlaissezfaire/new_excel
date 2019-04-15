@@ -76,5 +76,13 @@ module NewExcel
     def explode(*args)
       args
     end
+
+    def column(name)
+      reference = AST::CellReference.new("dynamic cell reference")
+      reference.cell_name = name
+      reference.value
+    end
+
+    alias_method :c, :column
   end
 end

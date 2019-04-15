@@ -326,6 +326,9 @@ module NewExcel
       end
     end
 
+    class UnquotedStringIdFallThrough < UnquotedString
+    end
+
     class DateTime < BaseAST
       def value
         Chronic.parse(string, hours24: true, guess: :begin)

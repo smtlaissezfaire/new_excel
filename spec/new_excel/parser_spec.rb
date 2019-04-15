@@ -236,6 +236,12 @@ CODE
       string_2_value.body.should be_a_kind_of(NewExcel::AST::FunctionCall)
       string_2_value.body.arguments[0].should be_a(NewExcel::AST::CellReference)
     end
+
+    it "should be able to call a one letter function " do
+      res = @obj.parse "= c()"
+      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      res.body.should be_a_kind_of(NewExcel::AST::FunctionCall)
+    end
   end
 
   context "primitives - evaluating" do

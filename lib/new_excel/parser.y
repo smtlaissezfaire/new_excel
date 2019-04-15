@@ -115,11 +115,17 @@ rule
 
   # there must be a better way?
   primitive: primitive any_primitive_type {
+    string = ""
+
     strings = val.map do |v|
-      v.respond_to?(:string) ? v.string : v
+      str = v.respond_to?(:string) ? v.string : v
+      str = "#{str} " if v.is_a?(AST::UnquotedStringIdFallThrough)
+      string << str
     end
 
-    result = AST::UnquotedString.new(strings.join)
+    string = string.strip
+
+    result = AST::UnquotedString.new(string)
   }
   | any_primitive_type {
     ref = if val[0].is_a?(AST::BaseAST)
@@ -131,13 +137,14 @@ rule
     result = ref
   }
 
-  any_primitive_type: datetime | time | float | integer | text
+  any_primitive_type: datetime | time | float | integer | id_primitive_fall_through | text
 
   quoted_string: QUOTED_STRING { result = AST::QuotedString.new(val[0]) }
   datetime: DATE_TIME { result = AST::DateTime.new(val[0]) }
   time: TIME { result = AST::UnquotedString.new(val[0]) } # TODO!
   float: FLOAT { result = AST::PrimitiveFloat.new(val[0]) }
   integer: INTEGER { result = AST::PrimitiveInteger.new(val[0]) }
+  id_primitive_fall_through: ID { result = AST::UnquotedStringIdFallThrough.new(val[0]) }
   text: TEXT { result = AST::UnquotedString.new(val[0]) }
 end
 
