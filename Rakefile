@@ -10,3 +10,4 @@ task :compile_parser do
 end
 
 task :compile => [:compile_parser]
+task :c => [:compile]
