@@ -1,10 +1,13 @@
 require 'spec_helper'
 
 describe NewExcel::Map do
+  def basic_file
+    @file = NewExcel::File.open(File.join("spec", "fixtures", "file.ne"))
+  end
+
   describe "with simple text" do
     before do
-      @file = File.join("spec", "fixtures", "file.ne", "simple_text.map")
-      @obj = NewExcel::Map.new(@file)
+      @obj = basic_file.get_sheet("simple_text")
     end
 
     it "should be able to read a simple string value" do
@@ -44,12 +47,11 @@ describe NewExcel::Map do
 
   describe "with a simple map" do
     before do
-      @file = File.join("spec", "fixtures", "file.ne", "map.map")
-      @obj = NewExcel::Map.new(@file)
+      @obj = basic_file.get_sheet("map")
     end
 
     it "should be able to read a map" do
-      @obj.raw_content.should == File.read(@file)
+      @obj.raw_content.should == File.read(File.join(basic_file.file_name, "map.map"))
     end
 
     it "should be able to list the columns" do
@@ -170,8 +172,7 @@ describe NewExcel::Map do
 
   describe "with simple formulas" do
     before do
-      @file = File.join("spec", "fixtures", "file.ne", "simple_formulas.map")
-      @obj = NewExcel::Map.new(@file)
+      @obj = basic_file.get_sheet("simple_formulas")
     end
 
     it "should be able to evaluate simple formula from a data sheet" do
@@ -198,12 +199,10 @@ describe NewExcel::Map do
 
   describe "data integrity" do
     before do
-      @file = File.join("spec", "fixtures", "file.ne", "invalid_double_column.map")
+      @obj = basic_file.get_sheet("invalid_double_column")
     end
 
     it "should only allow unique columns" do
-      @obj = NewExcel::Map.new(@file)
-
       lambda {
         @obj.parse
       }.should raise_error(RuntimeError)
@@ -212,8 +211,7 @@ describe NewExcel::Map do
 
   describe "printing" do
     it "should print" do
-      @file = File.join("spec", "fixtures", "file.ne", "simple_text.map")
-      @obj = NewExcel::Map.new(@file)
+      @obj = basic_file.get_sheet("simple_text")
 
       @obj.print.should == <<-STR
 String   Integer Float   Date Time  DateTime List of Strings List of Ints
@@ -224,8 +222,7 @@ a string 123     123.456 0    11:00 0        a b c           123
     end
 
     it "should print a referenced map correctly" do
-      @file = File.join("spec", "fixtures", "file.ne", "one_column_map.map")
-      @obj = NewExcel::Map.new(@file)
+      @obj = basic_file.get_sheet("one_column_map")
 
       @obj.print.should == <<-STR
 Date

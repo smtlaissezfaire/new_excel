@@ -11,8 +11,6 @@ module NewExcel
     def initialize(context, str)
       @context = context
       @str = str
-      @container_file_path = context.respond_to?(:container_file_path) ? context.container_file_path : "" # code smell - should be global-ish!
-      $container_file_path = @container_file_path # code smell!
     end
 
     attr_reader :container_file_path

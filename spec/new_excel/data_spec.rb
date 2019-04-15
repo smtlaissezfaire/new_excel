@@ -1,14 +1,17 @@
 require 'spec_helper'
 
 describe NewExcel::Data do
+  def basic_file
+    @file = NewExcel::File.open(File.join("spec", "fixtures", "file.ne"))
+  end
+
   describe "with a csv map" do
     before do
-      @file = File.join("spec", "fixtures", "file.ne", "original_data.csv")
-      @obj = NewExcel::Data.new(@file)
+      @obj = basic_file.get_sheet("original_data")
     end
 
     it "should be able to read a map" do
-      @obj.raw_content.should == File.read(@file)
+      @obj.raw_content.should == File.read(File.join(basic_file.file_name, "original_data.csv"))
     end
 
     it "should be able to list the columns" do
@@ -79,8 +82,7 @@ describe NewExcel::Data do
 
   context "printing" do
     it "should print" do
-      @file = File.join("spec", "fixtures", "file.ne", "rows_for_printing.csv")
-      @obj = NewExcel::Data.new(@file)
+      @obj = basic_file.get_sheet("rows_for_printing")
 
       @obj.print.should == <<-CODE
 One       Two        Three Four Five

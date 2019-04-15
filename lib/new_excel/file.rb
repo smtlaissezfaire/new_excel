@@ -5,8 +5,16 @@ module NewExcel
       MAP = "map",
     ]
 
-    def self.open(file)
-      new(file)
+    class << self
+      def open(file)
+        if ProcessState.file_cache[file]
+          ProcessState.file_cache[file]
+        else
+          new(file).tap do |obj|
+            ProcessState.file_cache[file] = obj
+          end
+        end
+      end
     end
 
     def initialize(file_name = nil)

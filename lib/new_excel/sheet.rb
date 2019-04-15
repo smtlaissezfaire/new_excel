@@ -54,8 +54,7 @@ module NewExcel
     def evaluate(*args)
       parse
 
-      # FIXME: hack hack hack
-      $container_file_path = @container_file_path
+      NewExcel::ProcessState.current_file_path = @container_file_path
 
       options = args.last.is_a?(Hash) ? args.pop : {}
       options[:with_header] = false unless options[:with_header]
