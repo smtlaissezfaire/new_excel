@@ -61,6 +61,8 @@ module NewExcel
           #   @q << [:MAP, match]
           when match = scanner.scan(/Map\!/)
             @q << [:MAP, match]
+          when comments = tokens_for_comments(scanner)
+            # ignore comments for now
           when match = scanner.scan(/[a-zA-Z][a-zA-Z0-9\_\- ]+\:/)
             @q << [:KEY_WITH_COLON, match]
           when match = scanner.scan(/\=/)
@@ -88,6 +90,8 @@ module NewExcel
           end
         else
           case
+          when comments = tokens_for_comments(scanner)
+            # ignore comments for now
           when token_pair = tokens_for_primitive_match(scanner)
             @q << token_pair
           when token_pair = tokens_for_text_scan(scanner)
@@ -120,6 +124,12 @@ module NewExcel
     def tokens_for_text_scan(scanner)
       if match = scanner.scan(/(.+)\n?/)
         [:TEXT, match]
+      end
+    end
+
+    def tokens_for_comments(scanner)
+      if match = scanner.scan(/#.*/)
+        [:COMMENT, match]
       end
     end
   end

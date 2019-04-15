@@ -253,4 +253,17 @@ STR
       ]
     end
   end
+
+  describe "comments" do
+    before do
+      @obj = basic_file.get_sheet("comments")
+    end
+
+    it "should list all the values" do
+      @obj.evaluate(with_header: true).should == [
+        ["Row1", "Row2"],
+        [1, 2],
+      ]
+    end
+  end
 end

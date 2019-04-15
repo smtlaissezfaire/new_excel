@@ -2,7 +2,7 @@ Date:
   = zf_original_data.Date
 Time:
   = zf_original_data.Time
-Open:
+OriginalOpen:
   = zf_original_data.Open
 High:
   = zf_original_data.High
@@ -18,3 +18,12 @@ BidVolume:
   = zf_original_data.BidVolume
 AskVolume:
   = zf_original_data.AskVolume
+
+# Open Whole:
+#   =value(left($C2, search(" ", $C2, 1)))
+# Open Numerator:
+#   =value(mid($C2, search(" ", $C2, 1)+1, search("/", $C2, 1)-search(" ", $C2, 1)-1))
+# Open Denominator:
+#   =value(RIGHT($C2, 2))
+# Original Open:
+#   =add(Open Whole, subtract)
