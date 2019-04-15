@@ -26,7 +26,6 @@ RSpec.configure do |config|
   config.include RSpec
 
   config.before do
-    NewExcel::ProcessState.reset_file_cache!
-    NewExcel::ProcessState.current_file_path = nil
+    NewExcel::ProcessState.reset!
   end
 end

@@ -75,7 +75,7 @@ rule
     result = ref
   }
 
-  formula_body: function_call | remote_cell_reference | primitive_value
+  formula_body: function_call | remote_cell_reference | local_cell_reference | primitive_value
 
   function_call: ID OPEN_PAREN function_body CLOSE_PAREN {
     ref = AST::FunctionCall.new(val.join)
@@ -99,6 +99,13 @@ rule
       ref = AST::CellReference.new(val.join)
       ref.sheet_name = val[0]
       ref.cell_name = val[2]
+      result = ref
+    }
+
+  local_cell_reference:
+    ID {
+      ref = AST::CellReference.new(val.join)
+      ref.cell_name = val[0]
       result = ref
     }
 

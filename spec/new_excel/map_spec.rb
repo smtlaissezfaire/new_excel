@@ -240,15 +240,26 @@ STR
     end
   end
 
-  # describe "self-referencing" do
-  #   before do
-  #     @obj = basic_file.get_sheet("self_referential")
-  #   end
-  #
-  #   it "should be able to refer to one of it's own columns through the sheet" do
-  #     pending "FIXME"
-  #     @obj.evaluate("One").should == [[1]]
-  #     @obj.evaluate("ReferencingOneIndirectly").should == [[1]]
-  #   end
-  # end
+  describe "self-referencing" do
+    before do
+      @obj = basic_file.get_sheet("self_referential")
+    end
+
+    it "should be able to refer to one of it's own columns through the sheet" do
+      @obj.evaluate("OneValue").should == [[1]]
+      @obj.evaluate("ReferencingOneIndirectly").should == [[1]]
+    end
+
+    it "should raise when handling an invalid column reference through the own sheet" do
+      lambda {
+        @obj.evaluate("ReferencingOneIndirectlyBadColumnValue")
+      }.should raise_error(RuntimeError, "Unknown row: \"InvalidColumnReference\"")
+    end
+
+    it "should be able to refer to one of it's own columns without the sheet" do
+      @obj.evaluate("OneValue").should == [[1]]
+      $debug = true
+      @obj.evaluate("ReferencingOneDirectly").should == [[1]]
+    end
+  end
 end

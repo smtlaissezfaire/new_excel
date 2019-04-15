@@ -55,6 +55,7 @@ module NewExcel
       parse
 
       NewExcel::ProcessState.current_file_path = @container_file_path
+      NewExcel::ProcessState.current_sheet = self
 
       options = args.last.is_a?(Hash) ? args.pop : {}
       options[:with_header] = false unless options[:with_header]

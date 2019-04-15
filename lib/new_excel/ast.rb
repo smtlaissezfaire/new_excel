@@ -25,7 +25,9 @@ module NewExcel
         if only_rows
           row_indexes = only_rows.map do |row|
             if row.is_a?(String)
-              column_names.index(row)
+              val = column_names.index(row)
+              raise "Unknown row: #{row.inspect}" if !val
+              val
             elsif row.is_a?(Integer)
               row - 1
             else
@@ -170,6 +172,7 @@ module NewExcel
 
         values_by_column = kv_pairs.map(&:pair_value)
         row_length = values_by_column[0].length
+
         # want them row by row
         body_values = []
 
@@ -240,8 +243,15 @@ module NewExcel
       attr_accessor :cell_name
 
       def value
-        file = NewExcel::ProcessState.current_file
-        sheet = file.get_sheet(sheet_name)
+        if sheet_name
+          file = NewExcel::ProcessState.current_file
+          sheet = file.get_sheet(sheet_name)
+        else
+          sheet = NewExcel::ProcessState.current_sheet
+        end
+
+        raise "No cell name specified! cell_name: #{cell_name.inspect}" if !cell_name
+
         sheet.evaluate(cell_name).flatten
       end
 

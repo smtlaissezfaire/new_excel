@@ -1,4 +1,8 @@
-OwnValues:
+OneValue:
   1
 ReferencingOneIndirectly:
-  = self_referential.OwnValues
+  = self_referential.OneValue
+ReferencingOneIndirectlyBadColumnValue:
+  = self_referential.InvalidColumnReference
+ReferencingOneDirectly:
+  = OneValue
