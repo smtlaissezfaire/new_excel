@@ -1,0 +1,4 @@
+OwnValues:
+  1
+ReferencingOneIndirectly:
+  = self_referential.OwnValues

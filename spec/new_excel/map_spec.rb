@@ -240,4 +240,15 @@ STR
     end
   end
 
+  # describe "self-referencing" do
+  #   before do
+  #     @obj = basic_file.get_sheet("self_referential")
+  #   end
+  #
+  #   it "should be able to refer to one of it's own columns through the sheet" do
+  #     pending "FIXME"
+  #     @obj.evaluate("One").should == [[1]]
+  #     @obj.evaluate("ReferencingOneIndirectly").should == [[1]]
+  #   end
+  # end
 end
