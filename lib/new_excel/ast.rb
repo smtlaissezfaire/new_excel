@@ -16,21 +16,7 @@ module NewExcel
       end
     end
 
-    class DataFile < BaseAST
-      attr_accessor :body
-
-      def columns
-        body.rows.first
-      end
-
-      def column_names
-        columns.value
-      end
-
-      def body_csv
-        body.rows[1..(body.rows.length)]
-      end
-
+    class SheetAST < BaseAST
       def value(options={})
         options[:with_header] = true unless options.has_key?(:with_header)
         with_header = options[:with_header]
@@ -54,7 +40,7 @@ module NewExcel
             value << column_names
           end
 
-          @body_values ||= body_csv.map(&:value)
+          @body_values ||= get_body_values
 
           @body_values.each_with_index do |val, index|
             to_add = if row_indexes
@@ -63,42 +49,34 @@ module NewExcel
               val
             end
 
-            value << to_add
+            value << to_add if to_add
           end
         end
       end
 
-      # def csv
-      #   parse_csv!
-      #   @csv
-      # end
-      #
-      # def columns
-      #   parse_csv!
-      #   @columns
-      # end
-      #
-      # def body_csv
-      #   parse_csv!
-      #   @body_csv
-      # end
-      #
-      # def value(options={})
-      #   # is this crazy?
-      #   @value ||= begin
-      #     [].tap do |value|
-      #       if options[:with_header] || !options.has_key?(:with_header)
-      #         value << columns
-      #       end
-      #
-      #       body_csv.each do |row|
-      #         value << row.map do |cell|
-      #           parser.parse(cell).value
-      #         end
-      #       end
-      #     end
-      #   end
-      # end
+      def get_body_values
+        raise NotImplementedError, "Must be implemented in subclass"
+      end
+    end
+
+    class DataFile < SheetAST
+      attr_accessor :body
+
+      def columns
+        body.rows.first
+      end
+
+      def column_names
+        columns.value
+      end
+
+      def body_csv
+        body.rows[1..(body.rows.length)]
+      end
+
+      def get_body_values
+        body_csv.map(&:value)
+      end
 
     private
 
@@ -155,7 +133,7 @@ module NewExcel
       end
     end
 
-    class Map < BaseAST
+    class Map < SheetAST
       def initialize(*args)
         super
         @key_value_pairs = []
@@ -181,76 +159,19 @@ module NewExcel
         end
       end
 
-      def value(options={})
-        options[:with_header] = true unless options.has_key?(:with_header)
-        with_header = options[:with_header]
-        only_rows = options[:only_rows]
+      def get_body_values
+        values_by_column = pairs.map(&:pair_value)
+        row_length = values_by_column[0].length
+        # want them row by row
+        body_values = []
 
-        if only_rows
-          row_indexes = only_rows.map do |row|
-            if row.is_a?(String)
-              column_names.index(row)
-            elsif row.is_a?(Integer)
-              row - 1
-            else
-              raise "Unknown row type!"
-            end
-          end
+        # transpose!
+        1.upto(row_length) do |num|
+          body_values << values_by_column.map { |v| v[num - 1] }
         end
 
-        # is this crazy?
-        [].tap do |value|
-          if with_header
-            value << column_names
-          end
-
-          # @body_values ||= body_csv.map(&:value)
-          # require 'matrix';
-          # body_values ||= begin
-          #   pair_values = pairs.map { |pair| pair.pair_value }
-          #   Matrix[*pair_values].transpose.to_a
-          # end
-          # @body_values ||= pairs.map { |pair| pair.hash_value.value }
-
-          values_by_column = pairs.map(&:pair_value)
-          row_length = values_by_column[0].length
-          # want them row by row
-          body_values = []
-
-          # transpose!
-          1.upto(row_length) do |num|
-            body_values << values_by_column.map { |v| v[num - 1] }
-          end
-
-          # columns.each_with_index do |col, index|
-          #   1.up
-          #   body_values << values_by_column
-          # end
-
-
-          body_values.each_with_index do |val, index|
-            to_add = if row_indexes
-              row_indexes.map { |i| val[i] }
-            else
-              val
-            end
-
-            value << to_add if to_add
-          end
-        end
+        body_values
       end
-
-
-      # def value
-      #   []/ta[]
-      #   @key_value_pairs.map do |kv_pair|
-      #     kv_pair.hash_value.value
-      #   end
-      #
-      #   # columns.each_with_index do |column, index|
-      #   #   @key_value_pairs.map(&:value)
-      #   # end
-      # end
 
       def print
         @key_value_pairs.map do |kv_pair|

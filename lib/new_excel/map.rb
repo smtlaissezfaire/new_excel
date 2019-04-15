@@ -1,10 +1,5 @@
 module NewExcel
   class Map < Sheet
-    def initialize(file)
-      super(file)
-      # @values = {}
-    end
-
     def parse
       return if @parsed
 
@@ -17,28 +12,6 @@ module NewExcel
 
         @column_names << column_name
       end
-
-      # last_column_name = nil
-      #
-      # raw_content.each_line do |line|
-      #   if line =~ /^[A-Za-z0-9]/
-      #     column_name = line.gsub(/\:$/, '').strip
-      #
-      #     # if @column_names.include?(column_name)
-      #     #   raise "Duplicate column name: #{column_name.inspect}"
-      #     # end
-      #     #
-      #     # # @column_names << column_name
-      #     # @values[column_name] ||= ""
-      #     last_column_name = column_name
-      #   elsif last_column_name
-      #     @values[last_column_name] << line
-      #   end
-      # end
-      #
-      # @values.each do |key, value|
-      #   value.strip!
-      # end
 
       @parsed = true
     end
@@ -57,39 +30,6 @@ module NewExcel
 
         @ast.get_column(column_name).hash_value.print
       end
-    end
-
-    def evaluate(*args)
-      parse
-
-      # FIXME: hack hack hack
-      $context_file_path = @file_path
-
-      options = args.last.is_a?(Hash) ? args.pop : {}
-      options[:with_header] = false unless options[:with_header]
-
-      if args && args.any?
-        options[:only_rows] = args
-      end
-
-      @ast.value(options)
-
-      # ambiguous_map(*args) do |column_name, index|
-      #   val = @ast.get_column(column_name).hash_value.value
-      #   # val = Evaluator.evaluate(self, get(column_name, index))
-      #
-      #   if index
-      #     val[index-1]
-      #   else
-      #     val
-      #   end
-      # end
-    end
-
-  private
-
-    def parser
-      @parser ||= Parser.new
     end
   end
 end

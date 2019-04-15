@@ -33,6 +33,9 @@ module NewExcel
       raise NotImplementedError, "must be implemented in subclasses"
     end
 
+    #
+    # TBD: implement this generically...
+    #
     # ***DESIRED*** interface:
     #
     # get = all unevaluated content
@@ -48,8 +51,20 @@ module NewExcel
       raise NotImplementedError, "must be implemented in subclasses"
     end
 
-    def evaluate(*a, &b)
-      raise NotImplementedError, "must be implemented in subclasses"
+    def evaluate(*args)
+      parse
+
+      # FIXME: hack hack hack
+      $context_file_path = @file_path
+
+      options = args.last.is_a?(Hash) ? args.pop : {}
+      options[:with_header] = false unless options[:with_header]
+
+      if args && args.any?
+        options[:only_rows] = args
+      end
+
+      @ast.value(options)
     end
 
     def print(*args)
@@ -115,5 +130,10 @@ module NewExcel
       str
     end
 
+  private
+
+    def parser
+      @parser ||= Parser.new
+    end
   end
 end
