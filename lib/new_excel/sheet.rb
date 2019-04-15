@@ -3,12 +3,12 @@ module NewExcel
     include ListHelpers
 
     def initialize(file_path)
-      @file = file_path
-      @file_path = ::File.dirname(@file)
+      @sheet_file_path = file_path
+      @container_file_path = ::File.dirname(@sheet_file_path)
       @column_names = []
     end
 
-    attr_reader :file_path
+    attr_reader :container_file_path
 
     def column_names
       parse
@@ -18,7 +18,7 @@ module NewExcel
     alias_method :columns, :column_names
 
     def raw_content
-      @raw_content ||= ::File.read(@file)
+      @raw_content ||= ::File.read(@sheet_file_path)
     end
 
     def read
@@ -55,7 +55,7 @@ module NewExcel
       parse
 
       # FIXME: hack hack hack
-      $context_file_path = @file_path
+      $container_file_path = @container_file_path
 
       options = args.last.is_a?(Hash) ? args.pop : {}
       options[:with_header] = false unless options[:with_header]

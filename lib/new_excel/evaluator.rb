@@ -11,11 +11,11 @@ module NewExcel
     def initialize(context, str)
       @context = context
       @str = str
-      @file_path = context.respond_to?(:file_path) ? context.file_path : "" # code smell - should be global-ish!
-      $context_file_path = @file_path # code smell!
+      @container_file_path = context.respond_to?(:container_file_path) ? context.container_file_path : "" # code smell - should be global-ish!
+      $container_file_path = @container_file_path # code smell!
     end
 
-    attr_reader :file_path
+    attr_reader :container_file_path
 
     def parser
       self.class.parser

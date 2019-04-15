@@ -232,7 +232,7 @@ module NewExcel
       attr_accessor :cell_name
 
       def value
-        file_path = ::File.join($context_file_path, "#{sheet_name}.csv")
+        file_path = ::File.join($container_file_path, "#{sheet_name}.csv")
         NewExcel::Data.new(file_path).evaluate(cell_name).flatten
       end
 

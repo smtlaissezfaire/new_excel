@@ -83,7 +83,7 @@ describe NewExcel::Parser do
     end
 
     # it "should be able to evaluate a remote cell refernece" do
-    #   $context_file_path = "spec/fixtures/file.ne" # FIXME!!!
+    #   $container_file_path = "spec/fixtures/file.ne" # FIXME!!!
     #
     #   str = "= other_sheet.other_column"
     #
