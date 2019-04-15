@@ -78,17 +78,7 @@ describe NewExcel::Map do
     end
 
     it "should be able to index in with a second variable" do
-      @obj.evaluate("Time").should == [
-        [ "0:00", ],
-        [ "0:05", ],
-        [ "0:10", ],
-        [ "0:15", ],
-        [ "0:20", ],
-        [ "0:25", ],
-        [ "0:30", ],
-        [ "0:35", ],
-        [ "0:40", ],
-      ]
+      @obj.evaluate("Time", 1).should == [ [ "0:00:00", ] ]
     end
 
     it "should be able to get multiple columns of the data (unevaluated)" do
@@ -115,25 +105,25 @@ describe NewExcel::Map do
 
     it "should be able to evaluate two columns" do
       @obj.evaluate("Time", "Volume").should == [
-        [ "0:00", 653, ],
-        [ "0:05", 4, ],
-        [ "0:10", 404, ],
-        [ "0:15", 1021, ],
-        [ "0:20", 521, ],
-        [ "0:25", 256, ],
-        [ "0:30", 226, ],
-        [ "0:35", 938, ],
-        [ "0:40", 262 ],
+        [ "0:00:00", 653, ],
+        [ "0:05:00", 4, ],
+        [ "0:10:00", 404, ],
+        [ "0:15:00", 1021, ],
+        [ "0:20:00", 521, ],
+        [ "0:25:00", 256, ],
+        [ "0:30:00", 226, ],
+        [ "0:35:00", 938, ],
+        [ "0:40:00", 262 ],
       ]
     end
 
     it "should be able to evaluate two columns with an index" do
-      @obj.evaluate(["Time", "Volume"], 1).should == [["0:00", 653]]
-      @obj.evaluate(["Time", "Volume"], 2).should == [["0:05", 4]]
+      @obj.evaluate(["Time", "Volume"], 1).should == [["0:00:00", 653]]
+      @obj.evaluate(["Time", "Volume"], 2).should == [["0:05:00", 4]]
     end
 
     it "should be able to evaluate two columns with two indexes" do
-      @obj.evaluate(["Time", "Volume"], [2, 3]).should == [["0:05", 4], ["0:10", 404]]
+      @obj.evaluate(["Time", "Volume"], [2, 3]).should == [["0:05:00", 4], ["0:10:00", 404]]
     end
 
     it "should be able to load all data with read()" do

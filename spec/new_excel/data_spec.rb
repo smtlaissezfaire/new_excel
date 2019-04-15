@@ -10,7 +10,7 @@ describe NewExcel::Data do
       @obj = basic_file.get_sheet("original_data")
     end
 
-    it "should be able to read a map" do
+    it "should be able to read the csv" do
       @obj.raw_content.should == File.read(File.join(basic_file.file_name, "original_data.csv"))
     end
 
@@ -99,7 +99,10 @@ describe NewExcel::Data do
       rows.first.length.should == 10
       rows.first[0].should be_a_kind_of(Time)
       rows.first[1].should be_a_kind_of(String)
-      # rows.first[2].should be_a_kind_of(String)
+    end
+
+    it "should be able to read raw text even when it looks like a number" do
+      @obj.evaluate("Open")[0][0].should == "114 16.75/32"
     end
   end
 

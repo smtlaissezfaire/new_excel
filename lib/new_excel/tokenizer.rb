@@ -39,11 +39,12 @@ module NewExcel
                 cell_scanner = StringScanner.new(cell_text)
 
                 # primitives
-                case
-                when token_pair = tokens_for_primitive_match(cell_scanner)
-                  @q << token_pair
-                else # when match = scanner.scan(/(.+)\n?/)
+                token_pair = tokens_for_primitive_match(cell_scanner)
+
+                if !token_pair || token_pair[1] != cell_text
                   @q << [:TEXT, cell_text]
+                else
+                  @q << token_pair
                 end
               end
 
