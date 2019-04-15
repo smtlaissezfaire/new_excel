@@ -29,6 +29,10 @@ describe NewExcel::BuiltInFunctions do
     it "should be able to subtract two vectors" do
       subtract([10, 20], [1, 2]).should == [9, 18]
     end
+
+    it "should be able to subtract three numbers" do
+      subtract(10, 3, 1).should == 10 - 3 - 1
+    end
   end
 
   context "multiply" do
@@ -130,6 +134,14 @@ describe NewExcel::BuiltInFunctions do
     it "should return the arguments joined as a string" do
       join(1, 2, 3).should == "1 2 3"
     end
+
+    it "should arrays joined" do
+      join([1, 2, 3], ["a", "b"]).should == ["1 a", "2 b", "3"]
+    end
+
+    it "should not trim arguments" do
+      join("   a", "   b ").should == "   a    b "
+    end
   end
 
   context "list" do
@@ -141,6 +153,28 @@ describe NewExcel::BuiltInFunctions do
   context "explode" do
     it "should return the list of arguments directly (which get exploded in columns)" do
       explode(1, 2, 3).should == [1, 2, 3]
+    end
+  end
+
+  context "value" do
+    it "should get a string as an integer" do
+      value("1").should == 1
+    end
+
+    it "should get a string as an float when containing a decimal" do
+      value("1.23").should == 1.23
+    end
+
+    it "should keep an int the same" do
+      value(1).should == 1
+    end
+
+    it "should keep a float the same" do
+      value(1.23).should == 1.23
+    end
+
+    it "should be able to handle arrays of stuff" do
+      value(["1", "2"]).should == [1, 2]
     end
   end
 end

@@ -33,8 +33,10 @@ module NewExcel
 
         l1 = list.shift
         l1.zip(*list)
+      elsif list.is_a?(Array)
+        list
       else
-        Array(list)
+        [list]
       end
     end
   end

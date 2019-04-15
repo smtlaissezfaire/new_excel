@@ -13,8 +13,8 @@ module NewExcel
 
     alias_method :sum, :add
 
-    def subtract(n1, n2)
-      inject(n1, n2, &:-)
+    def subtract(*list)
+      inject(*list, &:-)
     end
 
     def multiply(*list)
@@ -26,6 +26,22 @@ module NewExcel
     rescue ZeroDivisionError
       "DIV!"
     end
+
+    def to_number(str)
+      if str.is_a?(Array)
+        return str.map { |v| value(v) }
+      end
+
+      if str.is_a?(Numeric)
+        str
+      elsif str.include?(".")
+        str.to_f
+      else
+        str.to_i
+      end
+    end
+
+    alias_method :value, :to_number
 
     def concat(*args)
       ambiguous_map(*args, &:join)
@@ -66,7 +82,9 @@ module NewExcel
     end
 
     def join(*args)
-      args.join(" ")
+      ambiguous_map(*args) do |*objs|
+        objs.flatten.compact.map(&:to_s).join(" ")
+      end
     end
 
     def list(*args)

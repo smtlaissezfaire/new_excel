@@ -1,38 +1,20 @@
-# TODO: allow columns to come out of order
-# TODO: support spaces both in column name declaration
-
 Date:
   = zf_original_data.Date
+
 Time:
   = zf_original_data.Time
-Original Open:
-  = zf_original_data.Open
+
+DateTime:
+  = concat(zf_original_data.Date, zf_original_data.Time)
+
+
+Open:
+  = zf_mapped_dates.Open
 High:
-  = zf_original_data.High
+  = zf_mapped_dates.High
 Low:
-  = zf_original_data.Low
+  = zf_mapped_dates.Low
 Close:
-  = zf_original_data.Close
+  = zf_mapped_dates.Close
 Volume:
   = zf_original_data.Volume
-NumberOfTrades:
-  = zf_original_data.NumberOfTrades
-BidVolume:
-  = zf_original_data.BidVolume
-AskVolume:
-  = zf_original_data.AskVolume
-Open Whole:
-  = right(c("Original Open"), 2)
-# Open Denominator:
-#  = right(c("Original Open"), 2)
-
-
-
-# Open Whole:
-#   =value(left($C2, search(" ", $C2, 1)))
-# Open Numerator:
-#   =value(mid($C2, search(" ", $C2, 1)+1, search("/", $C2, 1)-search(" ", $C2, 1)-1))
-# Open Denominator:
-#   =value(RIGHT($C2, 2))
-# Original Open:
-#   =add(Open Whole, subtract)
