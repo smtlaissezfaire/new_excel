@@ -69,7 +69,7 @@ describe NewExcel::Parser do
         [:ID, "other_sheet"],
         [:DOT, "."],
         [:ID, "other_column"],
-        [false, "$end"],
+        [false, false],
       ]
 
       res = @obj.parse("= other_sheet.other_column")
@@ -92,7 +92,7 @@ describe NewExcel::Parser do
     #     [:ID, "other_sheet"],
     #     [:DOT, "."],
     #     [:ID, "other_column"],
-    #     [false, "$end"],
+    #     [false, false],
     #   ]
     #
     #   res = @obj.parse("= other_sheet.other_column")

@@ -204,7 +204,12 @@ module NewExcel
       end
 
       def pair_value
-        Array(hash_value.value)
+        value = hash_value.value
+        if value.is_a?(Array)
+          value
+        else
+          [value]
+        end
       end
 
       def print

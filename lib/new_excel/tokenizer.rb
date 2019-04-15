@@ -1,7 +1,11 @@
 module NewExcel
   class Tokenizer
-    def self.get_tokens(str)
-      new(str).tokenize
+    class << self
+      def get_tokens(str)
+        new(str).tokenize
+      end
+
+      alias_method :tokenize, :get_tokens
     end
 
     def initialize(str)
@@ -93,7 +97,7 @@ module NewExcel
         end
       end
 
-      @q.push [false, '$end']
+      @q.push [false, false]
       @q
     end
 

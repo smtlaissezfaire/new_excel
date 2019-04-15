@@ -23,8 +23,7 @@ describe NewExcel::Map do
     end
 
     it "should evaluate a Date" do
-      pending "FIXME: date parsing not working?"
-      @obj.evaluate("Date").should == Time.parse("2018-01-01 00:00:00")
+      @obj.evaluate("Date").should == [[Time.parse("2018-01-01 00:00:00")]]
     end
 
     it "should evaluate a Time" do # FIXME?
@@ -32,8 +31,7 @@ describe NewExcel::Map do
     end
 
     it "should evaluate a DateTime" do
-      pending "FIXME: Date parsing not working?"
-      @obj.evaluate("DateTime").should == Time.parse("2018-01-01 11:00:00")
+      @obj.evaluate("DateTime").should == [[Time.parse("2018-01-01 11:00:00")]]
     end
 
     # it "should allow a list of strings" do
@@ -214,9 +212,9 @@ describe NewExcel::Map do
       @obj = basic_file.get_sheet("simple_text")
 
       @obj.print.should == <<-STR
-String   Integer Float   Date Time  DateTime List of Strings List of Ints
--------- ------- ------- ---- ----- -------- --------------- ------------
-a string 123     123.456 0    11:00 0        a b c           123
+String   Integer Float   Date                      Time  DateTime                  List of Strings List of Ints
+-------- ------- ------- ------------------------- ----- ------------------------- --------------- ------------
+a string 123     123.456 2018-01-01 00:00:00 -0800 11:00 2018-01-01 11:00:00 -0800 a b c           123
   STR
 
     end
