@@ -20,10 +20,10 @@ module NewExcel
       def value(options={})
         options[:with_header] = true unless options.has_key?(:with_header)
         with_header = options[:with_header]
-        only_rows = options[:only_rows]
+        only_columns = options[:only_columns]
 
-        if only_rows
-          row_indexes = only_rows.map do |row|
+        if only_columns
+          column_indexes = only_columns.map do |row|
             if row.is_a?(String)
               val = column_names.index(row)
               raise "Unknown row: #{row.inspect}" if !val
@@ -42,13 +42,13 @@ module NewExcel
             value << column_names
           end
 
-          get_body_values(row_indexes).each do |val|
+          get_body_values(column_indexes).each do |val|
             value << val
           end
         end
       end
 
-      def get_body_values(row_indexes)
+      def get_body_values(column_indexes)
         raise NotImplementedError, "Must be implemented in subclass"
       end
     end
@@ -68,12 +68,12 @@ module NewExcel
         body.rows[1..(body.rows.length)]
       end
 
-      def get_body_values(row_indexes)
+      def get_body_values(column_indexes)
         body_values = body_csv.map do |row|
           values_for_row = row.value
 
-          if row_indexes
-            row_indexes.map { |i| values_for_row[i] }
+          if column_indexes
+            column_indexes.map { |i| values_for_row[i] }
           else
             values_for_row
           end
@@ -161,11 +161,11 @@ module NewExcel
         end
       end
 
-      def get_body_values(row_indexes)
+      def get_body_values(column_indexes)
         index = 0
 
         kv_pairs = pairs.select do |kv_pair|
-          val = !row_indexes || row_indexes.include?(index)
+          val = !column_indexes || column_indexes.include?(index)
           index += 1
           val
         end

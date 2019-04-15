@@ -61,7 +61,7 @@ module NewExcel
       options[:with_header] = false unless options[:with_header]
 
       if args && args.any?
-        options[:only_rows] = args
+        options[:only_columns] = args
       end
 
       @ast.value(options)
