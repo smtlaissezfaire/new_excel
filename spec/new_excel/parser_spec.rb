@@ -82,25 +82,43 @@ describe NewExcel::Parser do
       body.cell_name.should == "other_column"
     end
 
-    # it "should be able to evaluate a remote cell refernece" do
-    #   $container_file_path = "spec/fixtures/file.ne" # FIXME!!!
-    #
-    #   str = "= other_sheet.other_column"
-    #
-    #   NewExcel::Tokenizer.get_tokens(str).should == [
-    #     [:EQ, "="],
-    #     [:ID, "other_sheet"],
-    #     [:DOT, "."],
-    #     [:ID, "other_column"],
-    #     [false, false],
-    #   ]
-    #
-    #   res = @obj.parse("= other_sheet.other_column")
-    #   res.should be_a_kind_of(NewExcel::AST::CellReference)
-    #   res.sheet_name.should == "other_sheet"
-    #   res.cell_name.should == "other_column"
-    #
-    # end
+    it "should be able to evaluate a remote cell reference" do
+      str = "= other_sheet.other_column"
+
+      NewExcel::Tokenizer.get_tokens(str).should == [
+        [:EQ, "="],
+        [:ID, "other_sheet"],
+        [:DOT, "."],
+        [:ID, "other_column"],
+        [false, false],
+      ]
+
+      res = @obj.parse("= other_sheet.other_column")
+
+      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      body = res.body
+      body.should be_a_kind_of(NewExcel::AST::CellReference)
+      body.sheet_name.should == "other_sheet"
+      body.cell_name.should == "other_column"
+    end
+
+    it "should be able to evaluate a local cell reference" do
+      str = "= other_column"
+
+      NewExcel::Tokenizer.get_tokens(str).should == [
+        [:EQ, "="],
+        [:ID, "other_column"],
+        [false, false],
+      ]
+
+      res = @obj.parse("= other_column")
+
+      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      body = res.body
+      body.should be_a_kind_of(NewExcel::AST::CellReference)
+      body.sheet_name.should == nil
+      body.cell_name.should == "other_column"
+    end
 
     it "should allow strings passed to arguments" do
       str = "= trim(\" foo \")"
