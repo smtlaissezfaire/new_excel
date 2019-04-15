@@ -188,9 +188,9 @@ CODE
   end
 
   context "primitives - evaluating" do
-    # it "should be able to parse text" do
-    #   @obj.parse("string").value.should == "string"
-    # end
+    it "should be able to parse text" do
+      @obj.parse("string").value.should == "string"
+    end
 
     it "should parse an integer" do
       @obj.parse("123").value.should == 123

@@ -135,12 +135,11 @@ describe NewExcel::Map do
       first_data_row = result[0]
 
       first_data_row[0].should be_a_kind_of(Time)
-      # FIXME:
-      # first_data_row[1].should == "0:00:00"
-      # first_data_row[2].should == "114 16.75/32"
-      # first_data_row[3].should == "114 17/32"
-      # first_data_row[4].should == "114 16.75/32"
-      # first_data_row[5].should == "114 16.75/32"
+      first_data_row[1].should == "0:00:00"
+      first_data_row[2].should == "114 16.75/32"
+      first_data_row[3].should == "114 17/32"
+      first_data_row[4].should == "114 16.75/32"
+      first_data_row[5].should == "114 16.75/32"
       first_data_row[6].should == 653
       first_data_row[7].should == 214
       first_data_row[8].should == 524
