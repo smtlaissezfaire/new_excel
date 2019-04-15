@@ -64,5 +64,17 @@ module NewExcel
         starting_at + text_to_search.index(search_for)
       end
     end
+
+    def join(*args)
+      args.join(" ")
+    end
+
+    def list(*args)
+      [args]
+    end
+
+    def explode(*args)
+      args
+    end
   end
 end

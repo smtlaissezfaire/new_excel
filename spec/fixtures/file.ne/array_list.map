@@ -1,0 +1,6 @@
+num:
+  100
+Array:
+  = list(200, 201, 202)
+List:
+  = explode(300, 301, 302)

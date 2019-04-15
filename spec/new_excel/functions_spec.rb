@@ -125,4 +125,22 @@ describe NewExcel::BuiltInFunctions do
       search("def", ["abcdef", "abcxyzdef"]).should == [4, 7]
     end
   end
+
+  context "join" do
+    it "should return the arguments joined as a string" do
+      join(1, 2, 3).should == "1 2 3"
+    end
+  end
+
+  context "list" do
+    it "should return an array of array arguments" do
+      list(1, 2, 3).should == [[1, 2, 3]]
+    end
+  end
+
+  context "explode" do
+    it "should return the list of arguments directly (which get exploded in columns)" do
+      explode(1, 2, 3).should == [1, 2, 3]
+    end
+  end
 end

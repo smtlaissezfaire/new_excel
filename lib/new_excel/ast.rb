@@ -196,7 +196,7 @@ module NewExcel
           end
         end
 
-        column_length = values_by_column[0].length
+        column_length = values_by_column.map { |col| col.length }.max
 
         # transpose!
         # normally in

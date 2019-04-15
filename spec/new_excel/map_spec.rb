@@ -33,14 +33,6 @@ describe NewExcel::Map do
     it "should evaluate a DateTime" do
       @obj.evaluate("DateTime").should == [[Time.parse("2018-01-01 11:00:00")]]
     end
-
-    # it "should allow a list of strings" do
-    #   @obj.evaluate("List of Strings").should == ["a", "b", "c"]
-    # end
-    #
-    # it "should allow a list of ints" do
-    #   @obj.evaluate("List of Ints").should == [1, 2, 3]
-    # end
   end
 
   describe "with a simple map" do
@@ -210,9 +202,9 @@ describe NewExcel::Map do
       @obj = basic_file.get_sheet("simple_text")
 
       @obj.print.should == <<-STR
-String   Integer Float   Date                      Time  DateTime                  List of Strings List of Ints
--------- ------- ------- ------------------------- ----- ------------------------- --------------- ------------
-a string 123     123.456 2018-01-01 00:00:00 -0800 11:00 2018-01-01 11:00:00 -0800 a b c           123
+String   Integer Float   Date                      Time  DateTime
+-------- ------- ------- ------------------------- ----- -------------------------
+a string 123     123.456 2018-01-01 00:00:00 -0800 11:00 2018-01-01 11:00:00 -0800
   STR
 
     end
@@ -254,8 +246,22 @@ STR
 
     it "should be able to refer to one of it's own columns without the sheet" do
       @obj.evaluate("OneValue").should == [[1]]
-      $debug = true
       @obj.evaluate("ReferencingOneDirectly").should == [[1]]
+    end
+  end
+
+  describe "with different row counts" do
+    before do
+      @obj = basic_file.get_sheet("array_list")
+    end
+
+    it "should list all the values" do
+      @obj.evaluate(with_header: true).should == [
+        ["num", "Array", "List"],
+        [100, [200, 201, 202], 300],
+        [nil, nil, 301],
+        [nil, nil, 302],
+      ]
     end
   end
 end
