@@ -40,21 +40,13 @@ module NewExcel
             value << column_names
           end
 
-          @body_values ||= get_body_values
-
-          @body_values.each_with_index do |val, index|
-            to_add = if row_indexes
-              row_indexes.map { |i| val[i] }
-            else
-              val
-            end
-
-            value << to_add if to_add
+          get_body_values(row_indexes).each do |val|
+            value << val
           end
         end
       end
 
-      def get_body_values
+      def get_body_values(row_indexes)
         raise NotImplementedError, "Must be implemented in subclass"
       end
     end
@@ -74,8 +66,16 @@ module NewExcel
         body.rows[1..(body.rows.length)]
       end
 
-      def get_body_values
-        body_csv.map(&:value)
+      def get_body_values(row_indexes)
+        body_values = body_csv.map do |row|
+          values_for_row = row.value
+
+          if row_indexes
+            row_indexes.map { |i| values_for_row[i] }
+          else
+            values_for_row
+          end
+        end
       end
 
     private
@@ -159,8 +159,16 @@ module NewExcel
         end
       end
 
-      def get_body_values
-        values_by_column = pairs.map(&:pair_value)
+      def get_body_values(row_indexes)
+        index = 0
+
+        kv_pairs = pairs.select do |kv_pair|
+          val = !row_indexes || row_indexes.include?(index)
+          index += 1
+          val
+        end
+
+        values_by_column = kv_pairs.map(&:pair_value)
         row_length = values_by_column[0].length
         # want them row by row
         body_values = []
