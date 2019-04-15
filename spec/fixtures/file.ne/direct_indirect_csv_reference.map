@@ -1,0 +1,4 @@
+DateA:
+  = one_column_map.Date
+DateB:
+  = DateA

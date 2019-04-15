@@ -27,7 +27,9 @@ module NewExcel
           column_indexes = only_columns.map do |column|
             if column.is_a?(String)
               val = column_names.index(column)
-              raise "Unknown column: #{column.inspect}" if !val
+              if !val
+                raise "Unknown column: #{column.inspect}; columns are: #{column_names.inspect}"
+              end
               val
             elsif column.is_a?(Integer)
               column - 1

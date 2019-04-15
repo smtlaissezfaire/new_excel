@@ -54,23 +54,22 @@ module NewExcel
     def evaluate(*args)
       parse
 
-      NewExcel::ProcessState.current_file_path = @container_file_path
-      NewExcel::ProcessState.current_sheet = self
+      set_process_state do
+        options = args.last.is_a?(Hash) ? args.pop : {}
+        options[:with_header] = false unless options[:with_header]
 
-      options = args.last.is_a?(Hash) ? args.pop : {}
-      options[:with_header] = false unless options[:with_header]
+        if args && args.any?
+          if args.length >= 2 && (args.last.is_a?(Integer) || args.last.is_a?(Array))
+            row_indexes = args.pop
+            row_indexes = [row_indexes] if !row_indexes.is_a?(Array)
+            options[:only_rows] = row_indexes
+          end
 
-      if args && args.any?
-        if args.length >= 2 && (args.last.is_a?(Integer) || args.last.is_a?(Array))
-          row_indexes = args.pop
-          row_indexes = [row_indexes] if !row_indexes.is_a?(Array)
-          options[:only_rows] = row_indexes
+          options[:only_columns] = args.flatten
         end
 
-        options[:only_columns] = args.flatten
+        @ast.value(options)
       end
-
-      @ast.value(options)
     end
 
     def print(*args)
@@ -140,6 +139,19 @@ module NewExcel
 
     def parser
       @parser ||= Parser.new
+    end
+
+    def set_process_state
+      old_file_path = NewExcel::ProcessState.current_file_path
+      old_sheet = NewExcel::ProcessState.current_sheet
+
+      NewExcel::ProcessState.current_file_path = @container_file_path
+      NewExcel::ProcessState.current_sheet = self
+
+      yield
+    ensure
+      NewExcel::ProcessState.current_file_path = old_file_path
+      NewExcel::ProcessState.current_sheet = old_sheet
     end
   end
 end

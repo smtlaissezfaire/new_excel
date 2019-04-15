@@ -215,6 +215,23 @@ Date
 2019-03-01 00:00:00 -0800
 STR
     end
+
+    it "should be able to reference another column directly, which refers to a csv file" do
+      @obj = basic_file.get_sheet("direct_indirect_csv_reference")
+      @obj.print.should == <<-STR
+DateA                     DateB
+------------------------- -------------------------
+2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
+2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
+STR
+    end
   end
 
   describe "self-referencing" do
@@ -230,7 +247,7 @@ STR
     it "should raise when handling an invalid column reference through the own sheet" do
       lambda {
         @obj.evaluate("ReferencingOneIndirectlyBadColumnValue")
-      }.should raise_error(RuntimeError, "Unknown column: \"InvalidColumnReference\"")
+      }.should raise_error(RuntimeError, /Unknown column: \"InvalidColumnReference\"/)
     end
 
     it "should be able to refer to one of it's own columns without the sheet" do
