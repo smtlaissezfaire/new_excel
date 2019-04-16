@@ -29,6 +29,10 @@ require 'byebug'
 
 file = NewExcel::File.new("./file.ne")
 
-sheet = file.get_sheet('zf_mapped_data')
-# pp sheet.read
+# sheet = file.get_sheet('zf_mapped_data')
+# # pp sheet.read
+# puts sheet.print
+
+sheet = file.get_sheet("ZCTest")
+
 puts sheet.print

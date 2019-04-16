@@ -1,13 +1,9 @@
 Date:
   = zf_original_data.Date
-
 Time:
   = zf_original_data.Time
-
 DateTime:
   = concat(zf_original_data.Date, zf_original_data.Time)
-
-
 Open:
   = zf_mapped_dates.Open
 High:
