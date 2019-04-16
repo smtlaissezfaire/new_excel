@@ -3,6 +3,7 @@ module NewExcel
     module Events
       GET_BODY_VALUES = :get_body_values
       INCREMENT_BODY_VALUE = :increment_body_values
+      ROW_LOADED = :row_loaded
     end
 
     include Events

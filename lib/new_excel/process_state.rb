@@ -5,10 +5,12 @@ module NewExcel
         self.reset_file_cache!
         self.current_file_path = nil
         self.current_sheet = nil
+        self.max_rows_to_load = nil
       end
 
       attr_accessor :current_file_path
       attr_accessor :current_sheet
+      attr_accessor :max_rows_to_load
 
       def current_file
         if current_file_path

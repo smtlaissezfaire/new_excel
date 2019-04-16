@@ -80,9 +80,21 @@ module NewExcel
       end
 
       def get_body_values(column_indexes, row_indexes)
-        NewExcel::Event.fire(Event::GET_BODY_VALUES, length: body_csv.length)
+        body_values = body_csv
 
-        body_values = body_csv.map do |column|
+        if max_rows_to_load = NewExcel::ProcessState.max_rows_to_load
+          count = 1
+
+          body_values = body_values.select do |_row|
+            (count <= max_rows_to_load).tap do
+              count += 1
+            end
+          end
+        end
+
+        NewExcel::Event.fire(Event::GET_BODY_VALUES, length: body_values.length)
+
+        body_values = body_values.map do |column|
           values_for_column = column.value
 
           if column_indexes
