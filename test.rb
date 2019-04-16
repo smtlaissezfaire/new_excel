@@ -31,12 +31,12 @@ include NewExcel
 
 file = NewExcel::File.new("./file.ne")
 
-ProcessState.max_rows_to_load = 100
+ProcessState.max_rows_to_load = 10000
 
 # sheet = file.get_sheet('zf_mapped_data')
 # # pp sheet.read
 # puts sheet.print
 
-sheet = file.get_sheet("ZCTest")
+sheet = file.get_sheet("ZCTest2")
 
 puts sheet.print

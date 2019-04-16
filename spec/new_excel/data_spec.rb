@@ -118,4 +118,15 @@ One       Two        Three Four Five
 CODE
     end
   end
+
+  context "columns with spaces" do
+    before do
+      @file = NewExcel::File.open(File.join("spec", "fixtures", "file.ne"))
+      @obj = basic_file.get_sheet("space_columns")
+    end
+
+    it "should have the column names trimmed" do
+      @obj.columns.should == ["Date", "Time", "Open", "High", "Low", "Last", "Volume", "NumberOfTrades", "BidVolume", "AskVolume"]
+    end
+  end
 end

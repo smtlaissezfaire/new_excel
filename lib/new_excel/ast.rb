@@ -72,7 +72,7 @@ module NewExcel
       end
 
       def column_names
-        columns.value
+        columns.value.map(&:strip)
       end
 
       def body_csv
