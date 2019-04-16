@@ -3,12 +3,13 @@ module NewExcel
     def parse
       return if @parsed
 
-      @ast = parser.parse("DataFile!\n" + raw_content)
+      set_process_state do
+        @ast = parser.parse("DataFile!\n" + raw_content)
 
-      @column_names = @ast.column_names
-      @ast.value
+        @column_names = @ast.column_names
 
-      @parsed = true
+        @parsed = true
+      end
     end
   end
 end

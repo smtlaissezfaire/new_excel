@@ -16,6 +16,10 @@ module NewExcel
         end
       end
 
+      def current_sheet_name
+        current_sheet.sheet_name if current_sheet
+      end
+
       def file_cache
         @file_cache ||= {}
       end

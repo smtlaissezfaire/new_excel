@@ -1,6 +1,8 @@
 module NewExcel
   module AST
     class BaseAST
+      extend Memoist
+
       def initialize(string)
         @string = string
       end
@@ -55,6 +57,8 @@ module NewExcel
         end
       end
 
+      memoize :value
+
       def get_body_values(column_indexes, row_indexes)
         raise NotImplementedError, "Must be implemented in subclass"
       end
@@ -76,6 +80,8 @@ module NewExcel
       end
 
       def get_body_values(column_indexes, row_indexes)
+        NewExcel::Event.fire(Event::GET_BODY_VALUES, length: body_csv.length)
+
         body_values = body_csv.map do |column|
           values_for_column = column.value
 
@@ -138,7 +144,9 @@ module NewExcel
       attr_reader :cells
 
       def value
-        cells.map(&:value)
+        cells.map(&:value).tap do
+          NewExcel::Event.fire(Event::INCREMENT_BODY_VALUE)
+        end
       end
     end
 

@@ -1,19 +1,21 @@
 module NewExcel
   class Map < Sheet
     def parse
-      return if @parsed
+      set_process_state do
+        return if @parsed
 
-      content = "Map!\n#{raw_content}"
-      @ast = parser.parse(content)
-      @ast.columns.map { |col| col.to_s }.each do |column_name|
-        if @column_names.include?(column_name)
-          raise "Duplicate column name: #{column_name.inspect}"
+        content = "Map!\n#{raw_content}"
+        @ast = parser.parse(content)
+        @ast.columns.map { |col| col.to_s }.each do |column_name|
+          if @column_names.include?(column_name)
+            raise "Duplicate column name: #{column_name.inspect}"
+          end
+
+          @column_names << column_name
         end
 
-        @column_names << column_name
+        @parsed = true
       end
-
-      @parsed = true
     end
 
     def get(column_or_column_names = column_names)

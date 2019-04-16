@@ -10,6 +10,8 @@ gem 'byebug'
 gem 'chronic'
 gem 'racc'
 gem 'fakefs'
+gem 'ruby-progressbar'
+gem 'memoist'
 
 #
 # # Specify your gem's dependencies in new_excel.gemspec

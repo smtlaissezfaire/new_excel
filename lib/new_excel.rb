@@ -5,8 +5,11 @@ require 'time'
 require 'chronic'
 require 'csv'
 require 'racc'
+require 'ruby-progressbar'
+require 'memoist'
 
 require "new_excel/process_state"
+require "new_excel/event"
 require "new_excel/dependency_resolver"
 require "new_excel/list_helpers"
 require "new_excel/built_in_functions"
@@ -18,3 +21,5 @@ require 'new_excel/ast'
 require 'new_excel/tokenizer'
 require "new_excel/parser"
 require "new_excel/evaluator"
+
+require "new_excel/hooks"

@@ -10,6 +10,10 @@ module NewExcel
 
     attr_reader :container_file_path
 
+    def sheet_name
+      ::File.basename(@sheet_file_path, ::File.extname(@sheet_file_path)).to_s
+    end
+
     def column_names
       parse
       @column_names
