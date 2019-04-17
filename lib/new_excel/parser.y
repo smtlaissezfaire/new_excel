@@ -75,7 +75,7 @@ rule
     result = ref
   }
 
-  expression: function_call | remote_cell_reference | local_cell_reference | primitive_value
+  expression: function_call | cell_reference | primitive_value
 
   formula_body: expression
 
@@ -95,6 +95,8 @@ rule
     function_argument { result = val[0] }
 
   function_argument: expression
+
+  cell_reference: remote_cell_reference | local_cell_reference
 
   remote_cell_reference:
     ID DOT ID {
