@@ -6,7 +6,11 @@ require 'byebug'
 
 include NewExcel
 
-# file = NewExcel::File.new("./spec/fixtures/file.ne")
+ProcessState.debug = true
+
+# debugger
+
+file = NewExcel::File.new("./spec/fixtures/file.ne")
 #
 # sheet = file.get_sheet('simple_text')
 # puts sheet.print
@@ -26,17 +30,20 @@ include NewExcel
 # sheet = file.get_sheet('two_column_map')
 # puts sheet.print
 
+sheet = file.get_sheet("relative_references")
+puts sheet.print
+
 
 ###################################################
 
-file = NewExcel::File.new("./file.ne")
-
-ProcessState.max_rows_to_load = 10000
-
-# sheet = file.get_sheet('zf_mapped_data')
-# # pp sheet.read
+# file = NewExcel::File.new("./file.ne")
+#
+# ProcessState.max_rows_to_load = 10000
+#
+# # sheet = file.get_sheet('zf_mapped_data')
+# # # pp sheet.read
+# # puts sheet.print
+#
+# sheet = file.get_sheet("ZCTest2")
+#
 # puts sheet.print
-
-sheet = file.get_sheet("ZCTest2")
-
-puts sheet.print

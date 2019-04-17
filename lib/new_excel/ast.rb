@@ -16,6 +16,20 @@ module NewExcel
       def print
         string
       end
+
+      def debug(*msg)
+        return unless debug?
+        puts *msg
+      end
+
+      def debug_indented(msg)
+        return unless debug?
+        puts "\t#{msg}"
+      end
+
+      def debug?
+        ProcessState.debug
+      end
     end
 
     class SheetAST < BaseAST
@@ -208,6 +222,11 @@ module NewExcel
         # get their values
         values_by_column = kv_pairs.map(&:pair_value)
 
+        debug "map:"
+        values_by_column.each_with_index do |col_values, index|
+          debug_indented "#{kv_pairs[index].hash_key}: #{col_values}"
+        end
+
         # select only the values that match row_indexes
         if row_indexes
           values_by_column = values_by_column.map do |values_for_one_column|
@@ -291,7 +310,14 @@ module NewExcel
 
       def value
         evaluated_arguments = arguments.map(&:value)
-        NewExcel::BuiltInFunctions.public_send(name, *evaluated_arguments)
+
+        debug "function: #{print}"
+        debug_indented "name: #{name}"
+        debug_indented "arguments: #{evaluated_arguments}"
+
+        NewExcel::BuiltInFunctions.public_send(name, *evaluated_arguments).tap do |val|
+          debug_indented "value: #{val}"
+        end
       end
 
       def print

@@ -6,11 +6,13 @@ module NewExcel
         self.current_file_path = nil
         self.current_sheet = nil
         self.max_rows_to_load = nil
+        self.debug = false
       end
 
       attr_accessor :current_file_path
       attr_accessor :current_sheet
       attr_accessor :max_rows_to_load
+      attr_accessor :debug
 
       def current_file
         if current_file_path
