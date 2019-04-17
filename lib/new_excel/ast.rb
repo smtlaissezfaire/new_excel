@@ -17,14 +17,14 @@ module NewExcel
         string
       end
 
-      def debug(*msg)
+      def debug(msg)
         return unless debug?
-        puts *msg
+        require 'date'
+        puts "DEBUG #{Time.now.strftime("%Y-%m-%d-%H:%M:%S")}: #{msg}"
       end
 
       def debug_indented(msg)
-        return unless debug?
-        puts "\t#{msg}"
+        debug("  #{msg}")
       end
 
       def debug?
@@ -222,10 +222,7 @@ module NewExcel
         # get their values
         values_by_column = kv_pairs.map(&:pair_value)
 
-        debug "map:"
-        values_by_column.each_with_index do |col_values, index|
-          debug_indented "#{kv_pairs[index].hash_key}: #{col_values}"
-        end
+        Event.fire(Event::DEBUG_MAP, self, values_by_column, kv_pairs)
 
         # select only the values that match row_indexes
         if row_indexes
@@ -311,12 +308,10 @@ module NewExcel
       def value
         evaluated_arguments = arguments.map(&:value)
 
-        debug "function: #{print}"
-        debug_indented "name: #{name}"
-        debug_indented "arguments: #{evaluated_arguments}"
+        Event.fire(Event::DEBUG_FUNCTION, self, evaluated_arguments)
 
         NewExcel::BuiltInFunctions.public_send(name, *evaluated_arguments).tap do |val|
-          debug_indented "value: #{val}"
+          Event.fire(Event::DEBUG_FUNCTION_RESULT, self, val)
         end
       end
 

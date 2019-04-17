@@ -4,6 +4,9 @@ module NewExcel
       GET_BODY_VALUES = :get_body_values
       INCREMENT_BODY_VALUE = :increment_body_values
       ROW_LOADED = :row_loaded
+      DEBUG_MAP = :debug_map
+      DEBUG_FUNCTION = :debug_function
+      DEBUG_FUNCTION_RESULT = :debug_function_result
     end
 
     include Events

@@ -19,5 +19,29 @@ module NewExcel
         end
       end
     end
+
+    Event.listen(Event::DEBUG_MAP) do |map, values_by_column, kv_pairs|
+      map.instance_eval do
+        debug "map:"
+
+        values_by_column.each_with_index do |col_values, index|
+          debug_indented "#{kv_pairs[index].hash_key}: #{col_values}"
+        end
+      end
+    end
+
+    Event.listen(Event::DEBUG_FUNCTION) do |function_call, evaluated_arguments|
+      function_call.instance_eval do
+        debug "function: #{print}"
+        debug_indented "name: #{name}"
+        debug_indented "arguments: #{evaluated_arguments}"
+      end
+    end
+
+    Event.listen(Event::DEBUG_FUNCTION_RESULT) do |function_call, result|
+      function_call.instance_eval do
+        debug_indented "result: #{result}"
+      end
+    end
   end
 end
