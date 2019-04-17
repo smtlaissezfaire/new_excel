@@ -257,6 +257,10 @@ CODE
       @obj.parse("123.456").value.should == 123.456
     end
 
+    it "should parse a negative number" do
+      @obj.parse("-123").value.should == -123
+    end
+
     it "should parse a Date" do
       @obj.parse("2018-01-01").value.should == Time.parse("2018-01-01 00:00:00")
     end

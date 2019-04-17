@@ -116,7 +116,7 @@ module NewExcel
         [:TIME, match]
       when match = scanner.scan(/\d+\.\d+/)
         [:FLOAT, match]
-      when match = scanner.scan(/\d+/)
+      when match = scanner.scan(/\-?\d+/)
         [:INTEGER, match]
       end
     end
