@@ -22,7 +22,7 @@ module NewExcel
     end
 
     def divide(num, denom)
-      inject(num, denom, &:/)
+      inject(num, denom.to_f, &:/)
     rescue ZeroDivisionError
       "DIV!"
     end

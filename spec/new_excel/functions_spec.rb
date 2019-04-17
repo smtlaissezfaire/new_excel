@@ -59,6 +59,10 @@ describe NewExcel::BuiltInFunctions do
         divide(10, 0)
       }.should_not raise_error
     end
+
+    it "should work with decimals" do
+      divide(1, 2).should == 0.5
+    end
   end
 
   context "evaluate" do
