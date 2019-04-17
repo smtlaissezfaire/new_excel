@@ -11,10 +11,10 @@ ProcessState.debug = true
 # debugger
 
 file = NewExcel::File.new("./spec/fixtures/file.ne")
-#
-# sheet = file.get_sheet('simple_text')
-# puts sheet.print
-#
+
+sheet = file.get_sheet('simple_text')
+puts sheet.print
+
 # puts ""
 #
 # sheet = file.get_sheet('rows_for_printing')
@@ -30,8 +30,8 @@ file = NewExcel::File.new("./spec/fixtures/file.ne")
 # sheet = file.get_sheet('two_column_map')
 # puts sheet.print
 
-sheet = file.get_sheet("relative_references")
-puts sheet.print
+# sheet = file.get_sheet("relative_references")
+# puts sheet.print
 
 
 ###################################################
