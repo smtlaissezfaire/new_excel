@@ -1,6 +1,6 @@
 module NewExcel
   module Hooks
-    MIN_PROGRESS_BAR_THRESHOLD = 0
+    MIN_PROGRESS_BAR_THRESHOLD = 1000
 
     Event.listen(Event::GET_BODY_VALUES) do |length:|
       next if length < MIN_PROGRESS_BAR_THRESHOLD
