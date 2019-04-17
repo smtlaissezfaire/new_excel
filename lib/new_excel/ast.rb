@@ -45,7 +45,6 @@ module NewExcel
           row_indexes = only_rows
         end
 
-        # is this crazy?
         [].tap do |value|
           if with_header
             value << column_names
