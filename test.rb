@@ -5,6 +5,7 @@ require 'new_excel'
 require 'byebug'
 
 include NewExcel
+extend NewExcel::Console
 
 ProcessState.debug = true
 

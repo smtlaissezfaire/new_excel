@@ -21,5 +21,5 @@ require 'new_excel/ast'
 require 'new_excel/tokenizer'
 require "new_excel/parser"
 require "new_excel/evaluator"
-
 require "new_excel/hooks"
+require "new_excel/console"
