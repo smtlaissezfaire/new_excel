@@ -16,6 +16,9 @@ file = NewExcel::File.new("./spec/fixtures/file.ne")
 sheet = file.get_sheet('simple_text')
 puts sheet.print
 
+s = sheet "spec/fixtures/file.ne/map.map";
+print s.print
+
 # puts ""
 #
 # sheet = file.get_sheet('rows_for_printing')

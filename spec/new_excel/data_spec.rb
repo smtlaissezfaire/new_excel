@@ -30,7 +30,7 @@ describe NewExcel::Data do
     end
 
     it "should be able to evaluate a column" do
-      @obj.evaluate("Date").should == [
+      @obj.filter("Date").should == [
         [ Time.parse("2019/03/01"), ],
         [ Time.parse("2019/03/01"), ],
         [ Time.parse("2019/03/01"), ],
@@ -44,7 +44,7 @@ describe NewExcel::Data do
     end
 
     it "should be able to get by an index (plus one)" do
-      @obj.evaluate(1).should == [
+      @obj.filter(1).should == [
         [ Time.parse("2019/03/01"), ],
         [ Time.parse("2019/03/01"), ],
         [ Time.parse("2019/03/01"), ],
@@ -58,7 +58,7 @@ describe NewExcel::Data do
     end
 
     it "should be able to evaluate two columns" do
-      @obj.evaluate("Date", "Volume").should == [
+      @obj.filter("Date", "Volume").should == [
         [ Time.parse("2019/03/01"), 653, ],
         [ Time.parse("2019/03/01"), 4, ],
         [ Time.parse("2019/03/01"), 404, ],
@@ -72,18 +72,18 @@ describe NewExcel::Data do
     end
 
     it "should be able to evaluate two columns with an index" do
-      @obj.evaluate(["Date", "Volume"], 1).should == [[ Time.parse("2019/03/01"), 653, ],]
-      @obj.evaluate(["Date", "Volume"], 2).should == [[ Time.parse("2019/03/01"), 4, ],]
+      @obj.filter(["Date", "Volume"], 1).should == [[ Time.parse("2019/03/01"), 653, ],]
+      @obj.filter(["Date", "Volume"], 2).should == [[ Time.parse("2019/03/01"), 4, ],]
     end
 
     it "should be able to evaluate two columns with two indexes" do
-      @obj.evaluate(["Date", "Volume"], [2, 3]).should == [[ Time.parse("2019/03/01"), 4], [Time.parse("2019/03/01"), 404]]
+      @obj.filter(["Date", "Volume"], [2, 3]).should == [[ Time.parse("2019/03/01"), 4], [Time.parse("2019/03/01"), 404]]
     end
 
     it "should be able to get all the rows" do
-      rows = @obj.evaluate
+      rows = @obj.filter
 
-      # @obj.evaluate.should == [
+      # @obj.filter.should == [
       #   [Time.parse("2019/03/01"), "0:00", "114 16.75/32", "114 17/32", "114 16.75/32", "114 16.75/32", 653, 107, 524, 129],
       #   [Time.parse("2019/03/01"), "0:05", "114 16.75/32", "114 16.75/32", "114 16.75/32", "114 16.75/32", 4, 2, 4, 0],
       #   [Time.parse("2019/03/01"), "0:10", "114 16.75/32", "114 17/32", "114 16.75/32", "114 16.75/32", 404, 85, 306, 98],
@@ -102,7 +102,7 @@ describe NewExcel::Data do
     end
 
     it "should be able to read raw text even when it looks like a number" do
-      @obj.evaluate("Open")[0][0].should == "114 16.75/32"
+      @obj.filter("Open")[0][0].should == "114 16.75/32"
     end
   end
 

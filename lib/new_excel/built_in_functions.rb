@@ -88,10 +88,6 @@ module NewExcel
     end
 
     def list(*args)
-      [args]
-    end
-
-    def explode(*args)
       args
     end
 

@@ -47,6 +47,10 @@ describe NewExcel::BuiltInFunctions do
     it "should be able to multiply vectors" do
       multiply([10, 20, 30], [1, 2, 3]).should == [10, 40, 90]
     end
+
+    it "should be able to multiply a vector by a number" do
+      multiply([1, 2, 3], 2).should == [2, 4, 6]
+    end
   end
 
   context "divide" do
@@ -149,14 +153,8 @@ describe NewExcel::BuiltInFunctions do
   end
 
   context "list" do
-    it "should return an array of array arguments" do
-      list(1, 2, 3).should == [[1, 2, 3]]
-    end
-  end
-
-  context "explode" do
-    it "should return the list of arguments directly (which get exploded in columns)" do
-      explode(1, 2, 3).should == [1, 2, 3]
+    it "should return an array of values" do
+      list(1, 2, 3).should == [1, 2, 3]
     end
   end
 

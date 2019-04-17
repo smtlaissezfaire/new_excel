@@ -334,7 +334,7 @@ module NewExcel
 
         raise "No cell name specified! cell_name: #{cell_name.inspect}" if !cell_name
 
-        sheet.evaluate(cell_name).flatten
+        sheet.get_column(cell_name)
       end
 
       def print

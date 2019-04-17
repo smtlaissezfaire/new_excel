@@ -11,27 +11,27 @@ describe NewExcel::Map do
     end
 
     it "should be able to read a simple string value" do
-      @obj.evaluate("String").should == [["a string"]]
+      @obj.filter("String").should == [["a string"]]
     end
 
     it "should evaluate an integer" do
-      @obj.evaluate("Integer").should == [[123]]
+      @obj.filter("Integer").should == [[123]]
     end
 
     it "should evaluate a floating point" do
-      @obj.evaluate("Float").should == [[123.456]]
+      @obj.filter("Float").should == [[123.456]]
     end
 
     it "should evaluate a Date" do
-      @obj.evaluate("Date").should == [[Time.parse("2018-01-01 00:00:00")]]
+      @obj.filter("Date").should == [[Time.parse("2018-01-01 00:00:00")]]
     end
 
     it "should evaluate a Time" do # FIXME?
-      @obj.evaluate("Time").should == [["11:00"]]
+      @obj.filter("Time").should == [["11:00"]]
     end
 
     it "should evaluate a DateTime" do
-      @obj.evaluate("DateTime").should == [[Time.parse("2018-01-01 11:00:00")]]
+      @obj.filter("DateTime").should == [[Time.parse("2018-01-01 11:00:00")]]
     end
   end
 
@@ -64,7 +64,7 @@ describe NewExcel::Map do
     end
 
     it "should be able to evaluate to the original data map" do
-      @obj.evaluate("Date").should == [
+      @obj.filter("Date").should == [
         [ Time.parse("2019/03/01") ],
         [ Time.parse("2019/03/01") ],
         [ Time.parse("2019/03/01") ],
@@ -77,8 +77,22 @@ describe NewExcel::Map do
       ]
     end
 
+    it "should be able to get the column directly as an array (instead of as a filtered sheet)" do
+      @obj.get_column("Date").should == [
+        Time.parse("2019/03/01"),
+        Time.parse("2019/03/01"),
+        Time.parse("2019/03/01"),
+        Time.parse("2019/03/01"),
+        Time.parse("2019/03/01"),
+        Time.parse("2019/03/01"),
+        Time.parse("2019/03/01"),
+        Time.parse("2019/03/01"),
+        Time.parse("2019/03/01"),
+      ]
+    end
+
     it "should be able to index in with a second variable" do
-      @obj.evaluate("Time", 1).should == [ [ "0:00:00", ] ]
+      @obj.filter("Time", 1).should == [ [ "0:00:00", ] ]
     end
 
     it "should be able to get multiple columns of the data (unevaluated)" do
@@ -104,7 +118,7 @@ describe NewExcel::Map do
     end
 
     it "should be able to evaluate two columns" do
-      @obj.evaluate("Time", "Volume").should == [
+      @obj.filter("Time", "Volume").should == [
         [ "0:00:00", 653, ],
         [ "0:05:00", 4, ],
         [ "0:10:00", 404, ],
@@ -118,12 +132,12 @@ describe NewExcel::Map do
     end
 
     it "should be able to evaluate two columns with an index" do
-      @obj.evaluate(["Time", "Volume"], 1).should == [["0:00:00", 653]]
-      @obj.evaluate(["Time", "Volume"], 2).should == [["0:05:00", 4]]
+      @obj.filter(["Time", "Volume"], 1).should == [["0:00:00", 653]]
+      @obj.filter(["Time", "Volume"], 2).should == [["0:05:00", 4]]
     end
 
     it "should be able to evaluate two columns with two indexes" do
-      @obj.evaluate(["Time", "Volume"], [2, 3]).should == [["0:05:00", 4], ["0:10:00", 404]]
+      @obj.filter(["Time", "Volume"], [2, 3]).should == [["0:05:00", 4], ["0:10:00", 404]]
     end
 
     it "should be able to load all data with read()" do
@@ -153,24 +167,24 @@ describe NewExcel::Map do
     end
 
     it "should be able to evaluate simple formula from a data sheet" do
-      @obj.evaluate("Range").should == [[100 - 25]]
+      @obj.filter("Range").should == [[100 - 25]]
     end
 
     it "should be able to evaluate a simple plus formula" do
-      @obj.evaluate("Plus").should == [[100 + 25]]
+      @obj.filter("Plus").should == [[100 + 25]]
     end
 
     it "should be able to use primitives" do
-      # @obj.evaluate("Plus with Primitive", 1).should == 1 + 1
-      @obj.evaluate("Plus with Primitive").should == [[1 + 1]]
+      # @obj.filter("Plus with Primitive", 1).should == 1 + 1
+      @obj.filter("Plus with Primitive").should == [[1 + 1]]
     end
 
     it "should be able to evaluate one formula after another" do
-      @obj.evaluate("Plus with Minus").should == [[100 + 25 - 1]]
+      @obj.filter("Plus with Minus").should == [[100 + 25 - 1]]
     end
 
     it "should be able to read a simple string value evaluated" do
-      @obj.evaluate("String Evaluated").should == [["a string evaluated"]]
+      @obj.filter("String Evaluated").should == [["a string evaluated"]]
     end
   end
 
@@ -240,19 +254,19 @@ STR
     end
 
     it "should be able to refer to one of it's own columns through the sheet" do
-      @obj.evaluate("OneValue").should == [[1]]
-      @obj.evaluate("ReferencingOneIndirectly").should == [[1]]
+      @obj.filter("OneValue").should == [[1]]
+      @obj.filter("ReferencingOneIndirectly").should == [[1]]
     end
 
     it "should raise when handling an invalid column reference through the own sheet" do
       lambda {
-        @obj.evaluate("ReferencingOneIndirectlyBadColumnValue")
+        @obj.filter("ReferencingOneIndirectlyBadColumnValue")
       }.should raise_error(RuntimeError, /Unknown column: \"InvalidColumnReference\"/)
     end
 
     it "should be able to refer to one of it's own columns without the sheet" do
-      @obj.evaluate("OneValue").should == [[1]]
-      @obj.evaluate("ReferencingOneDirectly").should == [[1]]
+      @obj.filter("OneValue").should == [[1]]
+      @obj.filter("ReferencingOneDirectly").should == [[1]]
     end
   end
 
@@ -262,11 +276,11 @@ STR
     end
 
     it "should list all the values" do
-      @obj.evaluate(with_header: true).should == [
-        ["num", "Array", "List"],
-        [100, [200, 201, 202], 300],
-        [nil, nil, 301],
-        [nil, nil, 302],
+      @obj.filter(with_header: true).should == [
+        ["num", "List"],
+        [100, 200],
+        [nil, 201],
+        [nil, 202],
       ]
     end
   end
@@ -277,7 +291,7 @@ STR
     end
 
     it "should list all the values" do
-      @obj.evaluate(with_header: true).should == [
+      @obj.filter(with_header: true).should == [
         ["Row1", "Row2"],
         [1, 2],
       ]

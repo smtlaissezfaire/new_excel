@@ -25,10 +25,6 @@ module NewExcel
       @raw_content ||= ::File.read(@sheet_file_path)
     end
 
-    def read
-      evaluate
-    end
-
     def raw_value_for(*a, &b)
       get(*a, &b)
     end
@@ -55,7 +51,7 @@ module NewExcel
       raise NotImplementedError, "must be implemented in subclasses"
     end
 
-    def evaluate(*args)
+    def filter(*args)
       parse
 
       set_process_state do
@@ -76,8 +72,14 @@ module NewExcel
       end
     end
 
+    alias_method :read, :filter
+
+    def get_column(column)
+      filter(column).map(&:first)
+    end
+
     def print(*args)
-      all_values = evaluate(*args)
+      all_values = filter(*args)
 
       width_per_column = []
 
