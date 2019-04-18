@@ -31,53 +31,56 @@ describe NewExcel::Data do
 
     it "should be able to evaluate a column" do
       @obj.filter("Date").should == [
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
       ]
     end
 
     it "should be able to get by an index (plus one)" do
       @obj.filter(1).should == [
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
-        [ Time.parse("2019/03/01"), ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
+        [ "2019/03/01", ],
       ]
     end
 
     it "should be able to evaluate two columns" do
       @obj.filter("Date", "Volume").should == [
-        [ Time.parse("2019/03/01"), 653, ],
-        [ Time.parse("2019/03/01"), 4, ],
-        [ Time.parse("2019/03/01"), 404, ],
-        [ Time.parse("2019/03/01"), 1021, ],
-        [ Time.parse("2019/03/01"), 521, ],
-        [ Time.parse("2019/03/01"), 256, ],
-        [ Time.parse("2019/03/01"), 226, ],
-        [ Time.parse("2019/03/01"), 938, ],
-        [ Time.parse("2019/03/01"), 262 ],
+        [ "2019/03/01", "653", ],
+        [ "2019/03/01", "4", ],
+        [ "2019/03/01", "404", ],
+        [ "2019/03/01", "1021", ],
+        [ "2019/03/01", "521", ],
+        [ "2019/03/01", "256", ],
+        [ "2019/03/01", "226", ],
+        [ "2019/03/01", "938", ],
+        [ "2019/03/01", "262" ],
       ]
     end
 
     it "should be able to evaluate two columns with an index" do
-      @obj.filter(["Date", "Volume"], 1).should == [[ Time.parse("2019/03/01"), 653, ],]
-      @obj.filter(["Date", "Volume"], 2).should == [[ Time.parse("2019/03/01"), 4, ],]
+      @obj.filter(["Date", "Volume"], 1).should == [[ "2019/03/01", "653", ],]
+      @obj.filter(["Date", "Volume"], 2).should == [[ "2019/03/01", "4", ],]
     end
 
     it "should be able to evaluate two columns with two indexes" do
-      @obj.filter(["Date", "Volume"], [2, 3]).should == [[ Time.parse("2019/03/01"), 4], [Time.parse("2019/03/01"), 404]]
+      @obj.filter(["Date", "Volume"], [2, 3]).should == [
+        [ "2019/03/01", "4" ],
+        [ "2019/03/01", "404" ]
+      ]
     end
 
     it "should be able to get all the rows" do
@@ -97,7 +100,7 @@ describe NewExcel::Data do
 
       rows.length.should == 9
       rows.first.length.should == 10
-      rows.first[0].should be_a_kind_of(Time)
+      rows.first[0].should be_a_kind_of(String)
       rows.first[1].should be_a_kind_of(String)
     end
 

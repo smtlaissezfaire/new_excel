@@ -81,15 +81,15 @@ module NewExcel
       attr_accessor :body
 
       def columns
-        body.rows.first
+        body.first
       end
 
       def column_names
-        columns.value.map(&:strip)
+        columns.map(&:strip)
       end
 
       def body_csv
-        body.rows[1..(body.rows.length)]
+        body[1..(body.length)]
       end
 
       def get_body_values(column_indexes, row_indexes)
@@ -105,10 +105,8 @@ module NewExcel
           end
         end
 
-        NewExcel::Event.fire(Event::GET_BODY_VALUES, length: body_values.length)
-
         body_values = body_values.map do |column|
-          values_for_column = column.value
+          values_for_column = column
 
           if column_indexes
             values_for_column = column_indexes.map { |i| values_for_column[i] }
@@ -124,62 +122,6 @@ module NewExcel
         end
 
         body_values
-      end
-
-    private
-
-      def parser
-        @parser ||= NewExcel::Parser.new
-      end
-
-      def parse_csv!
-        @csv ||= begin
-          full_csv = CSV.parse(body)
-          @columns = full_csv.shift
-          @body_csv = full_csv
-        end
-      end
-    end
-
-    class DataBody < BaseAST
-      def initialize(*args)
-        @rows = []
-      end
-
-      def add_row(row)
-        @rows << row
-      end
-
-      attr_reader :rows
-
-      def value
-        rows.map(&:value)
-      end
-    end
-
-    class DataRow < BaseAST
-      def initialize(*args)
-        @cells = []
-      end
-
-      def add_cell(cell)
-        @cells << cell
-      end
-
-      attr_reader :cells
-
-      def value
-        cells.map(&:value).tap do
-          NewExcel::Event.fire(Event::INCREMENT_BODY_VALUE)
-        end
-      end
-    end
-
-    class DataCell < BaseAST
-      attr_accessor :cell_value
-
-      def value
-        cell_value.value
       end
     end
 
@@ -209,6 +151,10 @@ module NewExcel
         end
       end
 
+      def kv_pairs_cache
+        @kv_pairs_cache ||= {}
+      end
+
       def get_body_values(column_indexes, row_indexes)
         index = 0
 
@@ -219,8 +165,19 @@ module NewExcel
           val
         end
 
+        # if kv_pairs.any? { |pair| !kv_pairs_cache.include?(pair.hash_key) }
+        #   Event.fire(Event::MAP_STARTED_PROCESSING, length: kv_pairs.length)
+        # end
+
         # get their values
-        values_by_column = kv_pairs.map(&:pair_value)
+        values_by_column = kv_pairs.map do |kv_pair|
+          val = kv_pairs_cache[kv_pair.hash_key]
+          val ||= kv_pair.pair_value
+
+          kv_pairs_cache[kv_pair.hash_key] ||= val
+
+          val
+        end
 
         Event.fire(Event::DEBUG_MAP, self, values_by_column, kv_pairs)
 
@@ -276,6 +233,8 @@ module NewExcel
       end
 
       def pair_value
+        # Event.fire(Event::MAP_COLUMN_STARTED_PROCESSING, column_name: hash_key)
+
         value = hash_value.value
         if value.is_a?(Array)
           value
@@ -283,6 +242,8 @@ module NewExcel
           [value]
         end
       end
+
+      memoize :pair_value
 
       def print
         "#{hash_key}:\n#{hash_value}"

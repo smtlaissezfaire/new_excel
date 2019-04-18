@@ -7,6 +7,8 @@ module NewExcel
       DEBUG_MAP = :debug_map
       DEBUG_FUNCTION = :debug_function
       DEBUG_FUNCTION_RESULT = :debug_function_result
+      MAP_STARTED_PROCESSING = :map_started_processing
+      MAP_COLUMN_STARTED_PROCESSING = :map_column_started_processing
     end
 
     include Events

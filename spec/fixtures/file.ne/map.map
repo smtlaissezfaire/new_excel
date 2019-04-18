@@ -1,7 +1,7 @@
 Date:
-  = original_data.Date
+  = date(original_data.Date)
 Time:
-  = original_data.Time
+  = time(concat(original_data.Date, " ", original_data.Time))
 Open:
   = original_data.Open
 High:
@@ -11,10 +11,10 @@ Low:
 Close:
   = original_data.Close
 Volume:
-  = original_data.Volume
+  = to_number(original_data.Volume)
 NumberOfTrades:
-  = multiply(original_data.NumberOfTrades, 2)
+  = multiply(to_number(original_data.NumberOfTrades), 2)
 BidVolume:
-  = original_data.BidVolume
+  = to_number(original_data.BidVolume)
 AskVolume:
-  = original_data.AskVolume
+  = to_number(original_data.AskVolume)

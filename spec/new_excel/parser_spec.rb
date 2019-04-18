@@ -182,28 +182,6 @@ CODE
       res.should be_a_kind_of(NewExcel::AST::Map)
     end
 
-    it "should be able to accept a data file (as parsed csv)" do
-      csv = CSV.generate do |csv|
-        csv << ["header 1", "header 2", "header 3"]
-        csv << ["row 1", "row 2", "row 3"]
-        csv << ["row 1", "row 2", "row 3"]
-      end
-
-      data = CSV.parse(csv)
-
-      str = "DataFile!\n" + csv
-
-      # puts NewExcel::Tokenizer.get_tokens(str)
-
-      res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::AST::DataFile)
-
-      # res.body.should == csv.chomp'
-      res.column_names.should == ["header 1", "header 2", "header 3"]
-
-      res.value.should == data
-    end
-
     it "should be able to parse a function that calls another column" do
       str = File.read("spec/fixtures/file.ne/function_on_column.map")
       str = "Map!\n" + str

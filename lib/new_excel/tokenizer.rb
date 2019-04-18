@@ -11,7 +11,6 @@ module NewExcel
     def initialize(str)
       str = str.strip
       @str = str
-      @is_data_file = str =~ /^DataFile\!/
       @is_map = str =~ /^Map\!/
       @is_formula = str[0] == "="
       # thank you - https://martinfowler.com/bliki/HelloRacc.html
@@ -25,35 +24,7 @@ module NewExcel
       @q = []
 
       until scanner.eos?
-        if @is_data_file
-          case
-          when match = scanner.scan(/DataFile\!\n/)
-            @q << [:DATA_FILE, match]
-          else
-            remaining = scanner.rest
-            scanner.terminate
-
-            csv = CSV.parse(remaining)
-            csv.each do |row|
-              row.each do |cell_text|
-                cell_scanner = StringScanner.new(cell_text)
-
-                # primitives
-                token_pair = tokens_for_primitive_match(cell_scanner)
-
-                if !token_pair || token_pair[1] != cell_text
-                  @q << [:TEXT, cell_text]
-                else
-                  @q << token_pair
-                end
-              end
-
-              @q << [:CSV_END_OF_ROW, true]
-            end
-
-            @q << [:CSV_END_OF_FILE, true]
-          end
-        elsif @is_map || @is_formula
+        if @is_map || @is_formula
           case
           when match = scanner.scan(/\"(\\.|[^"\\])*\"/)
             @q << [:QUOTED_STRING, match]

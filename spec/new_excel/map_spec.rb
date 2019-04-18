@@ -60,84 +60,93 @@ describe NewExcel::Map do
     end
 
     it "should have the raw value for a column" do
-      @obj.raw_value_for("Date").should == "= original_data.Date"
+      @obj.raw_value_for("Date").should == "= date(original_data.Date)"
     end
 
     it "should be able to evaluate to the original data map" do
       @obj.filter("Date").should == [
-        [ Time.parse("2019/03/01") ],
-        [ Time.parse("2019/03/01") ],
-        [ Time.parse("2019/03/01") ],
-        [ Time.parse("2019/03/01") ],
-        [ Time.parse("2019/03/01") ],
-        [ Time.parse("2019/03/01") ],
-        [ Time.parse("2019/03/01") ],
-        [ Time.parse("2019/03/01") ],
-        [ Time.parse("2019/03/01") ],
+        [ Date.parse("2019/03/01") ],
+        [ Date.parse("2019/03/01") ],
+        [ Date.parse("2019/03/01") ],
+        [ Date.parse("2019/03/01") ],
+        [ Date.parse("2019/03/01") ],
+        [ Date.parse("2019/03/01") ],
+        [ Date.parse("2019/03/01") ],
+        [ Date.parse("2019/03/01") ],
+        [ Date.parse("2019/03/01") ],
       ]
     end
 
     it "should be able to get the column directly as an array (instead of as a filtered sheet)" do
       @obj.get_column("Date").should == [
-        Time.parse("2019/03/01"),
-        Time.parse("2019/03/01"),
-        Time.parse("2019/03/01"),
-        Time.parse("2019/03/01"),
-        Time.parse("2019/03/01"),
-        Time.parse("2019/03/01"),
-        Time.parse("2019/03/01"),
-        Time.parse("2019/03/01"),
-        Time.parse("2019/03/01"),
+        Date.parse("2019/03/01"),
+        Date.parse("2019/03/01"),
+        Date.parse("2019/03/01"),
+        Date.parse("2019/03/01"),
+        Date.parse("2019/03/01"),
+        Date.parse("2019/03/01"),
+        Date.parse("2019/03/01"),
+        Date.parse("2019/03/01"),
+        Date.parse("2019/03/01"),
       ]
     end
 
     it "should be able to index in with a second variable" do
-      @obj.filter("Time", 1).should == [ [ "0:00:00", ] ]
+      @obj.filter("Time", 1).should == [
+        [ Time.parse("2019-03-01 0:00:00"), ]
+      ]
     end
 
     it "should be able to get multiple columns of the data (unevaluated)" do
       @obj.get(["Date", "Time"]).should == [
-        "= original_data.Date",
-        "= original_data.Time",
+        "= date(original_data.Date)",
+        "= time(concat(original_data.Date, \" \", original_data.Time))",
       ]
     end
 
     it "should return all columns if none specified" do
       @obj.get().should == [
-        "= original_data.Date",
-        "= original_data.Time",
+        "= date(original_data.Date)",
+        "= time(concat(original_data.Date, \" \", original_data.Time))",
         "= original_data.Open",
         "= original_data.High",
         "= original_data.Low",
         "= original_data.Close",
-        "= original_data.Volume",
-        "= multiply(original_data.NumberOfTrades, 2)",
-        "= original_data.BidVolume",
-        "= original_data.AskVolume",
+        "= to_number(original_data.Volume)",
+        "= multiply(to_number(original_data.NumberOfTrades), 2)",
+        "= to_number(original_data.BidVolume)",
+        "= to_number(original_data.AskVolume)",
       ]
     end
 
     it "should be able to evaluate two columns" do
       @obj.filter("Time", "Volume").should == [
-        [ "0:00:00", 653, ],
-        [ "0:05:00", 4, ],
-        [ "0:10:00", 404, ],
-        [ "0:15:00", 1021, ],
-        [ "0:20:00", 521, ],
-        [ "0:25:00", 256, ],
-        [ "0:30:00", 226, ],
-        [ "0:35:00", 938, ],
-        [ "0:40:00", 262 ],
+        [ Time.parse("2019-03-01 0:00:00"), 653, ],
+        [ Time.parse("2019-03-01 0:05:00"), 4, ],
+        [ Time.parse("2019-03-01 0:10:00"), 404, ],
+        [ Time.parse("2019-03-01 0:15:00"), 1021, ],
+        [ Time.parse("2019-03-01 0:20:00"), 521, ],
+        [ Time.parse("2019-03-01 0:25:00"), 256, ],
+        [ Time.parse("2019-03-01 0:30:00"), 226, ],
+        [ Time.parse("2019-03-01 0:35:00"), 938, ],
+        [ Time.parse("2019-03-01 0:40:00"), 262 ],
       ]
     end
 
     it "should be able to evaluate two columns with an index" do
-      @obj.filter(["Time", "Volume"], 1).should == [["0:00:00", 653]]
-      @obj.filter(["Time", "Volume"], 2).should == [["0:05:00", 4]]
+      @obj.filter(["Time", "Volume"], 1).should == [
+        [Time.parse("2019-03-01 0:00:00"), 653]
+      ]
+      @obj.filter(["Time", "Volume"], 2).should == [
+        [Time.parse("2019-03-01 0:05:00"), 4]
+      ]
     end
 
     it "should be able to evaluate two columns with two indexes" do
-      @obj.filter(["Time", "Volume"], [2, 3]).should == [["0:05:00", 4], ["0:10:00", 404]]
+      @obj.filter(["Time", "Volume"], [2, 3]).should == [
+        [Time.parse("2019-03-01 0:05:00"), 4],
+        [Time.parse("2019-03-01 0:10:00"), 404]
+      ]
     end
 
     it "should be able to load all data with read()" do
@@ -148,8 +157,8 @@ describe NewExcel::Map do
 
       first_data_row = result[0]
 
-      first_data_row[0].should be_a_kind_of(Time)
-      first_data_row[1].should == "0:00:00"
+      first_data_row[0].should == Date.parse("2019/03/01")
+      first_data_row[1].should == Time.parse("2019/03/01 0:00:00")
       first_data_row[2].should == "114 16.75/32"
       first_data_row[3].should == "114 17/32"
       first_data_row[4].should == "114 16.75/32"
@@ -219,33 +228,33 @@ a string 123     123.456 2018-01-01 00:00:00 -0800 11:00 2018-01-01 11:00:00 -08
 
       @obj.print.should == <<-STR
 Date
--------------------------
-2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800
+----------
+2019/03/01
+2019/03/01
+2019/03/01
+2019/03/01
+2019/03/01
+2019/03/01
+2019/03/01
+2019/03/01
+2019/03/01
 STR
     end
 
     it "should be able to reference another column directly, which refers to a csv file" do
       @obj = basic_file.get_sheet("direct_indirect_csv_reference")
       @obj.print.should == <<-STR
-DateA                     DateB
-------------------------- -------------------------
-2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
-2019-03-01 00:00:00 -0800 2019-03-01 00:00:00 -0800
+DateA      DateB
+---------- ----------
+2019/03/01 2019/03/01
+2019/03/01 2019/03/01
+2019/03/01 2019/03/01
+2019/03/01 2019/03/01
+2019/03/01 2019/03/01
+2019/03/01 2019/03/01
+2019/03/01 2019/03/01
+2019/03/01 2019/03/01
+2019/03/01 2019/03/01
 STR
     end
   end

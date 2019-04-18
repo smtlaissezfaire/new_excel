@@ -8,44 +8,6 @@ rule
     result = val[1]
   }
 
-  data_file: DATA_FILE csv_file_contents {
-    ref = AST::DataFile.new(val.join)
-    ref.body = val[1]
-    result = ref
-  }
-
-  csv_file_contents: csv_file_body CSV_END_OF_FILE { result = val[0] }
-
-  csv_file_body: csv_file_body csv_row {
-    ref = val[0]
-    ref.add_row(val[1])
-    result = ref
-  } |
-  csv_row {
-   ref = AST::DataBody.new(val.join)
-   ref.add_row(val[0])
-   result = ref
- }
-
-  csv_row: csv_cells CSV_END_OF_ROW { result = val[0] }
-
-  csv_cells: csv_cells csv_cell {
-    ref = val[0]
-    ref.add_cell(val[1])
-    result = ref
-  } |
-  csv_cell {
-    ref = AST::DataRow.new(val.join)
-    ref.add_cell(val[0])
-    result = ref
-  }
-
-  csv_cell: any_primitive_type {
-    ref = AST::DataCell.new(val.join)
-    ref.cell_value = val[0]
-    result = ref
-  }
-
   key_value_pairs: key_value_pairs key_value_pair {
     ref = val[0]
     ref.add_pair(val[1])

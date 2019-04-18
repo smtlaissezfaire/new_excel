@@ -6,6 +6,7 @@ module NewExcel
 
         content = "Map!\n#{raw_content}"
         @ast = parser.parse(content)
+
         @ast.columns.map { |col| col.to_s }.each do |column_name|
           if @column_names.include?(column_name)
             raise "Duplicate column name: #{column_name.inspect}"

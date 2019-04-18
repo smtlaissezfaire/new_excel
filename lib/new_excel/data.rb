@@ -4,7 +4,10 @@ module NewExcel
       return if @parsed
 
       set_process_state do
-        @ast = parser.parse("DataFile!\n" + raw_content)
+        @csv = CSV.parse(raw_content)
+
+        @ast = AST::DataFile.new(@sheet_file_path)
+        @ast.body = @csv
 
         @column_names = @ast.column_names
 

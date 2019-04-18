@@ -223,5 +223,21 @@ module NewExcel
         yield args
       end
     end
+
+    def date(strs)
+      list_map(strs) do |list|
+        list.map do |str|
+          Date.parse(str)
+        end
+      end
+    end
+
+    def time(strs)
+      list_map(strs) do |list|
+        list.map do |str|
+          Time.parse(str)
+        end
+      end
+    end
   end
 end
