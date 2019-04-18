@@ -215,7 +215,7 @@ describe NewExcel::Map do
     it "should print" do
       @obj = basic_file.get_sheet("simple_text")
 
-      @obj.print.should == <<-STR
+      @obj.for_printing.should == <<-STR
 String   Integer Float   Date                      Time  DateTime
 -------- ------- ------- ------------------------- ----- -------------------------
 a string 123     123.456 2018-01-01 00:00:00 -0800 11:00 2018-01-01 11:00:00 -0800
@@ -226,7 +226,7 @@ a string 123     123.456 2018-01-01 00:00:00 -0800 11:00 2018-01-01 11:00:00 -08
     it "should print a referenced map correctly" do
       @obj = basic_file.get_sheet("one_column_map")
 
-      @obj.print.should == <<-STR
+      @obj.for_printing.should == <<-STR
 Date
 ----------
 2019/03/01
@@ -243,7 +243,7 @@ STR
 
     it "should be able to reference another column directly, which refers to a csv file" do
       @obj = basic_file.get_sheet("direct_indirect_csv_reference")
-      @obj.print.should == <<-STR
+      @obj.for_printing.should == <<-STR
 DateA      DateB
 ---------- ----------
 2019/03/01 2019/03/01

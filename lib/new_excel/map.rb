@@ -31,7 +31,7 @@ module NewExcel
         # raise "Column #{column_name.inspect} not found!" if !@values.has_key?(column_name)
         # @values[column_name]
 
-        @ast.get_column(column_name).hash_value.print
+        @ast.get_column(column_name).hash_value.for_printing
       end
     end
   end

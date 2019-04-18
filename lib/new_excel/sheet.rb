@@ -78,7 +78,11 @@ module NewExcel
       filter(column).map(&:first)
     end
 
-    def print(*args)
+    def print
+      Kernel.print for_printing
+    end
+
+    def for_printing(*args)
       all_values = filter(*args)
 
       width_per_column = []

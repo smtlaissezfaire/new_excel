@@ -113,7 +113,7 @@ describe NewExcel::Data do
     it "should print" do
       @obj = basic_file.get_sheet("rows_for_printing")
 
-      @obj.print.should == <<-CODE
+      @obj.for_printing.should == <<-CODE
 One       Two        Three Four Five
 --------- ---------- ---------------------
 123123131 1          something really long

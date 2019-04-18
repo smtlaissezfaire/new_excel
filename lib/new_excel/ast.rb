@@ -13,7 +13,7 @@ module NewExcel
         raise NotImplementedError, "must implement value in base classes"
       end
 
-      def print
+      def for_printing
         string
       end
 
@@ -213,9 +213,9 @@ module NewExcel
         body_values
       end
 
-      def print
+      def for_printing
         @key_value_pairs.map do |kv_pair|
-          kv_pair.print
+          kv_pair.for_printing
         end.join("\n")
       end
     end
@@ -245,7 +245,7 @@ module NewExcel
 
       memoize :pair_value
 
-      def print
+      def for_printing
         "#{hash_key}:\n#{hash_value}"
       end
     end
@@ -257,8 +257,8 @@ module NewExcel
         body.value
       end
 
-      def print
-        "= #{body.print}"
+      def for_printing
+        "= #{body.for_printing}"
       end
     end
 
@@ -276,8 +276,8 @@ module NewExcel
         end
       end
 
-      def print
-        "#{name}(#{arguments.map(&:print).join(", ")})"
+      def for_printing
+        "#{name}(#{arguments.map(&:for_printing).join(", ")})"
       end
     end
 
@@ -298,7 +298,7 @@ module NewExcel
         sheet.get_column(cell_name)
       end
 
-      def print
+      def for_printing
         "#{sheet_name}.#{cell_name}"
       end
     end
