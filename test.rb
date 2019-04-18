@@ -7,7 +7,7 @@ require 'byebug'
 include NewExcel
 extend NewExcel::Console
 
-ProcessState.debug = true
+ProcessState.debug = false
 
 file = NewExcel::File.new("./spec/fixtures/file.ne")
 
@@ -40,7 +40,7 @@ file = NewExcel::File.new("./spec/fixtures/file.ne")
 
 file = NewExcel::File.new("./file.ne")
 
-ProcessState.max_rows_to_load = 50
+ProcessState.max_rows_to_load = 1000
 
 # sheet = file.get_sheet('zf_mapped_data')
 # # pp sheet.read
