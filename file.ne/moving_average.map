@@ -1,0 +1,18 @@
+
+Value:
+  = value(ZCTest.Last)
+
+Count:
+  = count(Value)
+
+Sum:
+  = sum(Value)
+
+Running Sum:
+  = sum(each(Value))
+
+MA2:
+  = average(lookback(each(Value), 50))
+
+AddTwo:
+  = sum(each(Value), each(Value))

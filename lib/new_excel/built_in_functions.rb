@@ -7,8 +7,11 @@ module NewExcel
       Evaluator.evaluate(self, "= #{str}")
     end
 
+    # TODO: need to figure out the right way to do these things...
     def add(*list)
-      inject(*list, &:+)
+      list_map(make_list(list)) do |l|
+        l.inject(&:+)
+      end
     end
 
     alias_method :sum, :add
@@ -25,6 +28,17 @@ module NewExcel
       inject(num, denom.to_f, &:/)
     rescue ZeroDivisionError
       "DIV!"
+    end
+
+    def count(nums)
+      list_map(nums) do |nums|
+        nums.length
+      end
+    end
+
+    def make_list(list)
+      list = list[0] if list.any? { |l| l.is_a?(Array) }
+      list
     end
 
     def to_number(str)
@@ -98,5 +112,116 @@ module NewExcel
     end
 
     alias_method :c, :column
+
+    def range(*args)
+      ambiguous_map(*args) do |range_start, range_end|
+        (range_start..range_end).to_a
+      end
+    end
+
+    def pick2(list, start=1)
+      index = start
+      list.map do |l|
+        l.slice(0, index).tap do
+          index += 1
+        end
+      end
+    end
+
+    def take(list, count)
+      list_map(list) do |list|
+        list[0..count]
+      end
+    end
+
+    def reverse(list)
+      list_map(list) do |array|
+        array.reverse
+      end
+    end
+
+    def first(list)
+      list_map(list) do |array|
+        array.first
+      end
+    end
+
+    def lookback(list, length)
+      list_map(list) do |list|
+        reverse(take(reverse(list), length))
+      end
+    end
+
+    def compact(list)
+      list_map(list) do |list|
+        list.compact
+      end
+    end
+
+    def last(list)
+      list_map(list) do |list|
+        list.last
+      end
+    end
+
+    def index(list)
+      1.upto(list.length).to_a
+    end
+
+    def slice(list, nums)
+      nums = [nums] * list.length if nums.is_a?(Integer)
+
+      i = 0
+
+      list.map do |l|
+        if nums[i]
+          list.slice(0, nums[i]).tap do
+            i += 1
+          end
+        end
+      end
+    end
+
+    def average(*args)
+      if args[0].is_a?(Array)
+        list = args[0]
+      else
+        list = args
+      end
+
+      if list.any? { |x| x.is_a?(Array) }
+        list.map do |list|
+          average(list)
+        end
+      else
+        list = list.compact
+
+        begin
+          divide(sum(list), count(list))
+        rescue => e
+          nil
+        end
+      end
+    end
+
+    def upto(list, offset=0)
+      slice(list, index(list).map { |x| x + offset})
+    end
+
+    alias_method :each, :upto
+
+    def current(list)
+      upto(list)
+    end
+
+    def list_map(args, &block)
+      if args.any? { |n| n.is_a?(Array) }
+        args.map do |inner_args|
+          yield inner_args
+        end
+      else
+        yield args
+      end
+    end
   end
 end

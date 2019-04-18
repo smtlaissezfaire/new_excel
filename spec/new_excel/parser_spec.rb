@@ -57,7 +57,7 @@ describe NewExcel::Parser do
     end
 
     it "should be able to evaluate the function" do
-      res = @obj.parse("=add(1, 2)")
+      res = @obj.parse("=add(list(1, 2))")
       res.value.should == 3
     end
 

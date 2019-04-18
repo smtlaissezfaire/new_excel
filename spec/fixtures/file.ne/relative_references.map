@@ -1,0 +1,27 @@
+
+Value:
+  = range(10, 20)
+
+CountAll:
+  = count(Value)
+
+Each:
+  = each(Value)
+
+CountEach:
+  = count(each(Value))
+
+Index:
+  = index(Value)
+
+Sum:
+  = sum(Value)
+
+Lookback5:
+  = lookback(each(Value), 5)
+
+RunningSum:
+  = sum(each(Value))
+
+Five Period MA:
+  = average(lookback(each(Value), 5))

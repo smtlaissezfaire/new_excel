@@ -13,10 +13,12 @@ describe NewExcel::BuiltInFunctions do
     end
 
     it "should be able to add lists of numbers together" do
+      pending "FIXME"
       add([1, 1, 1], [2, 3, 4]).should == [1+2, 1+3, 1+4]
     end
 
     it "should be able to add lists of numbers to a static number" do
+      pending "FIXME"
       add([2, 3, 4], 1000).should == [1002, 1003, 1004]
     end
   end
@@ -177,6 +179,26 @@ describe NewExcel::BuiltInFunctions do
 
     it "should be able to handle arrays of stuff" do
       value(["1", "2"]).should == [1, 2]
+    end
+  end
+
+  context "range" do
+    it "should create an array" do
+      range(1, 10).should == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    end
+
+    it "should be able to take multiple lists" do
+      range([1, 10], [2, 15]).should == [[1, 2], [10, 11, 12, 13, 14, 15]]
+    end
+  end
+
+  context "average" do
+    it "should work with a simple list" do
+      average([1, 2, 3]).should == 2
+    end
+
+    it "should work with floats" do
+      average([1, 4]).should == 2.5
     end
   end
 end

@@ -9,15 +9,13 @@ extend NewExcel::Console
 
 ProcessState.debug = true
 
-# debugger
-
 file = NewExcel::File.new("./spec/fixtures/file.ne")
 
-sheet = file.get_sheet('simple_text')
-puts sheet.print
+# sheet = file.get_sheet('simple_text')
+# puts sheet.print
 
-s = sheet "spec/fixtures/file.ne/map.map";
-print s.print
+# s = sheet "spec/fixtures/file.ne/map.map";
+# print s.print
 
 # puts ""
 #
@@ -33,21 +31,24 @@ print s.print
 #
 # sheet = file.get_sheet('two_column_map')
 # puts sheet.print
-
+#
 # sheet = file.get_sheet("relative_references")
 # puts sheet.print
 
 
 ###################################################
 
-# file = NewExcel::File.new("./file.ne")
-#
-# ProcessState.max_rows_to_load = 10000
-#
-# # sheet = file.get_sheet('zf_mapped_data')
-# # # pp sheet.read
-# # puts sheet.print
-#
+file = NewExcel::File.new("./file.ne")
+
+ProcessState.max_rows_to_load = 50
+
+# sheet = file.get_sheet('zf_mapped_data')
+# # pp sheet.read
+# puts sheet.print
+
 # sheet = file.get_sheet("ZCTest2")
 #
 # puts sheet.print
+
+sheet = file.get_sheet("moving_average")
+print sheet.print
