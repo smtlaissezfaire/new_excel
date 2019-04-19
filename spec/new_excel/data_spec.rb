@@ -114,10 +114,10 @@ describe NewExcel::Data do
       @obj = basic_file.get_sheet("rows_for_printing")
 
       @obj.for_printing.should == <<-CODE
-One       Two        Three Four Five
---------- ---------- ---------------------
-123123131 1          something really long
-12        here there here there
+  One         Two          Three Four Five
+ ----------- ------------ -----------------------
+  123123131   1            something really long
+  12          here there   here there
 CODE
     end
   end

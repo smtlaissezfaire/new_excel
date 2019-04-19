@@ -12,6 +12,8 @@ gem 'racc'
 gem 'fakefs'
 gem 'ruby-progressbar'
 gem 'memoist'
+gem 'terminal-table'
+gem 'colored'
 
 #
 # # Specify your gem's dependencies in new_excel.gemspec

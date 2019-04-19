@@ -7,12 +7,16 @@ module NewExcel
         self.current_sheet = nil
         self.max_rows_to_load = nil
         self.debug = false
+        self.strict_error_mode = false
+        self.use_colors = true
       end
 
       attr_accessor :current_file_path
       attr_accessor :current_sheet
       attr_accessor :max_rows_to_load
       attr_accessor :debug
+      attr_accessor :strict_error_mode
+      attr_accessor :use_colors
 
       def current_file
         if current_file_path

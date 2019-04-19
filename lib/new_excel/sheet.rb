@@ -85,64 +85,24 @@ module NewExcel
     def for_printing(*args)
       all_values = filter(*args)
 
-      width_per_column = []
+      column_names_for_display = column_names
 
-      str = ""
-
-      column_names.each_with_index do |column_name, index|
-        max_length = column_name.length
-
-        lengths = all_values.map do |row|
-          row[index].to_s.length
-        end
-        max_body_length = lengths.max
-
-        max_length = max_body_length if max_body_length > max_length
-
-        width_per_column << max_length + 1
+      if ProcessState.use_colors
+        column_names_for_display = column_names.map(&:blue).map(&:bold)
       end
 
-      last_index = width_per_column.length - 1
+      str = ::Terminal::Table.new({
+        style: {
+          border_top: false,
+          border_bottom: false,
+          border_y: ' ',
+          border_i: ' ',
+        },
+        headings: column_names_for_display,
+        rows: all_values,
+      }).to_s
 
-      column_names.each_with_index do |column_name, index|
-        length = width_per_column[index]
-        to_print = column_name.strip
-
-        if index == last_index
-          str << to_print
-        else
-          str << "%-#{length}s" % to_print
-        end
-      end
-      str << "\n"
-
-      column_names.each_with_index do |column_name, index|
-        length = width_per_column[index]
-        to_print = ("-" * (length - 1))
-
-        if index == last_index
-          str << to_print
-        else
-          str << "%-#{length}s" % to_print
-        end
-      end
-      str << "\n"
-
-      all_values.each do |row|
-        row.each_with_index do |cell, index|
-          to_print = cell.to_s.strip
-
-          if index == last_index
-            str << to_print
-          else
-            length = width_per_column[index]
-            str << "%-#{length}s" % to_print
-          end
-        end
-        str << "\n"
-      end
-
-      str
+      str + "\n"
     end
 
   private

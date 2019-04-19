@@ -1,12 +1,15 @@
 require "new_excel/version"
 
 require 'strscan'
+require 'date'
 require 'time'
 require 'chronic'
 require 'csv'
 require 'racc'
 require 'ruby-progressbar'
 require 'memoist'
+require 'terminal-table'
+require 'colored'
 
 require "new_excel/process_state"
 require "new_excel/event"

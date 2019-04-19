@@ -27,5 +27,7 @@ RSpec.configure do |config|
 
   config.before do
     NewExcel::ProcessState.reset!
+    NewExcel::ProcessState.use_colors = false
+    NewExcel::ProcessState.strict_error_mode = true
   end
 end

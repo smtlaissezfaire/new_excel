@@ -48,7 +48,7 @@ module NewExcel
 
       if str.is_a?(Numeric)
         str
-      elsif str.include?(".")
+      elsif str.is_a?(String) && str.include?(".")
         str.to_f
       else
         str.to_i

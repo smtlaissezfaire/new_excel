@@ -19,7 +19,6 @@ module NewExcel
 
       def debug(msg)
         return unless debug?
-        require 'date'
         puts "DEBUG #{Time.now.strftime("%Y-%m-%d-%H:%M:%S")}: #{msg}"
       end
 
@@ -29,6 +28,28 @@ module NewExcel
 
       def debug?
         ProcessState.debug
+      end
+
+    private
+
+      def catching_errors(&block)
+        yield
+      rescue => e
+        if ProcessState.strict_error_mode
+          raise e
+        else
+          error_string = "!?ERROR"
+          error_string = error_string.red if ProcessState.use_colors
+
+          msg = ["#{error_string}: #{e.class}: #{e.message}\n"]
+          msg << e.backtrace[0]
+          msg.flatten!
+
+          message_split = msg.join("\n").scan(/.{1,60}/)
+          msg = message_split.join("\n")
+
+          [msg]
+        end
       end
     end
 
@@ -171,12 +192,12 @@ module NewExcel
 
         # get their values
         values_by_column = kv_pairs.map do |kv_pair|
-          val = kv_pairs_cache[kv_pair.hash_key]
-          val ||= kv_pair.pair_value
+          val = catching_errors do
+            val = kv_pairs_cache[kv_pair.hash_key]
+            val ||= kv_pair.pair_value
 
-          kv_pairs_cache[kv_pair.hash_key] ||= val
-
-          val
+            kv_pairs_cache[kv_pair.hash_key] ||= val
+          end
         end
 
         Event.fire(Event::DEBUG_MAP, self, values_by_column, kv_pairs)
