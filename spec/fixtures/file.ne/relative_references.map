@@ -5,11 +5,14 @@ Value:
 CountAll:
   = count(Value)
 
+Count2:
+  = count(1, 2, 100)
+
 Each:
   = each(Value)
 
 CountEach:
-  = count(each(Value))
+  = map("count", each(Value))
 
 Index:
   = index(Value)
@@ -19,9 +22,11 @@ Sum:
 
 Lookback5:
   = lookback(each(Value), 5)
+  # = reverse(take(reverse(each(Value)), 5))
+  # = each(lookback(each(Value), 5))
 
 RunningSum:
-  = sum(each(Value))
+  = map("sum", each(Value))
 
 Five Period MA:
-  = average(lookback(each(Value), 5))
+  = map("average", Lookback5)

@@ -9,9 +9,7 @@ module NewExcel
 
     # TODO: need to figure out the right way to do these things...
     def add(*list)
-      list_map(make_list(list)) do |l|
-        l.inject(&:+)
-      end
+      list.flatten.inject(&:+)
     end
 
     alias_method :sum, :add
@@ -30,11 +28,11 @@ module NewExcel
       "DIV!"
     end
 
-    def count(nums)
-      list_map(nums) do |nums|
-        nums.length
-      end
+    def count(*args)
+      args.flatten.length
     end
+
+    alias_method :length, :count
 
     def make_list(list)
       list = list[0] if list.any? { |l| l.is_a?(Array) }
@@ -147,9 +145,7 @@ module NewExcel
     end
 
     def lookback(list, length)
-      list_map(list) do |list|
-        reverse(take(reverse(list), length))
-      end
+      reverse(take(reverse(list), length))
     end
 
     def compact(list)
@@ -182,26 +178,31 @@ module NewExcel
       end
     end
 
+    # def average(*args)
+    #   if args[0].is_a?(Array)
+    #     list = args[0]
+    #   else
+    #     list = args
+    #   end
+    #
+    #   if list.any? { |x| x.is_a?(Array) }
+    #     list.map do |list|
+    #       average(list)
+    #     end
+    #   else
+    #     list = list.compact
+    #
+    #     begin
+    #       divide(sum(list), count(list))
+    #     rescue => e
+    #       nil
+    #     end
+    #   end
+    # end
+
     def average(*args)
-      if args[0].is_a?(Array)
-        list = args[0]
-      else
-        list = args
-      end
 
-      if list.any? { |x| x.is_a?(Array) }
-        list.map do |list|
-          average(list)
-        end
-      else
-        list = list.compact
-
-        begin
-          divide(sum(list), count(list))
-        rescue => e
-          nil
-        end
-      end
+      divide(sum(*args), length(*args))
     end
 
     def upto(list, offset=0)
@@ -238,6 +239,22 @@ module NewExcel
           Time.parse(str)
         end
       end
+    end
+
+    def map(fn, *lists)
+      return [] if lists.empty?
+      values = []
+
+      lists[0].each_with_index do |_, index|
+        indexed_items = lists.map { |l| l[index] }
+        values << method(fn).call(*indexed_items)
+      end
+
+      values
+    end
+
+    def apply(fn, arguments)
+      method(fn).call(*arguments)
     end
   end
 end

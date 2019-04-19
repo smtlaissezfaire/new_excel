@@ -297,6 +297,8 @@ module NewExcel
         end
       end
 
+      memoize :value
+
       def for_printing
         "#{name}(#{arguments.map(&:for_printing).join(", ")})"
       end

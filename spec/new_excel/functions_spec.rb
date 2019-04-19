@@ -12,14 +12,8 @@ describe NewExcel::BuiltInFunctions do
       add(1, 2, 3).should == 1 + 2 + 3
     end
 
-    it "should be able to add lists of numbers together" do
-      pending "FIXME"
-      add([1, 1, 1], [2, 3, 4]).should == [1+2, 1+3, 1+4]
-    end
-
-    it "should be able to add lists of numbers to a static number" do
-      pending "FIXME"
-      add([2, 3, 4], 1000).should == [1002, 1003, 1004]
+    it "should be able to add a list of numbers" do
+      add([1, 2, 3]).should == 1 + 2 + 3
     end
   end
 
@@ -194,11 +188,31 @@ describe NewExcel::BuiltInFunctions do
 
   context "average" do
     it "should work with a simple list" do
-      average([1, 2, 3]).should == 2
+      average(1, 2, 3).should == 2
     end
 
     it "should work with floats" do
-      average([1, 4]).should == 2.5
+      average(1, 4).should == 2.5
+    end
+  end
+
+  context "map" do
+    it "should work with a function and two lists" do
+      map("add", [1, 2, 3], [4, 5, 6]).should == [1+4, 2+5, 3+6]
+    end
+
+    it "should work with three lists" do
+      map("add", [1, 2, 3], [4, 5, 6], [7, 8, 9]).should == [1+4+7, 2+5+8, 3+6+9]
+    end
+
+    it "should work with just one list" do
+      map("add", [1, 2, 3]).should == [1, 2, 3]
+    end
+  end
+
+  context "apply" do
+    it "should be able to apply a function to a list" do
+      apply("add", [1, 2, 3]).should == 1+2+3
     end
   end
 end

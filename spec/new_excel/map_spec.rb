@@ -190,7 +190,6 @@ describe NewExcel::Map do
     end
 
     it "should be able to evaluate one formula after another" do
-      pending "FIXME"
       @obj.filter("Plus with Minus").should == [[100 + 25 - 1]]
     end
 
