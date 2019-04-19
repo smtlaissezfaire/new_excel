@@ -4,8 +4,11 @@ $LOAD_PATH << "./lib"
 
 require "bundler/setup"
 require "new_excel"
+require 'byebug'
 
 extend NewExcel::Console
+
+NewExcel::ProcessState.strict_error_mode = false
 
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
@@ -14,5 +17,19 @@ extend NewExcel::Console
 # require "pry"
 # Pry.start
 
-require "irb"
-IRB.start(__FILE__)
+# require "irb"
+# IRB.start(__FILE__)
+
+@obj = NewExcel::Parser.new
+
+# TODO: store keys in map / reuse map
+
+print "ne>: "
+
+ARGF.each_line do |line|
+  parse = @obj.parse(line)
+  value = parse.value
+
+  puts value
+  print "ne>>: "
+end
