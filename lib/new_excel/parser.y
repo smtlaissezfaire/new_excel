@@ -2,7 +2,7 @@ class NewExcel::Parser
 rule
   root: file | cell_contents
 
-  file: map_file | data_file
+  file: map_file
 
   map_file: MAP key_value_pairs {
     result = val[1]
