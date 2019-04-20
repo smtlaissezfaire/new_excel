@@ -215,4 +215,19 @@ describe NewExcel::BuiltInFunctions do
       apply("add", [1, 2, 3]).should == 1+2+3
     end
   end
+
+  context "index" do
+    it "should be able to get an index of a list" do
+      index([10, 20, 30]).should == [1, 2, 3]
+      index([1, 2]).should == [1,2]
+    end
+
+    it "should be able to indexes based on bounds" do
+      index(range(10, 50), 1, 2).should == [10, 11]
+    end
+
+    it "should be able to indexes everything up until current index" do
+      index(range(10, 50), nil, 3).should == [10, 11, 12]
+    end
+  end
 end

@@ -160,8 +160,13 @@ module NewExcel
       end
     end
 
-    def index(list)
-      1.upto(list.length).to_a
+    def index(list, val1=nil, val2=nil)
+      if val1 || val2
+        val1 ||= 1
+        list[val1-1..val2-1]
+      else
+        1.upto(list.length).to_a
+      end
     end
 
     def slice(list, nums)
@@ -201,7 +206,6 @@ module NewExcel
     # end
 
     def average(*args)
-
       divide(sum(*args), length(*args))
     end
 
