@@ -20,6 +20,24 @@ Index:
 Sum:
   = sum(Value)
 
+Running Sum:
+  = map("sum", Each)
+
+Running Avg:
+  = map("average", each(Value))
+
+Indexes:
+  = subtract(index(Value), 5)
+
+Test:
+  = index(Value, 1, Indexes)
+
+# Running Values:
+#   = index(Value, 1, Indexes)
+
+Lookback:
+  = index(each(Value), 1, 5)
+
 Lookback5:
   = lookback(each(Value), 5)
   # = reverse(take(reverse(each(Value)), 5))

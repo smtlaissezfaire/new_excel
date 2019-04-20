@@ -213,7 +213,17 @@ module NewExcel
       slice(list, index(list).map { |x| x + offset})
     end
 
-    alias_method :each, :upto
+    # alias_method :each, :upto
+
+    def each(list)
+      vals = []
+
+      list.each_with_index do |_, index|
+        vals << index(list, 1, index + 1)
+      end
+
+      vals
+    end
 
     def current(list)
       upto(list)
@@ -251,7 +261,7 @@ module NewExcel
 
       lists[0].each_with_index do |_, index|
         indexed_items = lists.map { |l| l[index] }
-        values << method(fn).call(*indexed_items)
+        values << call(fn, indexed_items)
       end
 
       values
@@ -259,6 +269,10 @@ module NewExcel
 
     def apply(fn, arguments)
       method(fn).call(*arguments)
+    end
+
+    def call(fn, arguments)
+      method(fn).call(arguments)
     end
   end
 end

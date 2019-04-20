@@ -230,4 +230,37 @@ describe NewExcel::BuiltInFunctions do
       index(range(10, 50), nil, 3).should == [10, 11, 12]
     end
   end
+
+  context "each" do
+    it "should yield a list of lists" do
+      each([10, 20, 30]).should == [
+        [10],
+        [10, 20],
+        [10, 20, 30],
+      ]
+    end
+
+    it "should be able to sum the first result of an each call" do
+      each_call = each([10, 20, 30])
+
+      first_val = each_call.first
+      first_val.should == [10]
+
+      second_val = each_call[1]
+      second_val.should == [10, 20]
+
+      sum(first_val).should == 10
+      sum(second_val).should == 10+20
+    end
+
+    it "should be able to map the sums of an each call" do
+      each_call = each([10, 20, 30])
+
+      map("sum", each_call).should == [
+        10,
+        10+20,
+        10+20+30,
+      ]
+    end
+  end
 end
