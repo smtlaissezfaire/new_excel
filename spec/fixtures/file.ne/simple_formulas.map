@@ -1,7 +1,7 @@
 Range:
   = subtract(value(simple_high_low.high), value(simple_high_low.low))
 Plus:
-  = add(simple_high_low.high, simple_high_low.low)
+  = add(value(simple_high_low.high), value(simple_high_low.low))
 Plus with Primitive:
   = add(1, 1)
 Plus with Minus:

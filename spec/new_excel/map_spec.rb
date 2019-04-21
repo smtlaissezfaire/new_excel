@@ -180,7 +180,6 @@ describe NewExcel::Map do
     end
 
     it "should be able to evaluate a simple plus formula" do
-      pending "FIXME"
       @obj.filter("Plus").should == [[100 + 25]]
     end
 
