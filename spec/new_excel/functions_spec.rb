@@ -351,7 +351,7 @@ describe NewExcel::BuiltInFunctions do
     end
 
     it "should be false for 2 > 2" do
-      gte(2, 2).should == false
+      gt(2, 2).should == false
     end
 
     it "should work with lists" do
