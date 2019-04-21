@@ -436,6 +436,24 @@ describe NewExcel::BuiltInFunctions do
     end
   end
 
+  context "lte" do
+    it "should be false for 5 < 2" do
+      lte(5, 2).should == false
+    end
+
+    it "should be true for 2 > 5" do
+      lte(2, 5).should == true
+    end
+
+    it "should be true for 2 < 2" do
+      lte(2, 2).should == true
+    end
+
+    it "should work with lists" do
+      lte([12, 5], [1, 17]).should == [false, true]
+    end
+  end
+
   context "if" do
     it "should return the first value if true" do
       self.send("if", true, 1, 2).should == 1
@@ -447,6 +465,29 @@ describe NewExcel::BuiltInFunctions do
 
     it "should work with lists" do
       self.send("if", [true, false], [1, 2], [3, 4]).should == [1, 4]
+    end
+  end
+
+  context "and" do
+    it "should be true if both arguments are true" do
+      self.send(:and, true, true).should == true
+    end
+
+    it "should be false if any arguments are false" do
+      self.send(:and, true, false).should == false
+      self.send(:and, false, false).should == false
+    end
+
+    it "should take multiple arguments" do
+      self.send(:and, true, true, true).should == true
+      self.send(:and, true, false, true).should == false
+      self.send(:and, false, false, true).should == false
+    end
+
+    it "should take lists of arguments" do
+      self.send(:and, [true, true, true], [true, false, false]).should == [true, false, false]
+      self.send(:and, [true, false, true], [true, false, false]).should == [true, false, false]
+      self.send(:and, [false, false, true], [true, false, false]).should == [false, false, false]
     end
   end
 end

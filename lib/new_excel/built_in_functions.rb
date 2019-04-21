@@ -241,6 +241,12 @@ module NewExcel
       end
     end
 
+    def and(*list)
+      zipped_lists(list) do |list|
+        list.inject { |v1, v2| v1 && v2 }
+      end
+    end
+
     def gt(*list)
       zipped_lists(list) do |val1, val2|
         begin
@@ -253,6 +259,12 @@ module NewExcel
     def gte(*list)
       zipped_lists(list) do |val1, val2|
         val1 >= val2
+      end
+    end
+
+    def lte(*list)
+      zipped_lists(list) do |val1, val2|
+        val1 <= val2
       end
     end
 

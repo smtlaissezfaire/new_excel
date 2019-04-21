@@ -10,6 +10,30 @@ low: = zf_mapped_data.Low
 close: = zf_mapped_data.Close
 
 min_current: = min(open, high, low, close)
+max_current: = max(open, high, low, close)
 
 L14:
   = map("min", lookback(each(min_current), 13))
+
+H14:
+  = map("max", lookback(each(max_current), 13))
+
+PercentK:
+  = multiply(100,
+             divide(subtract(close, L14),
+                    subtract(H14, L14)))
+
+PercentD:
+  = map("average", lookback(each(PercentK), 2))
+
+Overbought:
+  = and(gte(PercentK, 80),
+        gte(PercentD, 80))
+
+Oversold:
+  = and(lte(PercentK, 20),
+        lte(PercentD, 20))
+
+Signal:
+  = if (Overbought, "Overbought",
+        if(Oversold, "Oversold"))
