@@ -20,103 +20,106 @@
 # AskVolume:
 #   = zf_original_data.AskVolume
 
-Open Whole:
-  = left(c("Original Open"),
-         search(" ", c("Original Open"), 1))
-Original Open:
+OriginalOpen:
   = zf_original_data.Open
-Open Denominator:
-  = right(c("Original Open"), 2)
-Open Numerator:
-  = mid(c("Original Open"),
-        add(search(" ", c("Original Open"), 1), 1),
+
+OpenWhole:
+  = left(OriginalOpen,
+         search(" ", OriginalOpen, 1))
+
+OpenDenominator:
+  = right(OriginalOpen, 2)
+
+OpenNumerator:
+  = mid(OriginalOpen,
+        add(search(" ", OriginalOpen, 1), 1),
         subtract(search("/",
-                        c("Original Open"),
+                        OriginalOpen,
                         1),
                  search(" ",
-                        c("Original Open"),
+                        OriginalOpen,
                         1),
                  2))
 Open:
-  = add(value(c("Open Whole")),
-        divide(value(c("Open Numerator")), value(c("Open Denominator"))))
+  = add(value(OpenWhole),
+        divide(value(OpenNumerator), value(OpenDenominator)))
 
 
-#################################
-
-
-Close Whole:
-  = left(c("Original Close"),
-         search(" ", c("Original Close"), 1))
-Original Close:
-  = zf_original_data.Close
-Close Denominator:
-  = right(c("Original Close"), 2)
-Close Numerator:
-  = mid(c("Original Close"),
-        add(search(" ", c("Original Close"), 1), 1),
-        subtract(search("/",
-                        c("Original Close"),
-                        1),
-                 search(" ",
-                        c("Original Close"),
-                        1),
-                 2))
-Close:
-  = add(value(c("Close Whole")),
-        divide(value(c("Close Numerator")), value(c("Close Denominator"))))
-
-High Whole:
-  = left(c("Original High"),
-         search(" ", c("Original High"), 1))
-Original High:
-  = zf_original_data.High
-High Denominator:
-  = right(c("Original High"), 2)
-High Numerator:
-  = mid(c("Original High"),
-        add(search(" ", c("Original High"), 1), 1),
-        subtract(search("/",
-                        c("Original High"),
-                        1),
-                 search(" ",
-                        c("Original High"),
-                        1),
-                 2))
-High:
-  = add(value(c("High Whole")),
-        divide(value(c("High Numerator")), value(c("High Denominator"))))
-
-
-Low Whole:
-  = left(c("Original Low"),
-         search(" ", c("Original Low"), 1))
-Original Low:
-  = zf_original_data.Low
-Low Denominator:
-  = right(c("Original Low"), 2)
-Low Numerator:
-  = mid(c("Original Low"),
-        add(search(" ", c("Original Low"), 1), 1),
-        subtract(search("/",
-                        c("Original Low"),
-                        1),
-                 search(" ",
-                        c("Original Low"),
-                        1),
-                 2))
-Low:
-  = add(value(c("Low Whole")),
-        divide(value(c("Low Numerator")), value(c("Low Denominator"))))
-
-
-
-
-# Open Whole:
-#   =value(left($C2, search(" ", $C2, 1)))
-# Open Numerator:
-#   =value(mid($C2, search(" ", $C2, 1)+1, search("/", $C2, 1)-search(" ", $C2, 1)-1))
-# Open Denominator:
-#   =value(RIGHT($C2, 2))
-# Original Open:
-#   =add(Open Whole, subtract)
+# #################################
+#
+#
+# Close Whole:
+#   = left(c("Original Close"),
+#          search(" ", c("Original Close"), 1))
+# Original Close:
+#   = zf_original_data.Close
+# Close Denominator:
+#   = right(c("Original Close"), 2)
+# Close Numerator:
+#   = mid(c("Original Close"),
+#         add(search(" ", c("Original Close"), 1), 1),
+#         subtract(search("/",
+#                         c("Original Close"),
+#                         1),
+#                  search(" ",
+#                         c("Original Close"),
+#                         1),
+#                  2))
+# Close:
+#   = add(value(c("Close Whole")),
+#         divide(value(c("Close Numerator")), value(c("Close Denominator"))))
+#
+# High Whole:
+#   = left(c("Original High"),
+#          search(" ", c("Original High"), 1))
+# Original High:
+#   = zf_original_data.High
+# High Denominator:
+#   = right(c("Original High"), 2)
+# High Numerator:
+#   = mid(c("Original High"),
+#         add(search(" ", c("Original High"), 1), 1),
+#         subtract(search("/",
+#                         c("Original High"),
+#                         1),
+#                  search(" ",
+#                         c("Original High"),
+#                         1),
+#                  2))
+# High:
+#   = add(value(c("High Whole")),
+#         divide(value(c("High Numerator")), value(c("High Denominator"))))
+#
+#
+# Low Whole:
+#   = left(c("Original Low"),
+#          search(" ", c("Original Low"), 1))
+# Original Low:
+#   = zf_original_data.Low
+# Low Denominator:
+#   = right(c("Original Low"), 2)
+# Low Numerator:
+#   = mid(c("Original Low"),
+#         add(search(" ", c("Original Low"), 1), 1),
+#         subtract(search("/",
+#                         c("Original Low"),
+#                         1),
+#                  search(" ",
+#                         c("Original Low"),
+#                         1),
+#                  2))
+# Low:
+#   = add(value(c("Low Whole")),
+#         divide(value(c("Low Numerator")), value(c("Low Denominator"))))
+#
+#
+#
+#
+# # Open Whole:
+# #   =value(left($C2, search(" ", $C2, 1)))
+# # Open Numerator:
+# #   =value(mid($C2, search(" ", $C2, 1)+1, search("/", $C2, 1)-search(" ", $C2, 1)-1))
+# # Open Denominator:
+# #   =value(RIGHT($C2, 2))
+# # Original Open:
+# #   =add(Open Whole, subtract)

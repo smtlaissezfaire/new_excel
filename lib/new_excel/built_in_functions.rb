@@ -27,8 +27,10 @@ module NewExcel
       end
     end
 
-    def divide(num, denom)
-      num / denom.to_f
+    def divide(*list)
+      zipped_lists(list) do |num, denom|
+        num / denom.to_f
+      end
     end
 
     def count(*args)

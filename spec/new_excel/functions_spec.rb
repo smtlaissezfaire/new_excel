@@ -75,6 +75,10 @@ describe NewExcel::BuiltInFunctions do
     it "should work with decimals" do
       divide(1, 2).should == 0.5
     end
+
+    it "should work with two lists" do
+      divide([10, 20], [10, 30]).should == [1, 2/3.to_f]
+    end
   end
 
   context "evaluate" do
