@@ -212,5 +212,17 @@ module NewExcel
     def call(fn, arguments)
       method(fn).call(arguments)
     end
+
+    def abs(*list)
+      each_item(list) do |item|
+        item.abs
+      end
+    end
+
+    def max(*list)
+      zipped_lists(list) do |list|
+        list.max
+      end
+    end
   end
 end

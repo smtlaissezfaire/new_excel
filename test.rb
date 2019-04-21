@@ -40,10 +40,11 @@ ProcessState.debug = false
 
 file = NewExcel::File.new("./file.ne")
 
-ProcessState.max_rows_to_load = 1000
+ProcessState.max_rows_to_load = 20
 
 # sheet = file.get_sheet('zf_mapped_dates')
-sheet = file.get_sheet('zf_mapped_data')
+# sheet = file.get_sheet('zf_mapped_data')
+sheet = file.get_sheet('adx')
 # pp sheet.read
 puts sheet.for_printing
 

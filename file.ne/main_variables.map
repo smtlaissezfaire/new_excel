@@ -1,0 +1,5 @@
+start_time:
+  = time("10AM") # 8AM our time
+
+end_time:
+  = time("1PM") # 11 AM our time

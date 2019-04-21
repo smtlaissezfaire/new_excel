@@ -3,6 +3,16 @@ module NewExcel
 
   private
 
+    def each_item(list, &block)
+      if list.any? { |x| x.is_a?(Array) }
+        list[0].map do |item|
+          yield item
+        end
+      else
+        yield list[0]
+      end
+    end
+
     def each_list(args, &block)
       if args.any? { |n| n.is_a?(Array) }
         args.map do |inner_args|

@@ -283,4 +283,35 @@ describe NewExcel::BuiltInFunctions do
       ]
     end
   end
+
+  context "abs" do
+    it "should work on simple numbers" do
+      abs(1).should == 1
+      abs(-1).should == 1
+      abs(-12.2342342).should == 12.2342342
+    end
+
+    it "should work on a list of numbers" do
+      abs([1, -1, 10, -10]).should == [1, 1, 10, 10]
+    end
+  end
+
+  context "max" do
+    it "should find the max of two numbers" do
+      max(1, 2).should == 2
+      max(100, 2).should == 100
+    end
+
+    it "should work on a list" do
+      fold("max", [1, 2, 3]).should == 3
+    end
+
+    it "should work on multiple lists" do
+      max(
+        [1, 2, 3],
+        [10, 20, 0.10],
+        [50, 0, 3.11],
+      ).should == [50, 20, 3.11]
+    end
+  end
 end

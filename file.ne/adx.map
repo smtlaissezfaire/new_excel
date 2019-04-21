@@ -1,0 +1,23 @@
+DateTime:
+  = zf_mapped_dates.DateTime
+
+high: = zf_mapped_data.High
+low: = zf_mapped_data.Low
+close: = zf_mapped_data.Close
+previous_close:
+  # = lookback(each(zf_mapped_data.Close), 1)
+  = first(lookback(each(zf_mapped_data.Close), 1))
+
+TR1:
+  = subtract(high, low)
+TR2:
+  = abs(subtract(high, previous_close))
+TR3:
+  = abs(subtract(low, previous_close))
+Tr4:
+  = max(TR1, TR2, TR3)
+
+TrueRange:
+  = max(subtract(high, low),
+        abs(subtract(high, previous_close)),
+        abs(subtract(low, previous_close)))
