@@ -3,19 +3,25 @@ module NewExcel
 
   private
 
-    def inject(*list, &fn)
-      ambiguous_map(*list) do |list|
-        list.inject(&fn)
+    def each_list(args, &block)
+      if args.any? { |n| n.is_a?(Array) }
+        args.map do |inner_args|
+          yield inner_args
+        end
+      else
+        yield args
       end
     end
 
-    def ambiguous_map(*args)
-      res = to_list(*args)
+    def zipped_lists(list, &block)
+      list = to_list(*list)
 
-      if res.is_a?(Array) && res[0].is_a?(Array)
-        res.map { |x| yield x }
+      if list.any? { |list| list.is_a?(Array) }
+        list.map do |l|
+          yield l
+        end
       else
-        yield res
+        yield list
       end
     end
 

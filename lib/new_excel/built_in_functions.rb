@@ -7,9 +7,8 @@ module NewExcel
       Evaluator.evaluate(self, "= #{str}")
     end
 
-    # TODO: need to figure out the right way to do these things...
     def add(*list)
-      list_map_2(list) do |list|
+      zipped_lists(list) do |list|
         list.inject(&:+)
       end
     end
@@ -17,13 +16,13 @@ module NewExcel
     alias_method :sum, :add
 
     def subtract(*list)
-      list_map_2(list) do |list|
+      zipped_lists(list) do |list|
         list.inject(&:-)
       end
     end
 
     def multiply(*list)
-      list_map_2(list) do |list|
+      zipped_lists(list) do |list|
         list.inject(&:*)
       end
     end
@@ -55,17 +54,17 @@ module NewExcel
     alias_method :value, :to_number
 
     def concat(*args)
-      ambiguous_map(*args, &:join)
+      zipped_lists(args, &:join)
     end
 
     def left(*args)
-      ambiguous_map(*args) do |str, num|
+      zipped_lists(args) do |str, num|
         str[0..num-1]
       end
     end
 
     def mid(*args)
-      ambiguous_map(*args) do |str, starting_at, extract_length|
+      zipped_lists(args) do |str, starting_at, extract_length|
         i1 = starting_at-1
         i2 = i1 + extract_length
 
@@ -74,13 +73,13 @@ module NewExcel
     end
 
     def right(*args)
-      ambiguous_map(*args) do |str, num|
+      zipped_lists(args) do |str, num|
         str[-num..-1]
       end
     end
 
     def search(*args)
-      ambiguous_map(*args) do |search_for, text_to_search, starting_at|
+      zipped_lists(args) do |search_for, text_to_search, starting_at|
         starting_at = 1 if !starting_at
 
         i1 = starting_at-1
@@ -93,7 +92,7 @@ module NewExcel
     end
 
     def join(*args)
-      ambiguous_map(*args) do |*objs|
+      zipped_lists(args) do |*objs|
         objs.flatten.compact.map(&:to_s).join(" ")
       end
     end
@@ -111,34 +110,25 @@ module NewExcel
     alias_method :c, :column
 
     def range(*args)
-      ambiguous_map(*args) do |range_start, range_end|
+      zipped_lists(args) do |range_start, range_end|
         (range_start..range_end).to_a
       end
     end
 
-    def pick2(list, start=1)
-      index = start
-      list.map do |l|
-        l.slice(0, index).tap do
-          index += 1
-        end
-      end
-    end
-
     def take(list, count)
-      list_map(list) do |list|
+      each_list(list) do |list|
         list[0..count]
       end
     end
 
     def reverse(list)
-      list_map(list) do |array|
+      each_list(list) do |array|
         array.reverse
       end
     end
 
     def first(list)
-      list_map(list) do |array|
+      each_list(list) do |array|
         array.first
       end
     end
@@ -148,13 +138,13 @@ module NewExcel
     end
 
     def compact(list)
-      list_map(list) do |list|
+      each_list(list) do |list|
         list.compact
       end
     end
 
     def last(list)
-      list_map(list) do |list|
+      each_list(list) do |list|
         list.last
       end
     end
@@ -168,51 +158,9 @@ module NewExcel
       end
     end
 
-    def slice(list, nums)
-      nums = [nums] * list.length if nums.is_a?(Integer)
-
-      i = 0
-
-      list.map do |l|
-        if nums[i]
-          list.slice(0, nums[i]).tap do
-            i += 1
-          end
-        end
-      end
-    end
-
-    # def average(*args)
-    #   if args[0].is_a?(Array)
-    #     list = args[0]
-    #   else
-    #     list = args
-    #   end
-    #
-    #   if list.any? { |x| x.is_a?(Array) }
-    #     list.map do |list|
-    #       average(list)
-    #     end
-    #   else
-    #     list = list.compact
-    #
-    #     begin
-    #       divide(sum(list), count(list))
-    #     rescue => e
-    #       nil
-    #     end
-    #   end
-    # end
-
     def average(*args)
       divide(sum(*args), length(*args))
     end
-
-    def upto(list, offset=0)
-      slice(list, index(list).map { |x| x + offset})
-    end
-
-    # alias_method :each, :upto
 
     def each(list)
       vals = []
@@ -224,45 +172,8 @@ module NewExcel
       vals
     end
 
-    def current(list)
-      upto(list)
-    end
-
-    def list_map(args, &block)
-      if args.any? { |n| n.is_a?(Array) }
-        args.map do |inner_args|
-          yield inner_args
-        end
-      else
-        yield args
-      end
-    end
-
-    def list_map_2(list, &block)
-      if list.any? { |list| list.is_a?(Array) }
-        longest_list_length = list.map { |l| l.is_a?(Array) ? l.length : 0 }.max
-
-        list = list.map do |sublist|
-          if sublist.is_a?(Array)
-            sublist
-          else
-            [sublist] * longest_list_length
-          end
-        end
-
-        l1 = list.shift
-        l1.zip(*list).map do |list|
-          yield list
-        end
-      elsif list.is_a?(Array)
-        yield list
-      else
-        raise "got here?"
-      end
-    end
-
     def date(strs)
-      list_map(strs) do |list|
+      each_list(strs) do |list|
         list.map do |str|
           Date.parse(str)
         end
@@ -270,7 +181,7 @@ module NewExcel
     end
 
     def time(strs)
-      list_map(strs) do |list|
+      each_list(strs) do |list|
         list.map do |str|
           Time.parse(str)
         end
