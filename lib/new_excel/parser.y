@@ -75,7 +75,7 @@ rule
       result = ref
     }
 
-  primitive_value: quoted_string | datetime | time | integer | float
+  primitive_value: quoted_string | datetime | time | integer | float | boolean
 
   # there must be a better way?
   primitive: primitive any_primitive_type {
@@ -101,7 +101,7 @@ rule
     result = ref
   }
 
-  any_primitive_type: datetime | time | float | integer | id_primitive_fall_through | text
+  any_primitive_type: datetime | time | float | integer | boolean | id_primitive_fall_through | text
 
   quoted_string: QUOTED_STRING { result = AST::QuotedString.new(val[0]) }
   datetime: DATE_TIME { result = AST::DateTime.new(val[0]) }
@@ -110,6 +110,7 @@ rule
   integer: INTEGER { result = AST::PrimitiveInteger.new(val[0]) }
   id_primitive_fall_through: ID { result = AST::UnquotedStringIdFallThrough.new(val[0]) }
   text: TEXT { result = AST::UnquotedString.new(val[0]) }
+  boolean: BOOLEAN { result = AST::Boolean.new(val[0]) }
 end
 
 ---- inner

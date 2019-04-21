@@ -220,6 +220,16 @@ CODE
       res.should be_a_kind_of(NewExcel::AST::FormulaBody)
       res.body.should be_a_kind_of(NewExcel::AST::FunctionCall)
     end
+
+    it "should be able to define a one character key" do
+      str = "X: 1"
+      str = "Map!\n" + str
+
+      res = @obj.parse(str)
+
+      res.should be_a_kind_of(NewExcel::AST::Map)
+      res.columns.should == ["X"]
+    end
   end
 
   context "primitives - evaluating" do
@@ -257,6 +267,14 @@ CODE
 
     it "should to parse numbers that look like numbers, but have no concrete meaning" do
       @obj.parse("114 16.75/32").value.should == "114 16.75/32"
+    end
+
+    it "should parse true as true" do
+      @obj.parse("true").value.should == true
+    end
+
+    it "should parse false as false" do
+      @obj.parse("false").value.should == false
     end
   end
 end

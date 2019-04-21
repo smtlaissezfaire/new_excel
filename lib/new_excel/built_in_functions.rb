@@ -224,5 +224,32 @@ module NewExcel
         list.max
       end
     end
+
+    def eq(*list)
+      zipped_lists(list) do |vals|
+        vals.inject(&:==)
+      end
+    end
+
+    def gt(*list)
+      zipped_lists(list) do |val1, val2|
+        begin
+          val1 > val2
+        rescue => e
+        end
+      end
+    end
+
+    def gte(*list)
+      zipped_lists(list) do |val1, val2|
+        val1 >= val2
+      end
+    end
+
+    def if(*list)
+      zipped_lists(list) do |cond, true_expr, false_expr|
+        cond ? true_expr : false_expr
+      end
+    end
   end
 end

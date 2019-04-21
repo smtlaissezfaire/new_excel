@@ -34,7 +34,7 @@ module NewExcel
             @q << [:MAP, match]
           when comments = tokens_for_comments(scanner)
             # ignore comments for now
-          when match = scanner.scan(/[a-zA-Z][a-zA-Z0-9\_\- ]+\:/)
+          when match = scanner.scan(/[a-zA-Z][a-zA-Z0-9\_\- ]*\:/)
             @q << [:KEY_WITH_COLON, match]
           when match = scanner.scan(/\=/)
             @q << [:EQ, match]
@@ -89,6 +89,10 @@ module NewExcel
         [:FLOAT, match]
       when match = scanner.scan(/\-?\d+/)
         [:INTEGER, match]
+      when match = scanner.scan(/true/)
+        [:BOOLEAN, match]
+      when match = scanner.scan(/false/)
+        [:BOOLEAN, match]
       end
     end
 

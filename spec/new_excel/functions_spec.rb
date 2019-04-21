@@ -314,4 +314,80 @@ describe NewExcel::BuiltInFunctions do
       ).should == [50, 20, 3.11]
     end
   end
+
+  context "eq" do
+    it "should return true if both are boolean true" do
+      eq(true, true).should == true
+    end
+
+    it "should return true if both are boolean false" do
+      eq(false, false).should == true
+    end
+
+    it "should return false if one is true, one is false" do
+      eq(true, false).should == false
+    end
+
+    it "should return false if one is true, one is false" do
+      eq(false, true).should == false
+    end
+
+    it "should work with lists" do
+      eq([1, 2, 3], [1, 3, 2]).should == [true, false, false]
+    end
+
+    it "should work with multiple lists" do
+      eq([1, 2, 3], [1, 3, 2], [0, 1, 1]).should == [false, false, false]
+    end
+  end
+
+  context "gt" do
+    it "should be true for 5 > 2" do
+      gt(5, 2).should == true
+    end
+
+    it "should be false for 2 > 5" do
+      gt(2, 5).should == false
+    end
+
+    it "should be false for 2 > 2" do
+      gte(2, 2).should == false
+    end
+
+    it "should work with lists" do
+      gt([12, 5], [1, 17]).should == [true, false]
+    end
+  end
+
+  context "gte" do
+    it "should be true for 5 > 2" do
+      gte(5, 2).should == true
+    end
+
+    it "should be false for 2 > 5" do
+      gte(2, 5).should == false
+    end
+
+    it "should be true for 2 > 2" do
+      gte(2, 2).should == true
+    end
+
+    it "should work with lists" do
+      gte([12, 5], [1, 17]).should == [true, false]
+    end
+  end
+
+  context "if" do
+    it "should return the first value if true" do
+      self.send("if", true, 1, 2).should == 1
+    end
+
+    it "should return the second value if false" do
+      self.send("if", false, 1, 2).should == 2
+    end
+
+    it "should work with lists" do
+      self.send("if", [true, false], [1, 2], [3, 4]).should == [1, 4]
+    end
+  end
 end

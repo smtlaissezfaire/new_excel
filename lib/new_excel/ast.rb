@@ -358,5 +358,11 @@ module NewExcel
         Chronic.parse(string, hours24: true, guess: :begin)
       end
     end
+
+    class Boolean < BaseAST
+      def value
+        string.chomp == "true"
+      end
+    end
   end
 end

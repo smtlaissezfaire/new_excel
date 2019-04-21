@@ -1,23 +1,73 @@
+I:
+  = index(DateTime)
+
 DateTime:
   = zf_mapped_dates.DateTime
 
 high: = zf_mapped_data.High
 low: = zf_mapped_data.Low
 close: = zf_mapped_data.Close
+
 previous_close:
   # = lookback(each(zf_mapped_data.Close), 1)
   = first(lookback(each(zf_mapped_data.Close), 1))
 
-TR1:
-  = subtract(high, low)
-TR2:
-  = abs(subtract(high, previous_close))
-TR3:
-  = abs(subtract(low, previous_close))
-Tr4:
-  = max(TR1, TR2, TR3)
+previous_high:
+  = first(lookback(each(zf_mapped_data.High), 1))
+
+previous_low:
+  = first(lookback(each(zf_mapped_data.Low), 1))
 
 TrueRange:
   = max(subtract(high, low),
         abs(subtract(high, previous_close)),
         abs(subtract(low, previous_close)))
+
+DM1:
+  = if(gt(subtract(high, previous_high),
+          subtract(previous_low, low)),
+       max(subtract(high, previous_high), 0),
+       0)
+
+DM-1:
+ = if(gt(subtract(previous_low, low),
+         subtract(high, previous_high)),
+      max(subtract(previous_low, low), 0),
+      0)
+
+TR14:
+  = map("sum", lookback(each(TrueRange), 13))
+
+DM14:
+  = map("sum", lookback(each(DM1), 13))
+
+DM14-1:
+  = map("sum", lookback(each(DM-1), 13))
+
+DI14:
+  = multiply(100,
+             divide(DM14, TR14))
+
+DI14-1:
+  = multiply(100,
+            divide(DM14-1, TR14))
+
+DI14_Diff:
+  = abs(subtract(DI14, DI14-1))
+
+DI14_Sum:
+  = sum(DI14, DI14-1)
+
+DX:
+  = multiply(100, divide(DI14_Diff, DI14_Sum))
+
+ADX:
+  = if(gt(I, 27), map("average", lookback(each(DX), 13)), "")
+
+TrendStrength:
+  = if(eq(ADX, ""), "",
+       if(gt(ADX, 30), "Strong", "Weak"))
+
+TrendDirection:
+  = if(eq(ADX, ""), "",
+       if(gt(DI14, DI14-1), "Bullish", "Bearish"))
