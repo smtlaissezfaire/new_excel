@@ -1,9 +1,9 @@
 Date:
-  = zf_original_data.Date
+  = zf_mapped_dates.Date
 Time:
-  = zf_original_data.Time
+  = zf_mapped_dates.Time
 DateTime:
-  = concat(zf_original_data.Date, zf_original_data.Time)
+  = zf_mapped_dates.DateTime
 Open:
   = zf_mapped_dates.Open
 High:
@@ -14,3 +14,6 @@ Close:
   = zf_mapped_dates.Close
 Volume:
   = zf_original_data.Volume
+TwentySMA:
+  = map("average", lookback(each(Close), 20))
+  # = average(lookback(each(Close), 20))
