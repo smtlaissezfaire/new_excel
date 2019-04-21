@@ -18,7 +18,7 @@ Index:
   = index(Value)
 
 Sum:
-  = sum(Value)
+  = fold("sum", Value)
 
 Running Sum:
   = map("sum", Each)
@@ -29,9 +29,9 @@ Running Avg:
 Indexes:
   = subtract(index(Value), 5)
 
-Test:
-  = index(Value, 1, Indexes)
-
+# Test:
+#   = index(Value, 1, Indexes)
+#
 # Running Values:
 #   = index(Value, 1, Indexes)
 

@@ -13,7 +13,19 @@ describe NewExcel::BuiltInFunctions do
     end
 
     it "should be able to add a list of numbers" do
-      add([1, 2, 3]).should == 1 + 2 + 3
+      fold("add", [1, 2, 3]).should == 6
+    end
+
+    it "should be able to add columns of numbers" do
+      add([1, 2, 3], [4, 5, 6]).should == [1+4, 2+5, 3+6]
+    end
+
+    it "should be able to add 3 columns of numbers" do
+      add([1, 2, 3], [4, 5, 6], [7, 8, 9]).should == [1+4+7, 2+5+8, 3+6+9]
+    end
+
+    it "should be able to add two lists of numbers" do
+      add([1, 2, 3], [4, 5, 6]).should == [1+4, 2+5, 3+6]
     end
   end
 
@@ -196,20 +208,6 @@ describe NewExcel::BuiltInFunctions do
     end
   end
 
-  context "map" do
-    it "should work with a function and two lists" do
-      map("add", [1, 2, 3], [4, 5, 6]).should == [1+4, 2+5, 3+6]
-    end
-
-    it "should work with three lists" do
-      map("add", [1, 2, 3], [4, 5, 6], [7, 8, 9]).should == [1+4+7, 2+5+8, 3+6+9]
-    end
-
-    it "should work with just one list" do
-      map("add", [1, 2, 3]).should == [1, 2, 3]
-    end
-  end
-
   context "apply" do
     it "should be able to apply a function to a list" do
       apply("add", [1, 2, 3]).should == 1+2+3
@@ -249,8 +247,26 @@ describe NewExcel::BuiltInFunctions do
       second_val = each_call[1]
       second_val.should == [10, 20]
 
-      sum(first_val).should == 10
-      sum(second_val).should == 10+20
+      fold("sum", first_val).should == 10
+      fold("sum", second_val).should == 30
+    end
+
+    it "should be able to sum" do
+      each_values = each([1,2,3,4])
+
+      each_values.should == [
+        [1],
+        [1, 2],
+        [1, 2, 3],
+        [1, 2, 3, 4],
+      ]
+
+      map("sum", each_values).should == [
+        1,
+        1+2,
+        1+2+3,
+        1+2+3+4,
+      ]
     end
 
     it "should be able to map the sums of an each call" do

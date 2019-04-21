@@ -9,23 +9,27 @@ module NewExcel
 
     # TODO: need to figure out the right way to do these things...
     def add(*list)
-      list.flatten.inject(&:+)
+      list_map_2(list) do |list|
+        list.inject(&:+)
+      end
     end
 
     alias_method :sum, :add
 
     def subtract(*list)
-      inject(*list, &:-)
+      list_map_2(list) do |list|
+        list.inject(&:-)
+      end
     end
 
     def multiply(*list)
-      inject(*list, &:*)
+      list_map_2(list) do |list|
+        list.inject(&:*)
+      end
     end
 
     def divide(num, denom)
-      inject(num, denom.to_f, &:/)
-    rescue ZeroDivisionError
-      "DIV!"
+      num / denom.to_f
     end
 
     def count(*args)
@@ -33,11 +37,6 @@ module NewExcel
     end
 
     alias_method :length, :count
-
-    def make_list(list)
-      list = list[0] if list.any? { |l| l.is_a?(Array) }
-      list
-    end
 
     def to_number(str)
       if str.is_a?(Array)
@@ -239,6 +238,29 @@ module NewExcel
       end
     end
 
+    def list_map_2(list, &block)
+      if list.any? { |list| list.is_a?(Array) }
+        longest_list_length = list.map { |l| l.is_a?(Array) ? l.length : 0 }.max
+
+        list = list.map do |sublist|
+          if sublist.is_a?(Array)
+            sublist
+          else
+            [sublist] * longest_list_length
+          end
+        end
+
+        l1 = list.shift
+        l1.zip(*list).map do |list|
+          yield list
+        end
+      elsif list.is_a?(Array)
+        yield list
+      else
+        raise "got here?"
+      end
+    end
+
     def date(strs)
       list_map(strs) do |list|
         list.map do |str|
@@ -255,16 +277,19 @@ module NewExcel
       end
     end
 
-    def map(fn, *lists)
+    def map(fn, lists)
       return [] if lists.empty?
       values = []
 
-      lists[0].each_with_index do |_, index|
-        indexed_items = lists.map { |l| l[index] }
-        values << call(fn, indexed_items)
+      lists.each_with_index do |list|
+        values << apply(fn, list)
       end
 
       values
+    end
+
+    def fold(fn, list, initial=nil)
+      apply(fn, list)
     end
 
     def apply(fn, arguments)
