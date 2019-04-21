@@ -44,7 +44,8 @@ ProcessState.max_rows_to_load = 50
 
 # sheet = file.get_sheet('zf_mapped_dates')
 # sheet = file.get_sheet('zf_mapped_data')
-sheet = file.get_sheet('adx')
+# sheet = file.get_sheet('adx')
+sheet = file.get_sheet('stochastic')
 # pp sheet.read
 puts sheet.for_printing
 

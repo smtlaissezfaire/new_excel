@@ -315,6 +315,25 @@ describe NewExcel::BuiltInFunctions do
     end
   end
 
+  context "min" do
+    it "should find the min of two numbers" do
+      min(1, 2).should == 1
+      min(100, 2).should == 2
+    end
+
+    it "should work on a list" do
+      fold("min", [1, 2, 3]).should == 1
+    end
+
+    it "should work on multiple lists" do
+      min(
+        [1, 2, 3],
+        [10, 20, 0.10],
+        [50, 0, 3.11],
+      ).should == [1, 0.10, 0]
+    end
+  end
+
   context "eq" do
     it "should return true if both are boolean true" do
       eq(true, true).should == true

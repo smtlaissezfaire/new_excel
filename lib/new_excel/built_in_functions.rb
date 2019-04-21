@@ -225,6 +225,12 @@ module NewExcel
       end
     end
 
+    def min(*list)
+      zipped_lists(list) do |list|
+        list.min
+      end
+    end
+
     def eq(*list)
       zipped_lists(list) do |vals|
         vals.inject(&:==)
