@@ -330,7 +330,47 @@ describe NewExcel::BuiltInFunctions do
         [1, 2, 3],
         [10, 20, 0.10],
         [50, 0, 3.11],
-      ).should == [1, 0.10, 0]
+      ).should == [1, 0, 0.10]
+    end
+
+    it "should be able to get the results of multiple columns" do
+      col1 = [ 10, 20, 30, 40 ]
+      col2 = [ 11, 21, 31, 1 ]
+      col3 = [  9, 21, 40, 2 ]
+
+      min(col1, col2, col3).should == [9, 20, 30, 1]
+    end
+
+    it "should be able to lookback to get the results of multiple columns" do
+      col1 = [ 10, 20, 30, 40 ]
+      col2 = [ 11, 21, 31, 1 ]
+      col3 = [  9, 21, 40, 2 ]
+
+      lookback(each(min(col1, col2, col3)), 2).should == [
+        [9],
+        [9, 20],
+        [9, 20, 30],
+        [20, 30, 1],
+      ]
+    end
+
+    it "should be able to get the min of the lookbacks" do
+      col1 = [ 10, 20, 30, 40 ]
+      col2 = [ 11, 21, 31, 1 ]
+      col3 = [  9, 21, 40, 2 ]
+
+      map("min", lookback(each(min(col1, col2, col3)), 2)).should == [
+        [9].min,
+        [9, 20].min,
+        [9, 20, 30].min,
+        [20, 30, 1].min,
+      ]
+    end
+  end
+
+  context "flatten" do
+    it "should flatten any list" do
+      flatten([[[[1]]]]).should == [1]
     end
   end
 

@@ -12,4 +12,4 @@ close: = zf_mapped_data.Close
 min_current: = min(open, high, low, close)
 
 L14:
-  = min(lookback(each(min_current), 13))
+  = map("min", lookback(each(min_current), 13))

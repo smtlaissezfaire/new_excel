@@ -231,6 +231,10 @@ module NewExcel
       end
     end
 
+    def flatten(list)
+      list.flatten
+    end
+
     def eq(*list)
       zipped_lists(list) do |vals|
         vals.inject(&:==)
