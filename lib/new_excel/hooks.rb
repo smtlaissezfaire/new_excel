@@ -41,6 +41,8 @@ module NewExcel
     # end
 
     Event.listen(Event::DEBUG_MAP) do |map, values_by_column, kv_pairs|
+      next unless ProcessState.debug
+
       map.instance_eval do
         debug "map:"
 
@@ -51,6 +53,8 @@ module NewExcel
     end
 
     Event.listen(Event::DEBUG_FUNCTION) do |function_call, evaluated_arguments|
+      next unless ProcessState.debug
+
       function_call.instance_eval do
         debug "function: #{print}"
         debug_indented "name: #{name}"
@@ -59,6 +63,8 @@ module NewExcel
     end
 
     Event.listen(Event::DEBUG_FUNCTION_RESULT) do |function_call, result|
+      next unless ProcessState.debug
+
       function_call.instance_eval do
         debug_indented "result: #{result}"
       end
