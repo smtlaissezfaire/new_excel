@@ -32,6 +32,21 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+
+  spec.add_dependency 'chronic'
+  spec.add_dependency 'racc'
+  spec.add_dependency 'ruby-progressbar'
+  spec.add_dependency 'memoist'
+  spec.add_dependency 'terminal-table'
+  spec.add_dependency 'colored'
+
+  spec.add_development_dependency "bundler"
+  spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
+  spec.add_development_dependency 'rspec-autotest'
+  spec.add_development_dependency 'byebug'
+  spec.add_development_dependency 'fakefs'
+
   # spec.add_development_dependency "bundler", "~> 1.16"
   # spec.add_development_dependency "rake", "~> 10.0"
   # spec.add_development_dependency "rspec", "~> 3.0"

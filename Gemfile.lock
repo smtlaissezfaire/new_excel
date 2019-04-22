@@ -1,3 +1,14 @@
+PATH
+  remote: .
+  specs:
+    new_excel (0.1.0)
+      chronic
+      colored
+      memoist
+      racc
+      ruby-progressbar
+      terminal-table
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -35,16 +46,11 @@ PLATFORMS
 DEPENDENCIES
   bundler
   byebug
-  chronic
-  colored
   fakefs
-  memoist
-  racc
+  new_excel!
   rake
   rspec
   rspec-autotest
-  ruby-progressbar
-  terminal-table
 
 BUNDLED WITH
    1.16.3
