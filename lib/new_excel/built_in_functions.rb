@@ -268,6 +268,12 @@ module NewExcel
       end
     end
 
+    def lt(*list)
+      zipped_lists(list) do |val1, val2|
+        val1 < val2
+      end
+    end
+
     def if(*list)
       zipped_lists(list) do |cond, true_expr, false_expr|
         cond ? true_expr : false_expr
