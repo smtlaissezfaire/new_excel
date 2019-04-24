@@ -34,14 +34,17 @@ module NewExcel
     end
 
     def count(*args)
+      args = args.map { |x| _evaluate(x) }
       args.flatten.length
     end
 
     alias_method :length, :count
 
     def to_number(str)
+      str = _evaluate(str)
+
       if str.is_a?(Array)
-        return str.map { |v| value(v) }
+        return str.map { |v| to_number(v) }
       end
 
       if str.is_a?(Numeric)
@@ -100,7 +103,7 @@ module NewExcel
     end
 
     def list(*args)
-      args
+      args.map { |val| _evaluate(val) }
     end
 
     def column(name)
@@ -118,6 +121,8 @@ module NewExcel
     end
 
     def take(list, count)
+      count = _evaluate(count)
+
       each_list(list) do |list|
         list[0..count]
       end
@@ -136,6 +141,7 @@ module NewExcel
     end
 
     def lookback(list, length)
+      list = _evaluate(list)
       reverse(take(reverse(list), length))
     end
 
@@ -156,6 +162,7 @@ module NewExcel
         val1 ||= 1
         list[val1-1..val2-1]
       else
+        list = _evaluate(list)
         1.upto(list.length).to_a
       end
     end
@@ -165,6 +172,8 @@ module NewExcel
     end
 
     def each(list)
+      list = _evaluate(list)
+
       vals = []
 
       list.each_with_index do |_, index|
@@ -189,6 +198,9 @@ module NewExcel
     end
 
     def map(fn, lists)
+      fn = _evaluate(fn)
+      lists = _evaluate(lists)
+
       return [] if lists.empty?
       values = []
 
@@ -200,10 +212,13 @@ module NewExcel
     end
 
     def fold(fn, list, initial=nil)
+      fn = _evaluate(fn)
+      list = _evaluate(list)
       apply(fn, list)
     end
 
     def apply(fn, arguments)
+      fn = _evaluate(fn)
       method(fn).call(*arguments)
     end
 
@@ -274,7 +289,7 @@ module NewExcel
 
     def if(*list)
       zipped_lists(list) do |cond, true_expr, false_expr|
-        cond ? true_expr : false_expr
+        cond ? _evaluate(true_expr) : _evaluate(false_expr)
       end
     end
 
@@ -287,6 +302,23 @@ module NewExcel
     def any?(*list)
       zipped_lists(list) do |list|
         list.any?
+      end
+    end
+
+    def or(*list)
+      zipped_lists(list) do |list|
+        val = nil
+        list.map do |obj|
+          val = _evaluate(obj)
+          break if val
+        end
+        val
+      end
+    end
+
+    def square(*list)
+      each_item(list) do |item|
+        item ** 2
       end
     end
   end

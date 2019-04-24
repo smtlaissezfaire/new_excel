@@ -4,6 +4,8 @@ module NewExcel
   private
 
     def each_item(list, &block)
+      list = list.map { |l| _evaluate(l) }
+
       if list.any? { |x| x.is_a?(Array) }
         list[0].map do |item|
           yield item
@@ -14,6 +16,8 @@ module NewExcel
     end
 
     def each_list(args, &block)
+      args = _evaluate(args)
+
       if args.any? { |n| n.is_a?(Array) }
         args.map do |inner_args|
           yield inner_args
@@ -23,7 +27,12 @@ module NewExcel
       end
     end
 
+    def _evaluate(obj)
+      obj.respond_to?(:value) ? obj.value : obj
+    end
+
     def zipped_lists(list, &block)
+      list = list.map { |l| _evaluate(l) }
       list = to_list(*list)
 
       if list.any? { |list| list.is_a?(Array) }
@@ -31,7 +40,11 @@ module NewExcel
           begin
             yield l
           rescue => e
-            e
+            if ProcessState.strict_error_mode
+              raise e
+            else
+              e
+            end
           end
         end
       else

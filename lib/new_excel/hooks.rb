@@ -58,9 +58,17 @@ module NewExcel
       function_call.instance_eval do
         debug "function: #{print}"
         debug_indented "name: #{name}"
-        debug_indented "arguments: #{evaluated_arguments}"
       end
     end
+
+    Event.listen(Event::DEBUG_FUNCTION_ARGUMENT) do |arguments|
+      next unless ProcessState.debug
+
+      # TODO: this shouldn't reload/re-evaluate stuff!
+      values = arguments.map(&:value)
+      debug_indented "arguments: #{arguments.map(&:values)}"
+    end
+
 
     Event.listen(Event::DEBUG_FUNCTION_RESULT) do |function_call, result|
       next unless ProcessState.debug

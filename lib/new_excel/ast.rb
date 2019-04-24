@@ -288,11 +288,10 @@ module NewExcel
       attr_accessor :arguments
 
       def value
-        evaluated_arguments = arguments.map(&:value)
+        Event.fire(Event::DEBUG_FUNCTION, self)
 
-        Event.fire(Event::DEBUG_FUNCTION, self, evaluated_arguments)
-
-        NewExcel::BuiltInFunctions.public_send(name, *evaluated_arguments).tap do |val|
+        NewExcel::BuiltInFunctions.public_send(name, *arguments).tap do |val|
+          Event.fire(Event::DEBUG_FUNCTION_ARGUMENT, self, arguments)
           Event.fire(Event::DEBUG_FUNCTION_RESULT, self, val)
         end
       end
