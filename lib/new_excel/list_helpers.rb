@@ -28,7 +28,11 @@ module NewExcel
 
       if list.any? { |list| list.is_a?(Array) }
         list.map do |l|
-          yield l
+          begin
+            yield l
+          rescue => e
+            e
+          end
         end
       else
         yield list

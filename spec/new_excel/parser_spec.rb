@@ -17,6 +17,16 @@ describe NewExcel::Parser do
       body.arguments.should == []
     end
 
+    it "should be able to parse functions with question marks" do
+      res = @obj.parse("= any?(true, false)")
+      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+
+      body = res.body
+
+      body.should be_a_kind_of(NewExcel::AST::FunctionCall)
+      body.name.should == "any?"
+    end
+
     it "should be able to parse a function with an argument" do
       res = @obj.parse("=add(1)")
       res.should be_a_kind_of(NewExcel::AST::FormulaBody)

@@ -434,6 +434,10 @@ describe NewExcel::BuiltInFunctions do
     it "should work with lists" do
       gte([12, 5], [1, 17]).should == [true, false]
     end
+
+    it "should work with one list and one number" do
+      gte([12, 5], 6).should == [true, false]
+    end
   end
 
   context "lte" do
@@ -506,6 +510,44 @@ describe NewExcel::BuiltInFunctions do
       self.send(:and, [true, true, true], [true, false, false]).should == [true, false, false]
       self.send(:and, [true, false, true], [true, false, false]).should == [true, false, false]
       self.send(:and, [false, false, true], [true, false, false]).should == [false, false, false]
+    end
+  end
+
+  context "hour" do
+    it "should return the hour of a datetime" do
+      t = Time.parse("2019-01-01 2:05PM")
+      hour(t).should == 12 + 2
+    end
+
+    it "should work with arrays" do
+      t1 = Time.parse("2019-01-01 2:05PM")
+      t2 = Time.parse("2019-01-01 3:05PM")
+
+      hour([t1, t2]).should == [14, 15]
+    end
+  end
+
+  context "time" do
+    it "should parse a time" do
+      time("10AM").hour.should == 10
+    end
+
+    it "should parse a list of times" do
+      time(["10AM", "11AM"]).map(&:hour).should == [10, 11]
+    end
+  end
+
+  context "any?" do
+    it "should be true if any are true" do
+      any?(true, false).should == true
+    end
+
+    it "should be false if all are false" do
+      any?(false, false).should == false
+    end
+
+    it "should work with two lists" do
+      any?([true, false, false], [false, false, true]).should == [true, false, true]
     end
   end
 end

@@ -182,11 +182,9 @@ module NewExcel
       end
     end
 
-    def time(strs)
-      each_list(strs) do |list|
-        list.map do |str|
-          Time.parse(str)
-        end
+    def time(*strs)
+      each_item(strs) do |str|
+        Time.parse(str)
       end
     end
 
@@ -277,6 +275,18 @@ module NewExcel
     def if(*list)
       zipped_lists(list) do |cond, true_expr, false_expr|
         cond ? true_expr : false_expr
+      end
+    end
+
+    def hour(*list)
+      each_item(list) do |time|
+        time.hour
+      end
+    end
+
+    def any?(*list)
+      zipped_lists(list) do |list|
+        list.any?
       end
     end
   end
