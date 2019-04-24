@@ -10,6 +10,7 @@ require 'ruby-progressbar'
 require 'memoist'
 require 'terminal-table'
 require 'colored'
+require 'curses'
 
 require "new_excel/process_state"
 require "new_excel/event"

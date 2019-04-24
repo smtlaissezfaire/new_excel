@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'memoist'
   spec.add_dependency 'terminal-table'
   spec.add_dependency 'colored'
+  spec.add_dependency 'curses'
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"

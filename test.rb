@@ -48,6 +48,7 @@ ProcessState.max_rows_to_load = 10_000
 sheet = file.get_sheet('stochastic')
 # pp sheet.read
 puts sheet.for_printing
+# sheet.ncurses_print
 
 # # sheet = file.get_sheet("ZCTest2")
 # #
