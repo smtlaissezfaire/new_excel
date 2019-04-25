@@ -412,4 +412,14 @@ STR
       ]
     end
   end
+
+  context "with arguments" do
+    before do
+      @obj = basic_file.get_sheet("key_value_arguments")
+    end
+
+    it "should be able to evaluate a one argument kv/pair" do
+      @obj.get_column("IdentityCallingOne").should == [1]
+    end
+  end
 end
