@@ -159,6 +159,10 @@ module NewExcel
 
     def index(list, val1=nil, val2=nil)
       if val1 || val2
+        list = _evaluate(list)
+        val1 = _evaluate(val1)
+        val2 = _evaluate(val2)
+
         val1 ||= 1
         list[val1-1..val2-1]
       else
@@ -288,7 +292,7 @@ module NewExcel
     end
 
     def if(*list)
-      zipped_lists(list) do |cond, true_expr, false_expr|
+      zipped_lists(list, lazy_evaluate: true) do |cond, true_expr, false_expr|
         cond ? _evaluate(true_expr) : _evaluate(false_expr)
       end
     end
@@ -306,13 +310,66 @@ module NewExcel
     end
 
     def or(*list)
-      zipped_lists(list) do |list|
-        val = nil
-        list.map do |obj|
-          val = _evaluate(obj)
-          break if val
+      zipped_lists(list, lazy_evaluate: true) do |list|
+        #
+        # list[0] = _evaluate(list[0])
+        #
+        # length = list[0].length
+
+        # list_length = list[0].length
+        #
+        # list.map do
+        #   list.detect { |l| }
+        # end
+        #
+
+        list[0] = _evaluate(list[0])
+
+        debugger
+        index = 0
+        all_list_length = list.length
+        list[0].map do
+          val = nil
+          0.upto(all_list_length-1) do |list_index|
+            lst = _evaluate(list[list_index])
+            val = lst[index]
+            break if val
+          end
+          index += 1
+          val
         end
-        val
+        #
+        #
+        # debugger
+        # values = nil
+        # list.each do |l|
+        #   values = _evaluate(l)
+        #   break if values
+        # end
+        # values
+        #
+        #
+        # val = nil
+        # list.map do |obj|
+        #   val = _evaluate(obj)
+        #   break if val
+        # end
+        # val
+      end
+    end
+
+    def previous
+      debugger
+      @previous
+    end
+
+    def with_previous_iterating(list, fn)
+      list = _evaluate(list)
+      @previous = nil
+
+      list.map do |item|
+        debugger
+        @previous = _evaluate(fn)
       end
     end
 

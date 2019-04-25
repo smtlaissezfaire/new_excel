@@ -412,4 +412,14 @@ STR
       ]
     end
   end
+
+  context "looking back on own column" do
+    before do
+      @obj = basic_file.get_sheet("self_lookback")
+    end
+
+    it "should be able to lookback on it's own value" do
+      @obj.get_column("self_lookback").should == [1, 2, 4, 8]
+    end
+  end
 end

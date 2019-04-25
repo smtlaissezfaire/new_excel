@@ -1,0 +1,11 @@
+list_of_10:
+  = range(1, 4)
+seed_value:
+  = list(1, false, false, false)
+self_lookback:
+  = with_previous_iterating(seed_value,
+      or(seed_value, add(1, previous())))
+
+
+  # = previous("prev", or(seed_value,
+                        # add(1, prev)))

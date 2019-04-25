@@ -91,7 +91,7 @@ module NewExcel
         end
       end
 
-      memoize :value
+      # memoize :value
 
       def get_body_values(column_indexes, row_indexes)
         raise NotImplementedError, "Must be implemented in subclass"
@@ -264,7 +264,7 @@ module NewExcel
         end
       end
 
-      memoize :pair_value
+      # memoize :pair_value
 
       def for_printing
         "#{hash_key}:\n#{hash_value}"
@@ -296,7 +296,7 @@ module NewExcel
         end
       end
 
-      memoize :value
+      # memoize :value
 
       def for_printing
         "#{name}(#{arguments.map(&:for_printing).join(", ")})"

@@ -287,4 +287,18 @@ CODE
       @obj.parse("false").value.should == false
     end
   end
+
+  context "lazy evaluation" do
+    it "should not evaluate a second argument in an if statement when true" do
+      lambda {
+        @obj.parse("=if(true, 1, foobar.baz)").value
+      }.should_not raise_error
+    end
+
+    it "should not evaluate a second argument in an or statement when true" do
+      lambda {
+        @obj.parse("=or(true, 1, foobar.baz)").value
+      }.should_not raise_error
+    end
+  end
 end

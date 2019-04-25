@@ -488,6 +488,18 @@ describe NewExcel::BuiltInFunctions do
     it "should work with lists" do
       self.send("if", [true, false], [1, 2], [3, 4]).should == [1, 4]
     end
+
+    it "should not evaluate the second argument if true" do
+      evaluated = false
+      self.send("if", true, 1, lambda { evaluated = true })
+      evaluated.should_not == true
+    end
+
+    it "should not evaluate the first argument if false" do
+      evaluated = false
+      self.send("if", false, lambda { evaluated = false }, 1)
+      evaluated.should_not == true
+    end
   end
 
   context "and" do
@@ -546,8 +558,60 @@ describe NewExcel::BuiltInFunctions do
       any?(false, false).should == false
     end
 
+    it "should be false with a column of false values" do
+      any?([false, false]).should == [false, false]
+    end
+
+    it "should work with fold" do
+      fold("any?", [false, false]).should == false
+      fold("any?", [false, true]).should == true
+    end
+
     it "should work with two lists" do
       any?([true, false, false], [false, false, true]).should == [true, false, true]
+    end
+  end
+
+  context "or" do
+    it "should work like any? but with lambdas" do
+      self.send(:or, lambda { true }, lambda { false }).should == true
+      self.send(:or, lambda { false }, lambda { false }).should == false
+    end
+
+    it "should short circuit evaluation" do
+      evaluated = false
+      self.send(:or, lambda { false }, lambda { evaluated = true })
+      evaluated.should == true
+
+      evaluated = false
+      self.send(:or, lambda { true }, lambda { evaluated = true })
+      evaluated.should == false
+    end
+
+    it "should return the first true value" do
+      self.send(:or, 1, 2).should == 1
+    end
+
+    it "should work with lists" do
+      self.send(:or, [true, false, true, false], [false, true, true, false]).should == [true, true, true, false]
+    end
+  end
+
+  context "lookback" do
+    it "should be able to lookback by 1" do
+      lookback([1, 2, 3], 1).should == [2, 3]
+    end
+  end
+
+  context "square" do
+    it "should work" do
+      square(1).should == 1
+      square(2).should == 4
+      square(3).should == 9
+    end
+
+    it "should work with a list" do
+      square([1, 2, 3]).should == [1, 4, 9]
     end
   end
 end
