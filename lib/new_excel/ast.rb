@@ -271,7 +271,7 @@ module NewExcel
       end
     end
 
-    class FormulaBody < BaseAST
+    class Function < BaseAST
       attr_accessor :body
 
       def value

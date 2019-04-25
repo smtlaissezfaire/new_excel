@@ -8,7 +8,7 @@ describe NewExcel::Parser do
   context "functions" do
     it "should be able to parse a function" do
       res = @obj.parse("=add()")
-      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body
 
@@ -19,7 +19,7 @@ describe NewExcel::Parser do
 
     it "should be able to parse functions with question marks" do
       res = @obj.parse("= any?(true, false)")
-      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body
 
@@ -29,7 +29,7 @@ describe NewExcel::Parser do
 
     it "should be able to parse a function with an argument" do
       res = @obj.parse("=add(1)")
-      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body
 
@@ -45,7 +45,7 @@ describe NewExcel::Parser do
 
     it "should be able to parse a function with multiple arguments" do
       res = @obj.parse("=add(1, 2, 3)")
-      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body
 
@@ -83,7 +83,7 @@ describe NewExcel::Parser do
       ]
 
       res = @obj.parse("= other_sheet.other_column")
-      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body
 
@@ -105,7 +105,7 @@ describe NewExcel::Parser do
 
       res = @obj.parse("= other_sheet.other_column")
 
-      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      res.should be_a_kind_of(NewExcel::AST::Function)
       body = res.body
       body.should be_a_kind_of(NewExcel::AST::CellReference)
       body.sheet_name.should == "other_sheet"
@@ -123,7 +123,7 @@ describe NewExcel::Parser do
 
       res = @obj.parse("= other_column")
 
-      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      res.should be_a_kind_of(NewExcel::AST::Function)
       body = res.body
       body.should be_a_kind_of(NewExcel::AST::CellReference)
       body.sheet_name.should == nil
@@ -134,7 +134,7 @@ describe NewExcel::Parser do
       str = "= trim(\" foo \")"
 
       res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      res.should be_a_kind_of(NewExcel::AST::Function)
       body = res.body
       body.should be_a_kind_of(NewExcel::AST::FunctionCall)
       body.arguments.length.should == 1
@@ -186,7 +186,7 @@ CODE
       # +#<NewExcel::AST::KeyValuePair:0x00007ff19b934a60
       # + @hash_key="String2",
       # + @hash_value=
-      # +  #<NewExcel::AST::FormulaBody:0x00007ff19b934b28
+      # +  #<NewExcel::AST::Function:0x00007ff19b934b28
       # +   @body=
       # +    #<NewExcel::AST::FunctionCall:0x00007ff19b934c90
       # +     @arguments=
@@ -198,11 +198,11 @@ CODE
       # +     @string=
       # +      "right(#<NewExcel::AST::CellReference:0x00007ff19b934f38>#<NewExcel::AST::PrimitiveInteger:0x00007ff19b934e98>)">,
       # +   @string="=#<NewExcel::AST::FunctionCall:0x00007ff19b934c90>">,
-      # + @string="String2:#<NewExcel::AST::FormulaBody:0x00007ff19b934b28>">
+      # + @string="String2:#<NewExcel::AST::Function:0x00007ff19b934b28>">
 
       string_2_value = res.pairs[1].hash_value
       string_2_value.should_not be_nil
-      string_2_value.should be_a(NewExcel::AST::FormulaBody)
+      string_2_value.should be_a(NewExcel::AST::Function)
 
       string_2_value.body.should be_a_kind_of(NewExcel::AST::FunctionCall)
       string_2_value.body.arguments[0].should be_a(NewExcel::AST::CellReference)
@@ -210,7 +210,7 @@ CODE
 
     it "should be able to call a one letter function " do
       res = @obj.parse "= c()"
-      res.should be_a_kind_of(NewExcel::AST::FormulaBody)
+      res.should be_a_kind_of(NewExcel::AST::Function)
       res.body.should be_a_kind_of(NewExcel::AST::FunctionCall)
     end
 

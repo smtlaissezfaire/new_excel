@@ -26,7 +26,7 @@ rule
   value: formula | primitive
 
   formula: EQ formula_body {
-    ref = AST::FormulaBody.new(val.join)
+    ref = AST::Function.new(val.join)
     ref.body = val[1]
     result = ref
   }
