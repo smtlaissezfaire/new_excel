@@ -1,0 +1,9 @@
+IdentityOne: (x)
+  = x
+IdentityTwo: (x, y)
+  = list(x, y)
+
+ListOfThree:
+  = list(1, 2, 3)
+IdentityCallingOne:
+  = IdentityOne(1)
