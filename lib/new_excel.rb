@@ -20,6 +20,7 @@ require "new_excel/sheet"
 require "new_excel/data"
 require "new_excel/map"
 require "new_excel/file"
+require 'new_excel/run_time'
 require 'new_excel/ast'
 require 'new_excel/tokenizer'
 require "new_excel/parser"
