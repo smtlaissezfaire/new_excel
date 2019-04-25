@@ -1,25 +1,19 @@
 class NewExcel::Parser
 rule
-  root: file | cell_contents
+  root: assignments | value
 
-  file: map_file
-
-  map_file: MAP key_value_pairs {
-    result = val[1]
-  }
-
-  key_value_pairs: key_value_pairs key_value_pair {
+  assignments: assignments assignment {
     ref = val[0]
     ref.add_pair(val[1])
     result = ref
   } |
-  key_value_pair {
+  assignment {
     ref = AST::Map.new(val.join)
     ref.add_pair(val[0])
     result = ref
   }
 
-  key_value_pair: KEY_WITH_COLON cell_contents {
+  assignment: KEY_WITH_COLON value {
     ref = AST::KeyValuePair.new(val.join)
     key_with_colon = val[0]
     key_without_colon = key_with_colon[0..(key_with_colon.length-2)]
@@ -29,7 +23,7 @@ rule
     result = ref
   }
 
-  cell_contents: formula | primitive
+  value: formula | primitive
 
   formula: EQ formula_body {
     ref = AST::FormulaBody.new(val.join)

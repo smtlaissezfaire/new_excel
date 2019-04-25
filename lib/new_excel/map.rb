@@ -4,8 +4,7 @@ module NewExcel
       set_process_state do
         return if @parsed
 
-        content = "Map!\n#{raw_content}"
-        @ast = parser.parse(content)
+        @ast = parser.parse(raw_content)
 
         @ast.columns.map { |col| col.to_s }.each do |column_name|
           if @column_names.include?(column_name)

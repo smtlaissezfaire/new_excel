@@ -144,23 +144,8 @@ describe NewExcel::Parser do
       arg.value.should == " foo "
     end
 
-    it "should be able to read a cell with a straight string" do
-      str = "some"
-
-      res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::AST::UnquotedString)
-      res.value.should == "some"
-
-      str = "some string text"
-
-      res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::AST::UnquotedString)
-      res.value.should == "some string text"
-    end
-
     it "should be able to parse a Map" do
       str = <<-CODE
-Map!
 One:
   1
 CODE
@@ -184,7 +169,6 @@ CODE
 
     it "should be able to parse a known file" do
       str = File.read("spec/fixtures/file.ne/simple_text.map")
-      str = "Map!\n" + str
 
       # NewExcel::Tokenizer.get_tokens(str).should == []
 
@@ -194,7 +178,6 @@ CODE
 
     it "should be able to parse a function that calls another column" do
       str = File.read("spec/fixtures/file.ne/function_on_column.map")
-      str = "Map!\n" + str
 
       res = @obj.parse(str)
       res.should be_a_kind_of(NewExcel::AST::Map)
@@ -233,7 +216,6 @@ CODE
 
     it "should be able to define a one character key" do
       str = "X: 1"
-      str = "Map!\n" + str
 
       res = @obj.parse(str)
 
@@ -273,10 +255,6 @@ CODE
 
     it "should be able to parse a date with slahes" do
       @obj.parse("2019/03/01").value == Time.parse("2019-03-01 00:00:00")
-    end
-
-    it "should to parse numbers that look like numbers, but have no concrete meaning" do
-      @obj.parse("114 16.75/32").value.should == "114 16.75/32"
     end
 
     it "should parse true as true" do
