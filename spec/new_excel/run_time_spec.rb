@@ -55,4 +55,10 @@ describe NewExcel::RunTime::Environment do
     @environment[:foo] = 20
     @environment.to_hash.should == { bar: 10, foo: 20 }
   end
+
+  it "should have the keys" do
+    @environment.keys.should == []
+    @environment[:foo] = "bar"
+    @environment.keys.should == [:foo]
+  end
 end

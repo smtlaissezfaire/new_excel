@@ -40,14 +40,14 @@ module NewExcel
     #   end
     # end
 
-    Event.listen(Event::DEBUG_MAP) do |map, values_by_column, kv_pairs|
+    Event.listen(Event::DEBUG_MAP) do |map, keys, values|
       next unless ProcessState.debug
 
       map.instance_eval do
         debug "map:"
 
-        values_by_column.each_with_index do |col_values, index|
-          debug_indented "#{kv_pairs[index].hash_key}: #{col_values}"
+        keys.each_with_index do |key, index|
+          debug_indented "#{key}: #{values[index]}"
         end
       end
     end

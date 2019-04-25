@@ -149,11 +149,15 @@ module NewExcel
     class Map < SheetAST
       def initialize(*args)
         super
+        @environment = RunTime::Environment.new
         @key_value_pairs = []
       end
 
+      attr_reader :environment
+
       def add_pair(pair)
         @key_value_pairs << pair
+        @environment[pair.hash_key] = pair.hash_value
       end
 
       def pairs
@@ -167,40 +171,29 @@ module NewExcel
       alias_method :column_names, :columns
 
       def get_column(name)
-        @key_value_pairs.detect do |kv_pair|
-          kv_pair.hash_key == name
-        end
-      end
-
-      def kv_pairs_cache
-        @kv_pairs_cache ||= {}
+        @environment[name]
       end
 
       def get_body_values(column_indexes, row_indexes)
         index = 0
 
-        # select only the columns that match column_indexes
-        kv_pairs = pairs.select do |kv_pair|
-          val = !column_indexes || column_indexes.include?(index)
-          index += 1
+        keys = @environment.keys
+
+        if column_indexes
+          keys_for_selection = column_indexes.map do |index|
+            keys[index]
+          end
+        else
+          keys_for_selection = keys
+        end
+
+        values_by_column = keys_for_selection.map do |key|
+          val = @environment[key].value
+          val = [val] if !val.is_a?(Array)
           val
         end
 
-        # if kv_pairs.any? { |pair| !kv_pairs_cache.include?(pair.hash_key) }
-        #   Event.fire(Event::MAP_STARTED_PROCESSING, length: kv_pairs.length)
-        # end
-
-        # get their values
-        values_by_column = kv_pairs.map do |kv_pair|
-          val = catching_errors do
-            val = kv_pairs_cache[kv_pair.hash_key]
-            val ||= kv_pair.pair_value
-
-            kv_pairs_cache[kv_pair.hash_key] ||= val
-          end
-        end
-
-        Event.fire(Event::DEBUG_MAP, self, values_by_column, kv_pairs)
+        Event.fire(Event::DEBUG_MAP, self, keys_for_selection, values_by_column)
 
         # select only the values that match row_indexes
         if row_indexes

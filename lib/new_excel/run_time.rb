@@ -24,6 +24,10 @@ module NewExcel
       def []=(key, value)
         @hash[key.to_sym] = value
       end
+
+      def keys
+        to_hash.keys
+      end
     end
   end
 end
