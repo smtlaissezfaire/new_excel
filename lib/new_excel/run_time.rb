@@ -29,5 +29,24 @@ module NewExcel
         to_hash.keys
       end
     end
+
+    class BuiltInEnvironment < Environment
+      def initialize
+        super
+
+        mod = NewExcel::BuiltInFunctions
+
+        mod.public_instance_methods.each do |method_name|
+          @hash[method_name] = mod.method(method_name)
+        end
+      end
+    end
+
+    class BaseEnvironment < Environment
+      def initialize
+        super
+        @parent = BuiltInEnvironment.new
+      end
+    end
   end
 end

@@ -149,7 +149,7 @@ module NewExcel
     class Map < SheetAST
       def initialize(*args)
         super
-        @environment = RunTime::Environment.new
+        @environment = RunTime::BaseEnvironment.new
         @key_value_pairs = []
       end
 
@@ -174,10 +174,18 @@ module NewExcel
         @environment[name]
       end
 
+      def value(*args, &block)
+        val = nil
+        ProcessState.set_execution_context(@environment) do
+          val = super
+        end
+        val
+      end
+
       def get_body_values(column_indexes, row_indexes)
         index = 0
 
-        keys = @environment.keys
+        keys = columns
 
         if column_indexes
           keys_for_selection = column_indexes.map do |index|
@@ -276,10 +284,20 @@ module NewExcel
       attr_accessor :name
       attr_accessor :arguments
 
+      def environment
+        ProcessState.execution_context
+      end
+
       def value
         Event.fire(Event::DEBUG_FUNCTION, self)
 
-        NewExcel::BuiltInFunctions.public_send(name, *arguments).tap do |val|
+        if environment.nil?
+          raise "No environment!"
+        end
+
+        val = environment[name].call(*arguments)
+
+        val.tap do |val|
           Event.fire(Event::DEBUG_FUNCTION_ARGUMENT, self, arguments)
           Event.fire(Event::DEBUG_FUNCTION_RESULT, self, val)
         end
