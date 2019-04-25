@@ -273,6 +273,15 @@ module NewExcel
 
     class Function < BaseAST
       attr_accessor :body
+      attr_writer :arguments
+
+      def arguments
+        @arguments ||= []
+      end
+
+      def arity
+        arguments.length
+      end
 
       def value
         body.value
@@ -281,6 +290,10 @@ module NewExcel
       def for_printing
         "= #{body.for_printing}"
       end
+    end
+
+    class FunctionFormalArgument < BaseAST
+      attr_accessor :name
     end
 
     class FunctionCall < BaseAST

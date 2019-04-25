@@ -23,7 +23,26 @@ rule
     result = ref
   }
 
-  value: formula | primitive
+  value: function_definition | primitive
+
+  function_definition:
+    OPEN_PAREN formal_function_arguments CLOSE_PAREN formula {
+      function = val[3]
+      function.arguments = val[1]
+      result = function
+    } |
+    formula
+
+  formal_function_arguments:
+    |
+    formal_function_argument COMMA formal_function_arguments  { result = [val[0], val[2]].flatten } |
+    formal_function_argument { result = [val[0]] }
+
+  formal_function_argument: ID {
+    arg = AST::FunctionFormalArgument.new(val[0])
+    arg.name = val[0]
+    result = arg
+  }
 
   formula: EQ formula_body {
     ref = AST::Function.new(val.join)
@@ -31,9 +50,9 @@ rule
     result = ref
   }
 
-  expression: function_call | cell_reference | primitive_value
-
   formula_body: expression
+
+  expression: function_call | cell_reference | primitive_value
 
   function_call: ID OPEN_PAREN function_body CLOSE_PAREN {
     ref = AST::FunctionCall.new(val.join)

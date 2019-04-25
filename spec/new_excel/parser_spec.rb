@@ -265,4 +265,58 @@ CODE
       @obj.parse("false").value.should == false
     end
   end
+
+  context "Functions" do
+    it "should parse a function with an equal sign" do
+      @obj.parse("= 1").should be_a_kind_of(NewExcel::AST::Function)
+    end
+
+    it "should parse a function with an equal sign as having zero arguments" do
+      val = @obj.parse("= 1")
+      val.should be_a_kind_of(NewExcel::AST::Function)
+      val.arguments.should == []
+      val.arity.should == 0
+    end
+
+    it "should parse a function with an empty argument list and an an equal sign as having zero arguments" do
+      str = "() = 1"
+
+      NewExcel::Tokenizer.get_tokens(str).should == [
+        [:OPEN_PAREN, "("],
+        [:CLOSE_PAREN, ")"],
+        [:EQ, "="],
+        [:INTEGER, "1"],
+        [false, false],
+      ]
+
+      val = @obj.parse(str)
+      val.should be_a_kind_of(NewExcel::AST::Function)
+      val.arguments.should == []
+      val.arity.should == 0
+    end
+
+    it "should parse a function with an argument" do
+      str = "(x) = 1"
+
+      val = @obj.parse(str)
+      val.should be_a_kind_of(NewExcel::AST::Function)
+      val.arguments.length.should == 1
+      val.arguments[0].should be_a_kind_of(NewExcel::AST::FunctionFormalArgument)
+      val.arity.should == 1
+    end
+
+    it "should parse multiple function arguments" do
+      str = "(x, y) = 1"
+
+      val = @obj.parse(str)
+      val.should be_a_kind_of(NewExcel::AST::Function)
+      val.arguments.length.should == 2
+      val.arguments[0].should be_a_kind_of(NewExcel::AST::FunctionFormalArgument)
+      val.arguments[0].name.should == "x"
+      val.arguments[1].should be_a_kind_of(NewExcel::AST::FunctionFormalArgument)
+      val.arguments[1].name.should == "y"
+      val.arity.should == 2
+    end
+
+  end
 end
