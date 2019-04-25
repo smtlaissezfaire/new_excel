@@ -239,25 +239,8 @@ module NewExcel
       attr_accessor :hash_value
 
       def value
-        [pair_key, pair_value]
+        [hash_key, hash_value]
       end
-
-      def pair_key
-        hash_key
-      end
-
-      def pair_value
-        # Event.fire(Event::MAP_COLUMN_STARTED_PROCESSING, column_name: hash_key)
-
-        value = hash_value.value
-        if value.is_a?(Array)
-          value
-        else
-          [value]
-        end
-      end
-
-      memoize :pair_value
 
       def for_printing
         "#{hash_key}:\n#{hash_value}"
