@@ -1,9 +1,41 @@
 IdentityOne: (x)
   = x
-IdentityTwo: (x, y)
-  = list(x, y)
+
+MySquare: (x)
+  = multiply(x, x)
+
+MyMultiply: (x, y)
+  = multiply(x, y)
 
 ListOfThree:
   = list(1, 2, 3)
 IdentityCallingOne:
   = IdentityOne(1)
+IdentityCallingWithListOf3:
+  = IdentityOne(ListOfThree)
+
+SquareOf4:
+  = MySquare(4)
+
+TwoArgMultiply4And10:
+  = MyMultiply(4, 10)
+
+
+MySquare4TwoLevelsDeep:
+  = MySquare2(4)
+
+MySquare2: (x)
+  = MyMultiply2(x, x)
+
+MyMultiply2: (a, b)
+  = multiply(a, b)
+
+
+MySquare4TwoLevelsDeepWithVariableShadowing:
+  = MySquare2WithVariableShadowing(4)
+
+MySquare2WithVariableShadowing: (x)
+  = MyMultiply2WithVariableShadowing(x, x)
+
+MyMultiply2WithVariableShadowing: (x, y)
+  = multiply(x, y)

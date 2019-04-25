@@ -421,5 +421,25 @@ STR
     it "should be able to evaluate a one argument kv/pair" do
       @obj.get_column("IdentityCallingOne").should == [1]
     end
+
+    it "should be able to evaluate a list passed to the columnn/function" do
+      @obj.get_column("IdentityCallingWithListOf3").should == [1, 2, 3]
+    end
+
+    it "should be able to define square" do
+      @obj.get_column("SquareOf4").should == [16]
+    end
+
+    it "should be able to use two arguments" do
+      @obj.get_column("TwoArgMultiply4And10").should == [40]
+    end
+
+    it "should be able to go two levels deep" do
+      @obj.get_column("MySquare4TwoLevelsDeep").should == [16]
+    end
+
+    it "should be able to go two levels deep with variable shadowing" do
+      @obj.get_column("MySquare4TwoLevelsDeepWithVariableShadowing").should == [16]
+    end
   end
 end

@@ -276,6 +276,7 @@ module NewExcel
         bound_environment.parent = ProcessState.execution_context
 
         arguments.each_with_index do |argument, index|
+          next if bound_environment.parent[argument.name] # should this be assigned?
           bound_environment[argument.name] = realized_arguments[index]
         end
 
@@ -345,7 +346,6 @@ module NewExcel
           sheet = file.get_sheet(sheet_name)
           sheet.get_column(cell_name)
         else
-          # sheet = NewExcel::ProcessState.current_sheet
           ProcessState.execution_context[cell_name].value
         end
       end
