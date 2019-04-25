@@ -271,6 +271,23 @@ module NewExcel
         body.value
       end
 
+      def call(*realized_arguments) # TOOD: need better name
+        bound_environment = RunTime::Environment.new
+        bound_environment.parent = ProcessState.execution_context
+
+        arguments.each_with_index do |argument, index|
+          bound_environment[argument.name] = realized_arguments[index]
+        end
+
+        val = nil
+
+        ProcessState.set_execution_context(bound_environment) do
+          val = value
+        end
+
+        val
+      end
+
       def for_printing
         "= #{body.for_printing}"
       end
@@ -295,7 +312,13 @@ module NewExcel
           raise "No environment!"
         end
 
-        val = environment[name].call(*arguments)
+        function = environment[name]
+
+        if !function
+          raise "Can't find function with name: #{name}"
+        end
+
+        val = function.call(*arguments)
 
         val.tap do |val|
           Event.fire(Event::DEBUG_FUNCTION_ARGUMENT, self, arguments)
@@ -315,16 +338,16 @@ module NewExcel
       attr_accessor :cell_name
 
       def value
+        raise "No cell name specified! cell_name: #{cell_name.inspect}" if !cell_name
+
         if sheet_name
           file = NewExcel::ProcessState.current_file
           sheet = file.get_sheet(sheet_name)
+          sheet.get_column(cell_name)
         else
-          sheet = NewExcel::ProcessState.current_sheet
+          # sheet = NewExcel::ProcessState.current_sheet
+          ProcessState.execution_context[cell_name].value
         end
-
-        raise "No cell name specified! cell_name: #{cell_name.inspect}" if !cell_name
-
-        sheet.get_column(cell_name)
       end
 
       def for_printing
