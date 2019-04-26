@@ -39,3 +39,32 @@ MySquare2WithVariableShadowing: (x)
 
 MyMultiply2WithVariableShadowing: (x, y)
   = multiply(x, y)
+
+
+fib: (n)
+  = if (eq(n, 1),
+        1,
+        if (eq(n, 2),
+            1,
+            add(fib(subtract(n, 1)),
+                fib(subtract(n, 2)))))
+fib_list: (n)
+  = if (eq(n, 1),
+        list(fib(n)),
+        flatten(append(list(),
+                       fib_list(subtract(n, 1)),
+                       fib(n))))
+fib_one:
+  = fib_list(1)
+
+fib_two:
+  = fib_list(2)
+
+fib_three:
+  = fib_list(3)
+
+fib_four:
+  = fib_list(4)
+
+fib_five:
+  = fib_list(5)

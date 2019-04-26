@@ -28,6 +28,15 @@ module NewExcel
       def keys
         to_hash.keys
       end
+
+      def for_printing
+        @hash.map do |k, v|
+          [
+            k.to_s.green,
+            (v.respond_to?(:for_printing) ? v.for_printing : v.to_s),
+          ].join("=")
+        end.join("; ")
+      end
     end
 
     class BuiltInEnvironment < Environment

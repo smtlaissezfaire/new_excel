@@ -40,42 +40,46 @@ module NewExcel
     #   end
     # end
 
-    Event.listen(Event::DEBUG_MAP) do |map, keys, values|
-      next unless ProcessState.debug
+    class << self
 
-      map.instance_eval do
-        debug "map:"
+      def debug(msg)
+        return unless debug?
+        puts "DEBUG #{Time.now.strftime("%Y-%m-%d-%H:%M:%S")}: #{msg}"
+      end
 
-        keys.each_with_index do |key, index|
-          debug_indented "#{key}: #{values[index]}"
+      def debug_indented(msg)
+        debug("  #{msg}")
+      end
+
+      def debug?
+        ProcessState.debug
+      end
+
+      def install!
+        Event.listen(Event::DEBUG_MAP) do |map, keys, values|
+          next unless ProcessState.debug
+
+          debug "map:"
+
+          keys.each_with_index do |key, index|
+            debug_indented "#{key}: #{values[index]}"
+          end
         end
-      end
-    end
 
-    Event.listen(Event::DEBUG_FUNCTION) do |function_call, evaluated_arguments|
-      next unless ProcessState.debug
+        Event.listen(Event::DEBUG_FUNCTION) do |name, arguments, environment|
+          next unless ProcessState.debug
+          debug "function: #{name.to_s.blue}"
+          debug_indented "arguments: #{arguments}"
+          debug_indented "environment: #{environment}"
+        end
 
-      function_call.instance_eval do
-        debug "function: #{print}"
-        debug_indented "name: #{name}"
-      end
-    end
-
-    Event.listen(Event::DEBUG_FUNCTION_ARGUMENT) do |arguments|
-      next unless ProcessState.debug
-
-      # TODO: this shouldn't reload/re-evaluate stuff!
-      values = arguments.map(&:value)
-      debug_indented "arguments: #{arguments.map(&:values)}"
-    end
-
-
-    Event.listen(Event::DEBUG_FUNCTION_RESULT) do |function_call, result|
-      next unless ProcessState.debug
-
-      function_call.instance_eval do
-        debug_indented "result: #{result}"
+        Event.listen(Event::DEBUG_FUNCTION_RESULT) do |result|
+          next unless ProcessState.debug
+          debug_indented "result: #{result.to_s.red}"
+        end
       end
     end
   end
 end
+
+NewExcel::Hooks.install!

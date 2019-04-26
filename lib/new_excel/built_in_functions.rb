@@ -34,7 +34,7 @@ module NewExcel
       end
     end
 
-    # "regular functions"
+    # "regular" functions
 
     def add(*list)
       zipped_lists(list) do |list|
@@ -311,6 +311,14 @@ module NewExcel
       each_item(list) do |item|
         item ** 2
       end
+    end
+
+    def append(list, *values)
+      values.each do |value|
+        list.append(value)
+      end
+
+      list
     end
   end
 end

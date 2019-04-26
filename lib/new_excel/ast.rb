@@ -17,19 +17,6 @@ module NewExcel
         string
       end
 
-      def debug(msg)
-        return unless debug?
-        puts "DEBUG #{Time.now.strftime("%Y-%m-%d-%H:%M:%S")}: #{msg}"
-      end
-
-      def debug_indented(msg)
-        debug("  #{msg}")
-      end
-
-      def debug?
-        ProcessState.debug
-      end
-
     private
 
       def catching_errors(&block)
@@ -276,17 +263,12 @@ module NewExcel
         bound_environment.parent = ProcessState.execution_context
 
         arguments.each_with_index do |argument, index|
-          next if bound_environment.parent[argument.name] # should this be assigned?
           bound_environment[argument.name] = realized_arguments[index]
         end
 
-        val = nil
-
         ProcessState.set_execution_context(bound_environment) do
-          val = value
+          value
         end
-
-        val
       end
 
       def for_printing
@@ -313,8 +295,6 @@ module NewExcel
       end
 
       def value
-        Event.fire(Event::DEBUG_FUNCTION, self)
-
         if environment.nil?
           raise "No environment!"
         end
@@ -324,6 +304,8 @@ module NewExcel
         if !function
           raise "Can't find function with name: #{name}"
         end
+
+        Event.fire(Event::DEBUG_FUNCTION, name, arguments.map(&:for_printing), environment.for_printing)
 
         evaluated_arguments = arguments
 
@@ -336,12 +318,10 @@ module NewExcel
         val = function.call(*evaluated_arguments)
 
         val.tap do |val|
-          Event.fire(Event::DEBUG_FUNCTION_ARGUMENT, self, evaluated_arguments)
-          Event.fire(Event::DEBUG_FUNCTION_RESULT, self, val)
+          Event.fire(Event::DEBUG_FUNCTION_ARGUMENT, evaluated_arguments)
+          Event.fire(Event::DEBUG_FUNCTION_RESULT, val)
         end
       end
-
-      memoize :value
 
       def for_printing
         "#{name}(#{arguments.map(&:for_printing).join(", ")})"
@@ -361,7 +341,12 @@ module NewExcel
           sheet.get_column(cell_name)
         else
           cell = ProcessState.execution_context[cell_name]
-          cell.respond_to?(:value) ? cell.value : cell
+
+          if !cell
+            raise "couldn't find variable / cell: #{cell_name.inspect}"
+          end
+
+          val = cell.respond_to?(:value) ? cell.value : cell
         end
       end
 

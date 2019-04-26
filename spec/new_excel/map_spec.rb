@@ -441,5 +441,29 @@ STR
     it "should be able to go two levels deep with variable shadowing" do
       @obj.get_column("MySquare4TwoLevelsDeepWithVariableShadowing").should == [16]
     end
+
+    context "with recursion" do
+      context 'fib' do
+        it "should work with fib = 1" do
+          @obj.get_column("fib_one").should == [1]
+        end
+
+        it "should work with fib = 2" do
+          @obj.get_column("fib_two").should == [1, 1]
+        end
+
+        it "should work with fib = 3" do
+          @obj.get_column("fib_three").should == [1, 1, 2]
+        end
+
+        it "should work with fib = 4" do
+          @obj.get_column("fib_four").should == [1, 1, 2, 3]
+        end
+
+        it "should work with fib = 5" do
+          @obj.get_column("fib_five").should == [1, 1, 2, 3, 5]
+        end
+      end
+    end
   end
 end
