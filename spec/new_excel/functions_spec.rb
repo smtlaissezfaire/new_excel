@@ -81,13 +81,6 @@ describe NewExcel::BuiltInFunctions do
     end
   end
 
-  context "evaluate" do
-    it "should be able to evaluate a string" do
-      str = "subtract(2, 1)"
-      evaluate(str).should == 2-1
-    end
-  end
-
   context "concat" do
     it "should be able to concat two strings" do
       concat("a", "b").should == "ab"
