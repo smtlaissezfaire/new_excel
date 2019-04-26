@@ -28,11 +28,19 @@ module NewExcel
     end
 
     def _evaluate(obj)
-      obj.respond_to?(:value) ? obj.value : obj
+      if obj.respond_to?(:value)
+        obj.value
+      elsif obj.is_a?(Proc) && obj.respond_to?(:call) # just for tests...?
+        obj.call
+      else
+        obj
+      end
     end
 
-    def zipped_lists(list, &block)
-      list = list.map { |l| _evaluate(l) }
+    def zipped_lists(list, options={}, &block)
+      unless options[:evaluate] == false
+        list = list.map { |l| _evaluate(l) }
+      end
       list = to_list(*list)
 
       if list.any? { |list| list.is_a?(Array) }

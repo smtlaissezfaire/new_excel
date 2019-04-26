@@ -488,6 +488,23 @@ describe NewExcel::BuiltInFunctions do
     it "should work with lists" do
       self.send("if", [true, false], [1, 2], [3, 4]).should == [1, 4]
     end
+
+    it "should not evaluate the second condition when true" do
+      evaluated = false
+      self.send("if", true, true, lambda { evaluated = true })
+      evaluated.should == false
+    end
+
+    it "should not evaluate the first condition when false" do
+      evaluated = false
+      self.send("if", false, lambda { evaluated = true }, "not important")
+      evaluated.should == false
+    end
+
+    it "should call the block" do
+      value = self.send("if", true, lambda { true }, "not important")
+      value.should == true
+    end
   end
 
   context "and" do
