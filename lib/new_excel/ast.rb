@@ -162,11 +162,9 @@ module NewExcel
       end
 
       def value(*args, &block)
-        val = nil
         ProcessState.set_execution_context(@environment) do
-          val = super
+          super
         end
-        val
       end
 
       def get_body_values(column_indexes, row_indexes)
@@ -355,25 +353,28 @@ module NewExcel
       end
     end
 
-    class PrimitiveInteger < BaseAST
+    class Primitive < BaseAST
+    end
+
+    class PrimitiveInteger < Primitive
       def value
         string.to_i
       end
     end
 
-    class PrimitiveFloat < BaseAST
+    class PrimitiveFloat < Primitive
       def value
         string.to_f
       end
     end
 
-    class QuotedString < BaseAST
+    class QuotedString < Primitive
       def value
         string[1..string.length-2]
       end
     end
 
-    class UnquotedString < BaseAST
+    class UnquotedString < Primitive
       def value
         string.chomp
       end
@@ -382,13 +383,13 @@ module NewExcel
     class UnquotedStringIdFallThrough < UnquotedString
     end
 
-    class DateTime < BaseAST
+    class DateTime < Primitive
       def value
         Chronic.parse(string, hours24: true, guess: :begin)
       end
     end
 
-    class Boolean < BaseAST
+    class Boolean < Primitive
       def value
         string.chomp == "true"
       end
