@@ -4,8 +4,6 @@ module NewExcel
   private
 
     def each_item(list, &block)
-      list = list.map { |l| _evaluate(l) }
-
       if list.any? { |x| x.is_a?(Array) }
         list[0].map do |item|
           yield item
@@ -16,8 +14,6 @@ module NewExcel
     end
 
     def each_list(args, &block)
-      args = _evaluate(args)
-
       if args.any? { |n| n.is_a?(Array) }
         args.map do |inner_args|
           yield inner_args

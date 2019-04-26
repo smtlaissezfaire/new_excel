@@ -7,6 +7,35 @@ module NewExcel
       Evaluator.evaluate(self, "= #{str}")
     end
 
+    # macros
+
+    def if(*args)
+      conds, truthy_expressions, falsy_expressions = args
+
+      zipped_lists([_evaluate(conds), truthy_expressions, falsy_expressions], evaluate: false) do |cond, truthy_expression, falsy_expression|
+        cond ? _evaluate(truthy_expression) : _evaluate(falsy_expression)
+      end
+    end
+
+    def and(*list)
+      zipped_lists(list) do |list|
+        list.inject { |v1, v2| v1 && v2 }
+      end
+    end
+
+    def or(*list)
+      zipped_lists(list) do |list|
+        val = nil
+        list.map do |obj|
+          val = _evaluate(obj)
+          break if val
+        end
+        val
+      end
+    end
+
+    # "regular functions"
+
     def add(*list)
       zipped_lists(list) do |list|
         list.inject(&:+)
@@ -34,15 +63,12 @@ module NewExcel
     end
 
     def count(*args)
-      args = args.map { |x| _evaluate(x) }
       args.flatten.length
     end
 
     alias_method :length, :count
 
     def to_number(str)
-      str = _evaluate(str)
-
       if str.is_a?(Array)
         return str.map { |v| to_number(v) }
       end
@@ -103,7 +129,7 @@ module NewExcel
     end
 
     def list(*args)
-      args.map { |val| _evaluate(val) }
+      args
     end
 
     def column(name)
@@ -121,8 +147,6 @@ module NewExcel
     end
 
     def take(list, count)
-      count = _evaluate(count)
-
       each_list(list) do |list|
         list[0..count]
       end
@@ -141,7 +165,6 @@ module NewExcel
     end
 
     def lookback(list, length)
-      list = _evaluate(list)
       reverse(take(reverse(list), length))
     end
 
@@ -162,7 +185,6 @@ module NewExcel
         val1 ||= 1
         list[val1-1..val2-1]
       else
-        list = _evaluate(list)
         1.upto(list.length).to_a
       end
     end
@@ -172,8 +194,6 @@ module NewExcel
     end
 
     def each(list)
-      list = _evaluate(list)
-
       vals = []
 
       list.each_with_index do |_, index|
@@ -198,9 +218,6 @@ module NewExcel
     end
 
     def map(fn, lists)
-      fn = _evaluate(fn)
-      lists = _evaluate(lists)
-
       return [] if lists.empty?
       values = []
 
@@ -212,13 +229,10 @@ module NewExcel
     end
 
     def fold(fn, list, initial=nil)
-      fn = _evaluate(fn)
-      list = _evaluate(list)
       apply(fn, list)
     end
 
     def apply(fn, arguments)
-      fn = _evaluate(fn)
       method(fn).call(*arguments)
     end
 
@@ -254,12 +268,6 @@ module NewExcel
       end
     end
 
-    def and(*list)
-      zipped_lists(list) do |list|
-        list.inject { |v1, v2| v1 && v2 }
-      end
-    end
-
     def gt(*list)
       zipped_lists(list) do |val1, val2|
         begin
@@ -287,14 +295,6 @@ module NewExcel
       end
     end
 
-    def if(*args)
-      conds, truthy_expressions, falsy_expressions = args
-
-      zipped_lists([_evaluate(conds), truthy_expressions, falsy_expressions], evaluate: false) do |cond, truthy_expression, falsy_expression|
-        cond ? _evaluate(truthy_expression) : _evaluate(falsy_expression)
-      end
-    end
-
     def hour(*list)
       each_item(list) do |time|
         time.hour
@@ -304,17 +304,6 @@ module NewExcel
     def any?(*list)
       zipped_lists(list) do |list|
         list.any?
-      end
-    end
-
-    def or(*list)
-      zipped_lists(list) do |list|
-        val = nil
-        list.map do |obj|
-          val = _evaluate(obj)
-          break if val
-        end
-        val
       end
     end
 

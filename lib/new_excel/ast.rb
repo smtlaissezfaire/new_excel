@@ -299,6 +299,12 @@ module NewExcel
     end
 
     class FunctionCall < BaseAST
+      MACRO_FUNCTIONS = [
+        :and,
+        :or,
+        :if,
+      ]
+
       attr_accessor :name
       attr_accessor :arguments
 
@@ -319,10 +325,18 @@ module NewExcel
           raise "Can't find function with name: #{name}"
         end
 
-        val = function.call(*arguments)
+        evaluated_arguments = arguments
+
+        # macro functions don't evaluate arguments here, they evaluate
+        # them inline
+        unless MACRO_FUNCTIONS.include?(name.to_sym)
+          evaluated_arguments = arguments.map { |arg| arg.value }
+        end
+
+        val = function.call(*evaluated_arguments)
 
         val.tap do |val|
-          Event.fire(Event::DEBUG_FUNCTION_ARGUMENT, self, arguments)
+          Event.fire(Event::DEBUG_FUNCTION_ARGUMENT, self, evaluated_arguments)
           Event.fire(Event::DEBUG_FUNCTION_RESULT, self, val)
         end
       end
@@ -346,7 +360,8 @@ module NewExcel
           sheet = file.get_sheet(sheet_name)
           sheet.get_column(cell_name)
         else
-          ProcessState.execution_context[cell_name].value
+          cell = ProcessState.execution_context[cell_name]
+          cell.respond_to?(:value) ? cell.value : cell
         end
       end
 
