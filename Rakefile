@@ -11,3 +11,7 @@ end
 
 task :compile => [:compile_parser]
 task :c => [:compile]
+
+task :clean do
+  `rm -rf lib/new_excel/parser.rb`
+end
