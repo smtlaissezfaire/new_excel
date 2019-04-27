@@ -62,10 +62,6 @@ module NewExcel
 
     def tokens_for_primitive_match(scanner)
       case
-      when match = scanner.scan(/\d+[-\/]\d+[-\/]\d+( \d+\:\d+(\:\d+)?)?/)
-        [:DATE_TIME, match]
-      when match = scanner.scan(/\d+\:\d+/)
-        [:TIME, match]
       when match = scanner.scan(/\d+\.\d+/)
         [:FLOAT, match]
       when match = scanner.scan(/\-?\d+/)

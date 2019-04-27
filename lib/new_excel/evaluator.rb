@@ -76,18 +76,11 @@ module NewExcel
     end
 
     def primitive_function?(fn)
-      fn.is_a?(Proc)
+      fn.is_a?(Proc) || fn.is_a?(Method) || fn.is_a?(UnboundMethod)
     end
 
     def apply_primitive(fn, arguments, env)
-      formal_parameters = fn.parameters.map { |x| x[1] } # works in all rubies?
-      env = bind(formal_parameters, arguments, env)
-
-      params_for_function = formal_parameters.map do |key|
-        env[key]
-      end
-
-      fn.call(*params_for_function)
+      fn.call(*arguments)
     end
 
     def car(list)

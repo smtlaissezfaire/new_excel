@@ -14,3 +14,4 @@
 
 #compiled parser
 lib/new_excel/parser.rb
+lib/new_excel/new_parser.rb

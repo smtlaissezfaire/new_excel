@@ -1,8 +1,5 @@
 module NewExcel
   module ListHelpers
-
-  private
-
     def each_item(list, &block)
       if list.any? { |x| x.is_a?(Array) }
         list[0].map do |item|

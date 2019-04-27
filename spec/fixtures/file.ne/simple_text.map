@@ -1,12 +1,12 @@
 String:
-  a string
+  "a string"
 Integer:
   123
 Float:
   123.456
 Date:
-  2018-01-01
+  "2018-01-01"
 Time:
-  11:00
+  "11:00"
 DateTime:
-  2018-01-01 11:00
+  "2018-01-01 11:00"
