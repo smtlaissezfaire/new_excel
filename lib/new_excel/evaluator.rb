@@ -1,35 +1,119 @@
 module NewExcel
   class Evaluator
-    # def self.evaluate(*args)
-    #   new(*args).evaluate
-    # end
-    #
-    # def self.parser
-    #   @parser = Parser.new
-    # end
-    #
-    # def initialize(context, str)
-    #   @context = context
-    #   @str = str
-    # end
-    #
-    # attr_reader :container_file_path
-    #
-    # def parser
-    #   self.class.parser
-    # end
-    #
-    # def evaluate
-    #   if @str.is_a?(Array)
-    #     @str.map do |el|
-    #       self.class.evaluate(self, el)
-    #     end
-    #   elsif @str.is_a?(String)
-    #     ast = parser.parse(@str)
-    #     ast.value
-    #   else
-    #     raise "unknown parsing type!"
-    #   end
-    # end
+    def evaluate(expr, env={})
+      case expr
+      when Array
+        function_name = car(expr)
+
+        case function_name
+        when :lambda
+          Runtime::Closure.new(expr[1], expr[2], env)
+        when :define
+          env[expr[1]] = evaluate(expr[2], env)
+        when :if
+          eval_if(cdr(expr), env)
+        when :quote
+          quote(expr[1])
+        else
+          apply(evaluate(function_name, env),
+                evaluate_list(cdr(expr), env),
+                env)
+        end
+      when Symbol
+        lookup(expr, env)
+      when Integer, Float, TrueClass, FalseClass, String
+        expr
+      # TODO: Map
+      # AST types - convert to arrays
+      when NewAST::AstBase
+        evaluate(quote(expr), env)
+      else
+        raise "Unknown expression type!, expr: #{expr.inspect}"
+      end
+    end
+
+    def evaluate_list(list, env)
+      list.map do |item|
+        evaluate(item, env)
+      end
+    end
+
+    def eval_if(clauses, env)
+      cond, true_expr, false_expr = clauses
+
+      if evaluate(cond, env)
+        evaluate(true_expr, env)
+      else
+        evaluate(false_expr, env)
+      end
+    end
+
+    def lookup(expr, env)
+      env[expr]
+    end
+
+    def apply(fn, arguments, env)
+      if primitive_function?(fn)
+        apply_primitive(fn, arguments, env)
+      else
+        evaluate(fn.body, bind(fn.formal_arguments, arguments, env))
+      end
+    end
+
+    def bind(formal_arguments, evaluated_arguments, env)
+      new_env = {}
+
+      formal_arguments.zip(evaluated_arguments) do |l1, l2|
+        new_env[l1] = l2
+      end
+
+      env.merge(new_env)
+    end
+
+    def primitive_function?(fn)
+      fn.is_a?(Proc)
+    end
+
+    def apply_primitive(fn, arguments, env)
+      formal_parameters = fn.parameters.map { |x| x[1] } # works in all rubies?
+      env = bind(formal_parameters, arguments, env)
+
+      params_for_function = formal_parameters.map do |key|
+        env[key]
+      end
+
+      fn.call(*params_for_function)
+    end
+
+    def car(list)
+      list[0]
+    end
+
+    def cdr(list)
+      list.slice(1, list.length)
+    end
+
+    def quote(obj)
+      case obj
+      when Symbol, Array, Integer, Float, TrueClass, FalseClass, String
+        obj
+      when NewAST::Symbol
+        obj.symbol
+      when NewAST::Primitive
+        obj.value
+      when NewAST::Function
+        [:lambda, quote(obj.formal_arguments)] + quote_list(obj.body)
+      when NewAST::FunctionCall
+        [quote(obj.name)] + quote_list(obj.arguments)
+      when NewAST::KeyValuePair
+        [:define, quote(obj.key), quote(obj.value)]
+      else
+        raise "Not sure how to quote: #{obj.inspect}"
+      end
+    end
+
+    def quote_list(lst)
+      lst.map { |l| quote(l) }
+    end
   end
 end

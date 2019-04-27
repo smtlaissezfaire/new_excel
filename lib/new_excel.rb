@@ -11,6 +11,7 @@ require 'memoist'
 require 'terminal-table'
 require 'colored'
 
+require "new_excel/new_lang"
 require "new_excel/process_state"
 require "new_excel/event"
 require "new_excel/dependency_resolver"
