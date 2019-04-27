@@ -166,20 +166,7 @@ module NewExcel
       when NewAST::FileReference
         [:lookup_cell, quote(obj.symbol),
                        quote(obj.file_reference)]
-        #     [:quote, quote(obj.symbol)],
-        #     [:evaluate,
-        #       [:lookup_environment, [:quote, quote(obj.file_reference)]]]]
       when NewAST::Map
-        # new_hash = {}
-        # values = obj.to_hash.each do |key, value|
-        #   new_hash[quote(key)] = quote(value)
-        # end
-        #
-        # [:hash_map, new_hash]
-        #
-        # # [:hash_map, quote_list(.to_a)]
-        # obj.to_hash.inject({}) do |hash, key, value|
-        #   hash
         hash = {}
         obj.to_hash.each do |key, value|
           hash[quote(key)] = quote(value)

@@ -63,7 +63,5 @@ module NewExcel
     def body_csv
       body[1..(body.length)]
     end
-
-
   end
 end
