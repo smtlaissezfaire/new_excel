@@ -37,28 +37,14 @@ module NewExcel
         end
       else
         column_name = column_or_column_names
-        # raise "Column #{column_name.inspect} not found!" if !@values.has_key?(column_name)
-        # @values[column_name]
-
         @ast.to_hash[column_name.to_sym].for_printing
-
-        # @ast.get_column(column_name).for_printing
       end
-    end
-
-    def value(*args, &block)
-      super
-      # ProcessState.set_execution_context(environment) do
-      #   super
-      # end
     end
 
     def environment
       @environment ||= begin
         parse
-        env = Runtime.base_environment
-        # env = evaluate([:merge_envs, evaluted_ast, env], env)
-        # val = evaluate([val], env)
+        Runtime.base_environment
       end
     end
 
@@ -83,16 +69,10 @@ module NewExcel
       end
 
       values_by_column = keys_for_selection.map do |key|
-        # key_ast = @ast.to_hash[key.to_sym]
-        # val = evaluate(@ast.to_hash[key.to_sym], environment)
-
         key = key.to_sym
-
         env = environment
 
-        # evaluted_ast = evaluate(@ast, env)
         val = evaluate([:lookup, [:quote, key], environment], environment)
-
         val = [val] unless val.is_a?(Array)
 
         val

@@ -17,19 +17,6 @@ module NewExcel
       attr_accessor :debug
       attr_accessor :strict_error_mode
       attr_accessor :use_colors
-      attr_writer :execution_context
-
-      def execution_context
-        @execution_context || RunTime::BaseEnvironment.new
-      end
-
-      def set_execution_context(env)
-        old_context = self.execution_context
-        self.execution_context = env
-        yield
-      ensure
-        self.execution_context = old_context
-      end
 
       def current_file
         if current_file_path
