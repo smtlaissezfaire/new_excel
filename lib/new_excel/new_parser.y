@@ -35,7 +35,8 @@ rule
       result = NewAST::Function.new(formal_arguments, body)
     } |
     formula {
-      result = NewAST::Function.new([], val[0])
+      body = [val[0]]
+      result = NewAST::Function.new([], body)
     }
 
   formal_function_arguments:

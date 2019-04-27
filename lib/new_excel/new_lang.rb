@@ -8,6 +8,11 @@ module NewExcel
         env[method_name] = mod.method(method_name)
       end
 
+      mod = NewExcel::Evaluator
+      mod.public_instance_methods.each do |method_name|
+        env[method_name] = mod.instance_method(method_name)
+      end
+
       env.dup
     end
 
@@ -34,6 +39,10 @@ module NewExcel
         @key = key
         @value = value
       end
+
+      def for_printing
+        "#{key}:\n#{value}"
+      end
     end
 
     class FunctionCall < AstBase
@@ -44,16 +53,25 @@ module NewExcel
         @name = name
         @arguments = arguments
       end
+
+      def for_printing
+        "#{name}(#{arguments.map(&:for_printing).join(", ")})"
+      end
     end
 
     class Function < AstBase
       def initialize(formal_arguments, body)
         @formal_arguments = formal_arguments
         @body = body
+        @body = [body] if !body.is_a?(Array)
       end
 
       attr_reader :formal_arguments
       attr_reader :body
+
+      def for_printing
+        "= #{body.map(&:for_printing).join("\n")}"
+      end
     end
 
     class FileReference < AstBase
@@ -64,6 +82,10 @@ module NewExcel
 
       attr_reader :file_reference
       attr_reader :symbol
+
+      def for_printing
+        "#{file_reference}.#{symbol}"
+      end
     end
 
     class Symbol < AstBase
@@ -96,6 +118,10 @@ module NewExcel
 
       attr_reader :value
       attr_reader :string
+
+      def for_printing
+        @string
+      end
     end
 
     class PrimitiveInteger < Primitive
@@ -123,6 +149,10 @@ module NewExcel
       def initialize(str)
         super
         @value = str
+      end
+
+      def for_printing
+        "\"#{@string}\""
       end
     end
   end

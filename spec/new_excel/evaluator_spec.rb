@@ -280,14 +280,14 @@ describe NewExcel::Evaluator do
 
     ast = NewExcel::NewAST::FileReference.new(file_reference, column_reference)
 
-    @evaluator.evaluate([:quote, ast]).should == [:lookup, :column, [:lookup_environment, :file]]
+    @evaluator.evaluate([:quote, ast]).should == [:lookup_cell, :column, :file] # Change me?
   end
 
   it "should be able to evaluate a map with the right hash_map" do
     ast = NewExcel::NewAST::Map.new(foo: 1)
 
-    @evaluator.evaluate([:quote, ast]).should == [:hash_map, [[:foo, 1]]]
-    @evaluator.evaluate([:hash_map, [[:foo, 1]]]).should == { foo: 1 }
+    @evaluator.evaluate([:quote, ast]).should == { foo: 1 }
+    @evaluator.evaluate(foo: 1).should == { foo: 1 }
     @evaluator.evaluate(ast).should == { foo: 1 }
   end
 end

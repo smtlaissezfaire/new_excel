@@ -68,7 +68,8 @@ module NewExcel
           options[:only_columns] = args.flatten
         end
 
-        @ast.value(options)
+        # @ast.value(options)
+        value(options)
       end
     end
 
@@ -105,10 +106,47 @@ module NewExcel
       str + "\n"
     end
 
+    def value(options={})
+      options[:with_header] = true unless options.has_key?(:with_header)
+      with_header = options[:with_header]
+      only_columns = options[:only_columns]
+      only_rows = options[:only_rows]
+
+      if only_columns
+        column_indexes = only_columns.map do |column|
+          if column.is_a?(String)
+            val = column_names.index(column)
+            if !val
+              raise "Unknown column: #{column.inspect}; columns are: #{column_names.inspect}"
+            end
+            val
+          elsif column.is_a?(Integer)
+            column - 1
+          else
+            raise "Unknown column type!"
+          end
+        end
+      end
+
+      if only_rows
+        row_indexes = only_rows
+      end
+
+      [].tap do |value|
+        if with_header
+          value << column_names
+        end
+
+        get_body_values(column_indexes, row_indexes).each do |val|
+          value << val
+        end
+      end
+    end
+
   private
 
     def parser
-      @parser ||= Parser.new
+      @parser ||= NewParser.new
     end
 
     def set_process_state

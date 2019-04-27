@@ -241,18 +241,6 @@ CODE
       @obj.parse("-123").value.should == -123
     end
 
-    it "should parse a Date" do
-      @obj.parse("2018-01-01").value.should == Time.parse("2018-01-01 00:00:00")
-    end
-
-    it "should parse a Time" do # FIXME?
-      @obj.parse("11:00").value.should == "11:00"
-    end
-
-    it "should parse a DateTime" do
-      @obj.parse("2018-01-01 11:00:00").value.should == Time.parse("2018-01-01 11:00:00")
-    end
-
     it "should be able to parse a date with slahes" do
       @obj.parse("2019/03/01").value == Time.parse("2019-03-01 00:00:00")
     end

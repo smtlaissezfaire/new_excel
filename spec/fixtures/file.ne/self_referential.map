@@ -1,5 +1,5 @@
 OneValue:
-  1
+  = 1
 ReferencingOneIndirectly:
   = self_referential.OneValue
 ReferencingOneIndirectlyBadColumnValue:

@@ -1,6 +1,14 @@
 module NewExcel
   class Evaluator
     def evaluate(expr, env = {})
+      if ProcessState.debug
+        begin
+          puts "evaluate: #{quote(expr)}"
+        rescue => e
+          puts "ERROR quoting: #{expr.inspect}"
+        end
+      end
+
       case expr
       when Array
         function_name = car(expr)
@@ -14,21 +22,17 @@ module NewExcel
           eval_if(cdr(expr), env)
         when :quote
           quote(expr[1])
-        when :hash_map
-          hash_map(cdr(expr))
+        when :lookup_cell
+          lookup_cell(expr[1], expr[2], env)
         else
           fn = evaluate(function_name, env)
           raise "Can't find function with name: #{function_name.inspect}" unless fn
-
-          apply(fn,
-                evaluate_list(cdr(expr), env),
-                env)
+          evaluated_arguments = evaluate_list(cdr(expr), env)
+          apply(fn, evaluated_arguments, env)
         end
       when Symbol
         lookup(expr, env)
-      when Hash
-        expr
-      when Integer, Float, TrueClass, FalseClass, String
+      when Integer, Float, TrueClass, FalseClass, String, NewExcel::Runtime::Closure, Hash
         expr
       when NewAST::AstBase
         evaluate(quote(expr), env)
@@ -54,14 +58,49 @@ module NewExcel
     end
 
     def lookup(expr, env)
-      env[expr]
+      val ||= env[expr]
+      val ||= lookup_cell(expr, NewExcel::ProcessState.current_sheet_name, env) if expr.is_a?(Symbol)
+      val
+    end
+
+    def lookup_cell(cell_name, sheet_name, env)
+      file = NewExcel::ProcessState.current_file
+
+      return if !file
+
+      if sheet_name && ProcessState.current_sheet_name == sheet_name
+        sheet = ProcessState.current_sheet
+        sheet.parse
+
+        if sheet.column_names.include?(cell_name.to_s)
+          column_function = sheet.evaluated_with_unevaluated_columns[cell_name]
+
+          # if it's arity = 0 (aka no arguments, we evaluate it - otherwise, we return the function)
+          # to be called later
+          if column_function[1].length == 0
+            evaluate([column_function], env)
+          else
+            column_function
+          end
+        end
+      else
+        sheet = file.get_sheet(sheet_name.to_s)
+
+        sheet.parse
+        sheet.get_column(cell_name.to_s)
+      end
     end
 
     def apply(fn, arguments, env)
       if primitive_function?(fn)
         apply_primitive(fn, arguments, env)
-      else
+      elsif fn.is_a?(Runtime::Closure)
         evaluate(fn.body, bind(fn.formal_arguments, arguments, env))
+      elsif fn.is_a?(Array) && fn[0] == :lambda
+        bound_function = evaluate(fn, env)
+        apply(bound_function, arguments, env)
+      else
+        raise "Not sure how to apply function: #{fn.inspect}"
       end
     end
 
@@ -72,7 +111,23 @@ module NewExcel
         new_env[l1] = l2
       end
 
-      env.merge(new_env)
+      merge_envs(env, new_env)
+    end
+
+    def merge_envs(old_env, new_env)
+      old_env = extract_primitive_hash(old_env)
+      new_env = extract_primitive_hash(new_env)
+      old_env.merge(new_env)
+    end
+
+    def extract_primitive_hash(obj)
+      if obj.is_a?(Array) && obj[0] == :hash_map
+        obj[1]
+      elsif obj.is_a?(Hash)
+        obj
+      else
+        raise "Data error! Not sure how extract hash from obj: #{obj.inspect}"
+      end
     end
 
     def primitive_function?(fn)
@@ -80,6 +135,9 @@ module NewExcel
     end
 
     def apply_primitive(fn, arguments, env)
+      if fn.is_a?(UnboundMethod)
+        fn = fn.bind(self)
+      end
       fn.call(*arguments)
     end
 
@@ -93,22 +151,42 @@ module NewExcel
 
     def quote(obj)
       case obj
-      when Symbol, Array, Integer, Float, TrueClass, FalseClass, String
+      when Symbol, Array, Integer, Float, TrueClass, FalseClass, String, Hash
         obj
       when NewAST::Symbol
         obj.symbol
       when NewAST::Primitive
         obj.value
       when NewAST::Function
-        [:lambda, quote(obj.formal_arguments)] + quote_list(obj.body)
+        [:lambda, quote_list(obj.formal_arguments)] + quote_list(obj.body)
       when NewAST::FunctionCall
         [quote(obj.name)] + quote_list(obj.arguments)
       when NewAST::KeyValuePair
         [:define, quote(obj.key), quote(obj.value)]
       when NewAST::FileReference
-        [:lookup, quote(obj.symbol), [:lookup_environment, quote(obj.file_reference)]]
+        [:lookup_cell, quote(obj.symbol),
+                       quote(obj.file_reference)]
+        #     [:quote, quote(obj.symbol)],
+        #     [:evaluate,
+        #       [:lookup_environment, [:quote, quote(obj.file_reference)]]]]
       when NewAST::Map
-        [:hash_map, quote_list(obj.to_hash.to_a)]
+        # new_hash = {}
+        # values = obj.to_hash.each do |key, value|
+        #   new_hash[quote(key)] = quote(value)
+        # end
+        #
+        # [:hash_map, new_hash]
+        #
+        # # [:hash_map, quote_list(.to_a)]
+        # obj.to_hash.inject({}) do |hash, key, value|
+        #   hash
+        hash = {}
+        obj.to_hash.each do |key, value|
+          hash[quote(key)] = quote(value)
+        end
+        hash
+      when Method, UnboundMethod
+        obj
       else
         raise "Not sure how to quote: #{obj.inspect}"
       end

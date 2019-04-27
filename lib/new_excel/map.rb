@@ -6,7 +6,7 @@ module NewExcel
 
         @ast = parser.parse(raw_content)
 
-        @ast.columns.map { |col| col.to_s }.each do |column_name|
+        @ast.to_hash.keys.map { |col| col.to_s }.each do |column_name|
           if @column_names.include?(column_name)
             raise "Duplicate column name: #{column_name.inspect}"
           end
@@ -16,6 +16,14 @@ module NewExcel
 
         @parsed = true
       end
+    end
+
+    def evaluate(obj, env)
+      evaluator.evaluate(obj, env)
+    end
+
+    def evaluator
+      @evaluator ||= Evaluator.new
     end
 
     def get(column_or_column_names = column_names)
@@ -30,8 +38,96 @@ module NewExcel
         # raise "Column #{column_name.inspect} not found!" if !@values.has_key?(column_name)
         # @values[column_name]
 
-        @ast.get_column(column_name).for_printing
+        @ast.to_hash[column_name.to_sym].for_printing
+
+        # @ast.get_column(column_name).for_printing
       end
+    end
+
+    def value(*args, &block)
+      super
+      # ProcessState.set_execution_context(environment) do
+      #   super
+      # end
+    end
+
+    def environment
+      @environment ||= begin
+        parse
+        env = Runtime.base_environment
+        # env = evaluate([:merge_envs, evaluted_ast, env], env)
+        # val = evaluate([val], env)
+      end
+    end
+
+    def evaluated_with_unevaluated_columns
+      @evaluated_with_unevaluated_columns ||= begin
+        parse
+        evaluate(@ast, environment)
+      end
+    end
+
+    def get_body_values(column_indexes, row_indexes)
+      index = 0
+
+      keys = columns
+
+      if column_indexes
+        keys_for_selection = column_indexes.map do |index|
+          keys[index]
+        end
+      else
+        keys_for_selection = keys
+      end
+
+      values_by_column = keys_for_selection.map do |key|
+        # key_ast = @ast.to_hash[key.to_sym]
+        # val = evaluate(@ast.to_hash[key.to_sym], environment)
+
+        key = key.to_sym
+
+        env = environment
+
+        # evaluted_ast = evaluate(@ast, env)
+        val = evaluate([:lookup, [:quote, key], environment], environment)
+
+        val = [val] unless val.is_a?(Array)
+
+        val
+      end
+
+      Event.fire(Event::DEBUG_MAP, self, keys_for_selection, values_by_column)
+
+      # select only the values that match row_indexes
+      if row_indexes
+        values_by_column = values_by_column.map do |values_for_one_column|
+          row_indexes.map do |row_index|
+            values_for_one_column[row_index-1]
+          end
+        end
+      end
+
+      column_length = values_by_column.map { |col| col.length }.max
+
+      # transpose!
+      # normally in
+      # [
+      #   ["col1", "col 1 val 1", "col 1 val 2"],
+      #   ["col2", "col 2 val 1", "col 2 val 2"]
+      # ]
+      # we want it in:
+      # [
+      #   ["col1",        "col2"],
+      #   ["col 1 val 1", "col 2 val 1"],
+      #   ["col 1 val 2", "col 2 val 2"],
+      # ]
+      body_values = []
+
+      1.upto(column_length) do |num|
+        body_values << values_by_column.map { |v| v[num - 1] }
+      end
+
+      body_values
     end
   end
 end

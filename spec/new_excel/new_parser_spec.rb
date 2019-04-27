@@ -10,7 +10,7 @@ describe NewExcel::NewParser do
       res = @obj.parse("= add()")
       res.should be_a_kind_of(NewExcel::NewAST::Function)
 
-      body = res.body
+      body = res.body[0]
 
       body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
       body.name.should == :add
@@ -21,7 +21,7 @@ describe NewExcel::NewParser do
       res = @obj.parse("= any?(true, false)")
       res.should be_a_kind_of(NewExcel::NewAST::Function)
 
-      body = res.body
+      body = res.body[0]
 
       body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
       body.name.should == :any?
@@ -31,7 +31,7 @@ describe NewExcel::NewParser do
       res = @obj.parse("=add(1)")
       res.should be_a_kind_of(NewExcel::NewAST::Function)
 
-      body = res.body
+      body = res.body[0]
 
       body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
       body.name.should == :add
@@ -47,7 +47,7 @@ describe NewExcel::NewParser do
       res = @obj.parse("=add(1, 2, 3)")
       res.should be_a_kind_of(NewExcel::NewAST::Function)
 
-      body = res.body
+      body = res.body[0]
 
       body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
       body.name.should == :add
@@ -89,7 +89,7 @@ describe NewExcel::NewParser do
       res = @obj.parse("= other_sheet.other_column")
       res.should be_a_kind_of(NewExcel::NewAST::Function)
 
-      body = res.body
+      body = res.body[0]
 
       body.should be_a_kind_of(NewExcel::NewAST::FileReference)
       body.file_reference.should == :other_sheet
@@ -110,7 +110,7 @@ describe NewExcel::NewParser do
       res = @obj.parse("= other_sheet.other_column")
 
       res.should be_a_kind_of(NewExcel::NewAST::Function)
-      body = res.body
+      body = res.body[0]
       body.should be_a_kind_of(NewExcel::NewAST::FileReference)
       body.file_reference.should == :other_sheet
       body.symbol.should == :other_column
@@ -128,7 +128,7 @@ describe NewExcel::NewParser do
       res = @obj.parse("= other_column")
 
       res.should be_a_kind_of(NewExcel::NewAST::Function)
-      body = res.body
+      body = res.body[0]
       body.should be_a_kind_of(NewExcel::NewAST::Symbol)
       body.symbol.should == :other_column
     end
@@ -138,7 +138,7 @@ describe NewExcel::NewParser do
 
       res = @obj.parse(str)
       res.should be_a_kind_of(NewExcel::NewAST::Function)
-      body = res.body
+      body = res.body[0]
       body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
       body.arguments.length.should == 1
 
@@ -179,14 +179,14 @@ CODE
       string_2_value.should_not be_nil
       string_2_value.should be_a(NewExcel::NewAST::Function)
 
-      string_2_value.body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
-      string_2_value.body.arguments[0].should be_a(NewExcel::NewAST::Symbol)
+      string_2_value.body[0].should be_a_kind_of(NewExcel::NewAST::FunctionCall)
+      string_2_value.body[0].arguments[0].should be_a(NewExcel::NewAST::Symbol)
     end
 
     it "should be able to call a one letter function " do
       res = @obj.parse "= c()"
       res.should be_a_kind_of(NewExcel::NewAST::Function)
-      res.body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
+      res.body[0].should be_a_kind_of(NewExcel::NewAST::FunctionCall)
     end
 
     it "should be able to define a one character key" do
