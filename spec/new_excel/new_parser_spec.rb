@@ -1,67 +1,67 @@
 require 'spec_helper'
 
-describe NewExcel::NewParser do
+describe NewExcel::Parser do
   before do
-    @obj = NewExcel::NewParser.new
+    @obj = NewExcel::Parser.new
   end
 
   context "functions" do
     it "should be able to parse a function" do
       res = @obj.parse("= add()")
-      res.should be_a_kind_of(NewExcel::NewAST::Function)
+      res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body[0]
 
-      body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
+      body.should be_a_kind_of(NewExcel::AST::FunctionCall)
       body.name.should == :add
       body.arguments.should == []
     end
 
     it "should be able to parse functions with question marks" do
       res = @obj.parse("= any?(true, false)")
-      res.should be_a_kind_of(NewExcel::NewAST::Function)
+      res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body[0]
 
-      body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
+      body.should be_a_kind_of(NewExcel::AST::FunctionCall)
       body.name.should == :any?
     end
 
     it "should be able to parse a function with an argument" do
       res = @obj.parse("=add(1)")
-      res.should be_a_kind_of(NewExcel::NewAST::Function)
+      res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body[0]
 
-      body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
+      body.should be_a_kind_of(NewExcel::AST::FunctionCall)
       body.name.should == :add
       body.arguments.length.should == 1
       arg = body.arguments.first
 
-      arg.should be_a_kind_of(NewExcel::NewAST::PrimitiveInteger)
+      arg.should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
       arg.string.should == "1"
       arg.value.should == 1
     end
 
     it "should be able to parse a function with multiple arguments" do
       res = @obj.parse("=add(1, 2, 3)")
-      res.should be_a_kind_of(NewExcel::NewAST::Function)
+      res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body[0]
 
-      body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
+      body.should be_a_kind_of(NewExcel::AST::FunctionCall)
       body.name.should == :add
       body.arguments.length.should == 3
 
-      body.arguments[0].should be_a_kind_of(NewExcel::NewAST::PrimitiveInteger)
+      body.arguments[0].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
       body.arguments[0].string.should == "1"
       body.arguments[0].value.should == 1
 
-      body.arguments[1].should be_a_kind_of(NewExcel::NewAST::PrimitiveInteger)
+      body.arguments[1].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
       body.arguments[1].string.should == "2"
       body.arguments[1].value.should == 2
 
-      body.arguments[2].should be_a_kind_of(NewExcel::NewAST::PrimitiveInteger)
+      body.arguments[2].should be_a_kind_of(NewExcel::AST::PrimitiveInteger)
       body.arguments[2].string.should == "3"
       body.arguments[2].value.should == 3
     end
@@ -87,11 +87,11 @@ describe NewExcel::NewParser do
       ]
 
       res = @obj.parse("= other_sheet.other_column")
-      res.should be_a_kind_of(NewExcel::NewAST::Function)
+      res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body[0]
 
-      body.should be_a_kind_of(NewExcel::NewAST::FileReference)
+      body.should be_a_kind_of(NewExcel::AST::FileReference)
       body.file_reference.should == :other_sheet
       body.symbol.should == :other_column
     end
@@ -109,9 +109,9 @@ describe NewExcel::NewParser do
 
       res = @obj.parse("= other_sheet.other_column")
 
-      res.should be_a_kind_of(NewExcel::NewAST::Function)
+      res.should be_a_kind_of(NewExcel::AST::Function)
       body = res.body[0]
-      body.should be_a_kind_of(NewExcel::NewAST::FileReference)
+      body.should be_a_kind_of(NewExcel::AST::FileReference)
       body.file_reference.should == :other_sheet
       body.symbol.should == :other_column
     end
@@ -127,9 +127,9 @@ describe NewExcel::NewParser do
 
       res = @obj.parse("= other_column")
 
-      res.should be_a_kind_of(NewExcel::NewAST::Function)
+      res.should be_a_kind_of(NewExcel::AST::Function)
       body = res.body[0]
-      body.should be_a_kind_of(NewExcel::NewAST::Symbol)
+      body.should be_a_kind_of(NewExcel::AST::Symbol)
       body.symbol.should == :other_column
     end
 
@@ -137,13 +137,13 @@ describe NewExcel::NewParser do
       str = "= trim(\" foo \")"
 
       res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::NewAST::Function)
+      res.should be_a_kind_of(NewExcel::AST::Function)
       body = res.body[0]
-      body.should be_a_kind_of(NewExcel::NewAST::FunctionCall)
+      body.should be_a_kind_of(NewExcel::AST::FunctionCall)
       body.arguments.length.should == 1
 
       arg = body.arguments[0]
-      arg.should be_a_kind_of(NewExcel::NewAST::String)
+      arg.should be_a_kind_of(NewExcel::AST::String)
       arg.value.should == " foo "
     end
 
@@ -154,7 +154,7 @@ One:
 CODE
 
       res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::NewAST::Map)
+      res.should be_a_kind_of(NewExcel::AST::Map)
       res.to_hash.keys.should == [:One]
       res.to_hash[:One].value.should == 1
     end
@@ -165,28 +165,28 @@ CODE
       # NewExcel::Tokenizer.get_tokens(str).should == []
 
       res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::NewAST::Map)
+      res.should be_a_kind_of(NewExcel::AST::Map)
     end
 
     it "should be able to parse a function that calls another column" do
       str = File.read("spec/fixtures/file.ne/function_on_column.map")
 
       res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::NewAST::Map)
+      res.should be_a_kind_of(NewExcel::AST::Map)
       res.to_hash.keys.should == [:String1, :String2]
 
       string_2_value = res.to_hash[:String2]
       string_2_value.should_not be_nil
-      string_2_value.should be_a(NewExcel::NewAST::Function)
+      string_2_value.should be_a(NewExcel::AST::Function)
 
-      string_2_value.body[0].should be_a_kind_of(NewExcel::NewAST::FunctionCall)
-      string_2_value.body[0].arguments[0].should be_a(NewExcel::NewAST::Symbol)
+      string_2_value.body[0].should be_a_kind_of(NewExcel::AST::FunctionCall)
+      string_2_value.body[0].arguments[0].should be_a(NewExcel::AST::Symbol)
     end
 
     it "should be able to call a one letter function " do
       res = @obj.parse "= c()"
-      res.should be_a_kind_of(NewExcel::NewAST::Function)
-      res.body[0].should be_a_kind_of(NewExcel::NewAST::FunctionCall)
+      res.should be_a_kind_of(NewExcel::AST::Function)
+      res.body[0].should be_a_kind_of(NewExcel::AST::FunctionCall)
     end
 
     it "should be able to define a one character key" do
@@ -194,7 +194,7 @@ CODE
 
       res = @obj.parse(str)
 
-      res.should be_a_kind_of(NewExcel::NewAST::Map)
+      res.should be_a_kind_of(NewExcel::AST::Map)
       res.to_hash.keys.should == [:X]
     end
   end
@@ -227,12 +227,12 @@ CODE
 
   context "Functions" do
     it "should parse a function with an equal sign" do
-      @obj.parse("= 1").should be_a_kind_of(NewExcel::NewAST::Function)
+      @obj.parse("= 1").should be_a_kind_of(NewExcel::AST::Function)
     end
 
     it "should parse a function with an equal sign as having zero arguments" do
       val = @obj.parse("= 1")
-      val.should be_a_kind_of(NewExcel::NewAST::Function)
+      val.should be_a_kind_of(NewExcel::AST::Function)
       val.formal_arguments.should == []
     end
 
@@ -248,7 +248,7 @@ CODE
       ]
 
       val = @obj.parse(str)
-      val.should be_a_kind_of(NewExcel::NewAST::Function)
+      val.should be_a_kind_of(NewExcel::AST::Function)
       val.formal_arguments.should == []
     end
 
@@ -256,9 +256,9 @@ CODE
       str = "(x) = 1"
 
       val = @obj.parse(str)
-      val.should be_a_kind_of(NewExcel::NewAST::Function)
+      val.should be_a_kind_of(NewExcel::AST::Function)
       val.formal_arguments.length.should == 1
-      val.formal_arguments[0].should be_a_kind_of(NewExcel::NewAST::Symbol)
+      val.formal_arguments[0].should be_a_kind_of(NewExcel::AST::Symbol)
       val.formal_arguments[0].symbol.should == :x
     end
 
@@ -266,11 +266,11 @@ CODE
       str = "(x, y) = 1"
 
       val = @obj.parse(str)
-      val.should be_a_kind_of(NewExcel::NewAST::Function)
+      val.should be_a_kind_of(NewExcel::AST::Function)
       val.formal_arguments.length.should == 2
-      val.formal_arguments[0].should be_a_kind_of(NewExcel::NewAST::Symbol)
+      val.formal_arguments[0].should be_a_kind_of(NewExcel::AST::Symbol)
       val.formal_arguments[0].symbol.should == :x
-      val.formal_arguments[1].should be_a_kind_of(NewExcel::NewAST::Symbol)
+      val.formal_arguments[1].should be_a_kind_of(NewExcel::AST::Symbol)
       val.formal_arguments[1].symbol.should == :y
     end
   end

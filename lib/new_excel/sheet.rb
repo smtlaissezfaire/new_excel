@@ -149,7 +149,7 @@ module NewExcel
   private
 
     def parser
-      @parser ||= NewParser.new
+      @parser ||= Parser.new
     end
 
     def set_process_state

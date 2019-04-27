@@ -34,7 +34,7 @@ module NewExcel
         lookup(expr, env)
       when Integer, Float, TrueClass, FalseClass, String, NewExcel::Runtime::Closure, Hash
         expr
-      when NewAST::AstBase
+      when AST::AstBase
         evaluate(quote(expr), env)
       else
         raise "Unknown expression type!, expr: #{expr.inspect}"
@@ -153,20 +153,20 @@ module NewExcel
       case obj
       when Symbol, Array, Integer, Float, TrueClass, FalseClass, String, Hash
         obj
-      when NewAST::Symbol
+      when AST::Symbol
         obj.symbol
-      when NewAST::Primitive
+      when AST::Primitive
         obj.value
-      when NewAST::Function
+      when AST::Function
         [:lambda, quote_list(obj.formal_arguments)] + quote_list(obj.body)
-      when NewAST::FunctionCall
+      when AST::FunctionCall
         [quote(obj.name)] + quote_list(obj.arguments)
-      when NewAST::KeyValuePair
+      when AST::KeyValuePair
         [:define, quote(obj.key), quote(obj.value)]
-      when NewAST::FileReference
+      when AST::FileReference
         [:lookup_cell, quote(obj.symbol),
                        quote(obj.file_reference)]
-      when NewAST::Map
+      when AST::Map
         hash = {}
         obj.to_hash.each do |key, value|
           hash[quote(key)] = quote(value)

@@ -1,4 +1,4 @@
-class NewExcel::NewParser
+class NewExcel::Parser
 rule
   root: assignments | expression | value
 
@@ -9,7 +9,7 @@ rule
       result = ref
     } |
     assignment {
-      ref = NewAST::Map.new()
+      ref = AST::Map.new()
       ref.add_pair(val[0])
       result = ref
     }
@@ -22,7 +22,7 @@ rule
       hash_key = key_without_colon.to_sym
       hash_value = val[1]
 
-      result = NewAST::KeyValuePair.new(hash_key, hash_value)
+      result = AST::KeyValuePair.new(hash_key, hash_value)
     }
 
   value: function_definition | primitive
@@ -32,11 +32,11 @@ rule
       formal_arguments = val[1] || []
       body = val[3]
 
-      result = NewAST::Function.new(formal_arguments, body)
+      result = AST::Function.new(formal_arguments, body)
     } |
     formula {
       body = [val[0]]
-      result = NewAST::Function.new([], body)
+      result = AST::Function.new([], body)
     }
 
   formal_function_arguments:
@@ -46,7 +46,7 @@ rule
 
   formal_function_argument:
     ID {
-      result = NewAST::Symbol.new(val[0].to_sym)
+      result = AST::Symbol.new(val[0].to_sym)
     }
 
   formula:
@@ -63,7 +63,7 @@ rule
       name = val[0].to_sym
       arguments = Array(val[2]).compact.flatten
 
-      result = NewAST::FunctionCall.new(name, arguments)
+      result = AST::FunctionCall.new(name, arguments)
     }
 
   function_body:
@@ -80,12 +80,12 @@ rule
 
   remote_cell_reference:
     ID DOT ID {
-      result = NewAST::FileReference.new(val[0].to_sym, val[2].to_sym)
+      result = AST::FileReference.new(val[0].to_sym, val[2].to_sym)
     }
 
   local_cell_reference:
     ID {
-      result = NewAST::Symbol.new(val[0].to_sym)
+      result = AST::Symbol.new(val[0].to_sym)
     }
 
   primitive: quoted_string | float | integer | boolean
@@ -93,11 +93,11 @@ rule
   quoted_string: QUOTED_STRING {
     string = val[0]
     string = string[1..string.length-2]
-    result = NewAST::String.new(string)
+    result = AST::String.new(string)
   }
-  float: FLOAT { result = NewAST::PrimitiveFloat.new(val[0]) }
-  integer: INTEGER { result = NewAST::PrimitiveInteger.new(val[0]) }
-  boolean: BOOLEAN { result = NewAST::Boolean.new(val[0]) }
+  float: FLOAT { result = AST::PrimitiveFloat.new(val[0]) }
+  integer: INTEGER { result = AST::PrimitiveInteger.new(val[0]) }
+  boolean: BOOLEAN { result = AST::Boolean.new(val[0]) }
 end
 
 ---- inner

@@ -11,9 +11,9 @@ require 'memoist'
 require 'terminal-table'
 require 'colored'
 
-require "new_excel/new_parser"
-require "new_excel/new_lang"
-
+require "new_excel/parser"
+require "new_excel/run_time"
+require "new_excel/ast"
 require "new_excel/process_state"
 require "new_excel/event"
 require "new_excel/dependency_resolver"

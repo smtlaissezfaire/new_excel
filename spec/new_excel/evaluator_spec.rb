@@ -8,7 +8,7 @@ describe NewExcel::Evaluator do
 
   it "should evaluate a primitive number as a Primitive" do
     ruby_int = 1
-    ast_int = NewExcel::NewAST::PrimitiveInteger.new(ruby_int)
+    ast_int = NewExcel::AST::PrimitiveInteger.new(ruby_int)
 
     @evaluator.evaluate(ast_int).should == ruby_int
     @evaluator.evaluate(ruby_int).should == ruby_int
@@ -16,7 +16,7 @@ describe NewExcel::Evaluator do
 
   it "should evaluate a primitive float as a Primitive" do
     ruby_float = 1.23
-    ast_float = NewExcel::NewAST::PrimitiveFloat.new(ruby_float)
+    ast_float = NewExcel::AST::PrimitiveFloat.new(ruby_float)
 
     @evaluator.evaluate(ast_float).should == ruby_float
     @evaluator.evaluate(ruby_float).should == ruby_float
@@ -25,7 +25,7 @@ describe NewExcel::Evaluator do
   it "should evaluate primitive booleans: true, false" do
     [true, false].each do |bool|
       ruby_boolean = bool
-      ast_boolean = NewExcel::NewAST::Boolean.new("#{ruby_boolean}")
+      ast_boolean = NewExcel::AST::Boolean.new("#{ruby_boolean}")
 
       @evaluator.evaluate(ast_boolean).should == ruby_boolean
       @evaluator.evaluate(ruby_boolean).should == ruby_boolean
@@ -34,7 +34,7 @@ describe NewExcel::Evaluator do
 
   it "should be able to evaluate a string" do
     ruby_string = "test string"
-    ast_string = NewExcel::NewAST::String.new(ruby_string)
+    ast_string = NewExcel::AST::String.new(ruby_string)
 
     @evaluator.evaluate(ast_string).should == ruby_string
     @evaluator.evaluate(ruby_string).should == ruby_string
@@ -44,15 +44,15 @@ describe NewExcel::Evaluator do
   # TODO: checking types convert properly
   it "should evaluate a symbol in the environment"  do
     env = { x: 1 }
-    symbol = NewExcel::NewAST::Symbol.new(:x)
+    symbol = NewExcel::AST::Symbol.new(:x)
     @evaluator.evaluate(symbol, env).should == 1
 
     env = { x: 2 }
-    symbol = NewExcel::NewAST::Symbol.new(:x)
+    symbol = NewExcel::AST::Symbol.new(:x)
     @evaluator.evaluate(symbol, env).should == 2
 
     env = { x: 3 }
-    symbol = NewExcel::NewAST::Symbol.new(:x)
+    symbol = NewExcel::AST::Symbol.new(:x)
     @evaluator.evaluate(symbol, env).should == 3
   end
 
@@ -63,8 +63,8 @@ describe NewExcel::Evaluator do
       }
     }
 
-    symbol = NewExcel::NewAST::Symbol.new(:+)
-    function = NewExcel::NewAST::FunctionCall.new(symbol)
+    symbol = NewExcel::AST::Symbol.new(:+)
+    function = NewExcel::AST::FunctionCall.new(symbol)
     @evaluator.evaluate(function, env).should == 0
   end
 
@@ -75,11 +75,11 @@ describe NewExcel::Evaluator do
       }
     }
 
-    symbol = NewExcel::NewAST::Symbol.new(:+)
-    int1 = NewExcel::NewAST::PrimitiveInteger.new(1)
-    int2 = NewExcel::NewAST::PrimitiveInteger.new(2)
+    symbol = NewExcel::AST::Symbol.new(:+)
+    int1 = NewExcel::AST::PrimitiveInteger.new(1)
+    int2 = NewExcel::AST::PrimitiveInteger.new(2)
 
-    function = NewExcel::NewAST::FunctionCall.new(symbol, [int1, int2])
+    function = NewExcel::AST::FunctionCall.new(symbol, [int1, int2])
     @evaluator.evaluate(function, env).should == 3
   end
 
@@ -199,15 +199,15 @@ describe NewExcel::Evaluator do
       }
     }
 
-    function_call = NewExcel::NewAST::FunctionCall.new(
-      NewExcel::NewAST::Symbol.new(:primitive_plus),
+    function_call = NewExcel::AST::FunctionCall.new(
+      NewExcel::AST::Symbol.new(:primitive_plus),
       [
-        NewExcel::NewAST::PrimitiveInteger.new(1),
-        NewExcel::NewAST::PrimitiveInteger.new(2),
+        NewExcel::AST::PrimitiveInteger.new(1),
+        NewExcel::AST::PrimitiveInteger.new(2),
       ]
     )
 
-    ast = NewExcel::NewAST::Function.new([:x, :y], [
+    ast = NewExcel::AST::Function.new([:x, :y], [
       function_call
     ])
 
@@ -221,10 +221,10 @@ describe NewExcel::Evaluator do
   it "should define a key value pair as a define" do
     env = {}
 
-    key = NewExcel::NewAST::Symbol.new(:x)
-    value = NewExcel::NewAST::PrimitiveInteger.new(1)
+    key = NewExcel::AST::Symbol.new(:x)
+    value = NewExcel::AST::PrimitiveInteger.new(1)
 
-    kv_pair = NewExcel::NewAST::KeyValuePair.new(key, value)
+    kv_pair = NewExcel::AST::KeyValuePair.new(key, value)
 
     @evaluator.evaluate(kv_pair, env)
     env[:x].should == 1
@@ -233,10 +233,10 @@ describe NewExcel::Evaluator do
   it "should define a key value pair as a define with the right key + value" do
     env = {}
 
-    key = NewExcel::NewAST::Symbol.new(:y)
-    value = NewExcel::NewAST::PrimitiveInteger.new(2)
+    key = NewExcel::AST::Symbol.new(:y)
+    value = NewExcel::AST::PrimitiveInteger.new(2)
 
-    kv_pair = NewExcel::NewAST::KeyValuePair.new(key, value)
+    kv_pair = NewExcel::AST::KeyValuePair.new(key, value)
 
     @evaluator.evaluate(kv_pair, env)
     env[:y].should == 2
@@ -244,21 +244,21 @@ describe NewExcel::Evaluator do
 
   it "should be able to quote a symbol" do
     @evaluator.evaluate([:quote, :foo]).should == :foo
-    @evaluator.evaluate([:quote, NewExcel::NewAST::Symbol.new(:bar)]).should == :bar
+    @evaluator.evaluate([:quote, NewExcel::AST::Symbol.new(:bar)]).should == :bar
   end
 
   it "should be able to quote a list without evaluating" do
     @evaluator.evaluate([:quote, [1, 2, 3]]).should == [1,2,3]
 
-    function_call = NewExcel::NewAST::FunctionCall.new(
-      NewExcel::NewAST::Symbol.new(:primitive_plus),
+    function_call = NewExcel::AST::FunctionCall.new(
+      NewExcel::AST::Symbol.new(:primitive_plus),
       [
-        NewExcel::NewAST::PrimitiveInteger.new(1),
-        NewExcel::NewAST::PrimitiveInteger.new(2),
+        NewExcel::AST::PrimitiveInteger.new(1),
+        NewExcel::AST::PrimitiveInteger.new(2),
       ]
     )
 
-    ast = NewExcel::NewAST::Function.new([:x, :y], [
+    ast = NewExcel::AST::Function.new([:x, :y], [
       function_call
     ])
 
@@ -275,16 +275,16 @@ describe NewExcel::Evaluator do
   end
 
   it "should quote foo.bar syntax as a lookup of foo in the bar environment" do
-    file_reference = NewExcel::NewAST::Symbol.new(:file)
-    column_reference = NewExcel::NewAST::Symbol.new(:column)
+    file_reference = NewExcel::AST::Symbol.new(:file)
+    column_reference = NewExcel::AST::Symbol.new(:column)
 
-    ast = NewExcel::NewAST::FileReference.new(file_reference, column_reference)
+    ast = NewExcel::AST::FileReference.new(file_reference, column_reference)
 
     @evaluator.evaluate([:quote, ast]).should == [:lookup_cell, :column, :file] # Change me?
   end
 
   it "should be able to evaluate a map with the right hash_map" do
-    ast = NewExcel::NewAST::Map.new(foo: 1)
+    ast = NewExcel::AST::Map.new(foo: 1)
 
     @evaluator.evaluate([:quote, ast]).should == { foo: 1 }
     @evaluator.evaluate(foo: 1).should == { foo: 1 }
