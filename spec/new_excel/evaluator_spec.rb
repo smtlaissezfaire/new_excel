@@ -273,4 +273,21 @@ describe NewExcel::Evaluator do
     @evaluator.evaluate([:quote, false]).should == false
     @evaluator.evaluate([:quote, "foo"]).should == "foo"
   end
+
+  it "should quote foo.bar syntax as a lookup of foo in the bar environment" do
+    file_reference = NewExcel::NewAST::Symbol.new(:file)
+    column_reference = NewExcel::NewAST::Symbol.new(:column)
+
+    ast = NewExcel::NewAST::FileReference.new(file_reference, column_reference)
+
+    @evaluator.evaluate([:quote, ast]).should == [:lookup, :column, [:lookup_environment, :file]]
+  end
+
+  it "should be able to evaluate a map with the right hash_map" do
+    ast = NewExcel::NewAST::Map.new(foo: 1)
+
+    @evaluator.evaluate([:quote, ast]).should == [:hash_map, [[:foo, 1]]]
+    @evaluator.evaluate([:hash_map, [[:foo, 1]]]).should == { foo: 1 }
+    @evaluator.evaluate(ast).should == { foo: 1 }
+  end
 end

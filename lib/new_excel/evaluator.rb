@@ -1,6 +1,6 @@
 module NewExcel
   class Evaluator
-    def evaluate(expr, env={})
+    def evaluate(expr, env = {})
       case expr
       when Array
         function_name = car(expr)
@@ -14,17 +14,22 @@ module NewExcel
           eval_if(cdr(expr), env)
         when :quote
           quote(expr[1])
+        when :hash_map
+          hash_map(cdr(expr))
         else
-          apply(evaluate(function_name, env),
+          fn = evaluate(function_name, env)
+          raise "Can't find function with name: #{function_name.inspect}" unless fn
+
+          apply(fn,
                 evaluate_list(cdr(expr), env),
                 env)
         end
       when Symbol
         lookup(expr, env)
+      when Hash
+        expr
       when Integer, Float, TrueClass, FalseClass, String
         expr
-      # TODO: Map
-      # AST types - convert to arrays
       when NewAST::AstBase
         evaluate(quote(expr), env)
       else
@@ -107,6 +112,10 @@ module NewExcel
         [quote(obj.name)] + quote_list(obj.arguments)
       when NewAST::KeyValuePair
         [:define, quote(obj.key), quote(obj.value)]
+      when NewAST::FileReference
+        [:lookup, quote(obj.symbol), [:lookup_environment, quote(obj.file_reference)]]
+      when NewAST::Map
+        [:hash_map, quote_list(obj.to_hash.to_a)]
       else
         raise "Not sure how to quote: #{obj.inspect}"
       end
@@ -114,6 +123,10 @@ module NewExcel
 
     def quote_list(lst)
       lst.map { |l| quote(l) }
+    end
+
+    def hash_map(args)
+      Hash[*args]
     end
   end
 end

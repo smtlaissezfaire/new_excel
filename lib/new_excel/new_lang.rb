@@ -45,6 +45,16 @@ module NewExcel
       attr_reader :body
     end
 
+    class FileReference < AstBase
+      def initialize(file_reference, symbol)
+        @file_reference = file_reference
+        @symbol = symbol
+      end
+
+      attr_reader :file_reference
+      attr_reader :symbol
+    end
+
     class Symbol < AstBase
       def initialize(str)
         @str = str
@@ -52,6 +62,16 @@ module NewExcel
       end
 
       attr_reader :symbol
+    end
+
+    class Map < AstBase
+      def initialize(hash)
+        @hash = hash
+      end
+
+      def to_hash
+        @hash
+      end
     end
 
     class Primitive < AstBase
