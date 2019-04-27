@@ -20,16 +20,29 @@ NewExcel::ProcessState.strict_error_mode = false
 # require "irb"
 # IRB.start(__FILE__)
 
-@obj = NewExcel::Parser.new
+env = NewExcel::Runtime.base_environment
+parser = NewExcel::Parser.new
+evaluator = NewExcel::Evaluator.new
 
 # TODO: store keys in map / reuse map
 
 print "ne>: "
 
-ARGF.each_line do |line|
-  parse = @obj.parse(line)
-  value = parse.value
+ARGF.each_line do |expr|
+  begin
+    expr = parser.parse(expr)
+    value = evaluator.evaluate(expr, env)
+    # puts "ENV is: #{env}"
 
-  puts value
+    if value.is_a?(Hash)
+      env = env.merge(value)
+    end
+
+    print value
+    print "\n"
+  rescue => e
+    puts "ERROR: #{e}"
+  end
+
   print "ne>>: "
 end
