@@ -1,5 +1,7 @@
 module NewExcel
   class Data < Sheet
+    extend Memoist
+
     def parse
       return if @parsed
 

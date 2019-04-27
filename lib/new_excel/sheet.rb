@@ -1,6 +1,7 @@
 module NewExcel
   class Sheet
     include ListHelpers
+    extend Memoist
 
     def initialize(file_path)
       @sheet_file_path = file_path
@@ -74,6 +75,8 @@ module NewExcel
     end
 
     alias_method :read, :filter
+
+    memoize :filter
 
     def get_column(column)
       filter(column).map(&:first)

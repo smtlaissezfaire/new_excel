@@ -25,15 +25,15 @@ describe NewExcel::ProcessState do
       @sheet.filter.length.should == 5
     end
 
-    it "should refresh when the value is refeshed (feature? bug?)" do
+    it "should NOT refresh when the value is refeshed (feature? bug?)" do
       @state.max_rows_to_load = 1000
       @sheet.filter.length.should == 9
 
       @state.max_rows_to_load = 2
-      @sheet.filter.length.should == 2
+      @sheet.filter.length.should == 9
 
       @state.max_rows_to_load = 5
-      @sheet.filter.length.should == 5
+      @sheet.filter.length.should == 9
     end
   end
 end

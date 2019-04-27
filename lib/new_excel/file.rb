@@ -45,17 +45,28 @@ module NewExcel
     end
 
     def get_sheet(sheet_name)
-      file = @files_by_sheet_name[sheet_name]
-      type = @sheet_name_to_file_type[sheet_name]
+      if sheet_cache[sheet_name]
+        sheet_cache[sheet_name]
+      else
+        file = @files_by_sheet_name[sheet_name]
+        type = @sheet_name_to_file_type[sheet_name]
 
-      if type == MAP
-        Map.new(file)
-      elsif type == CSV
-        Data.new(file)
+        obj = if type == MAP
+          Map.new(file)
+        elsif type == CSV
+          Data.new(file)
+        end
+
+        sheet_cache[sheet_name] = obj
+        obj
       end
     end
 
   private
+
+    def sheet_cache
+      @sheet_cache ||= {}
+    end
 
     def load_sheet_names
       TYPES.each do |type|

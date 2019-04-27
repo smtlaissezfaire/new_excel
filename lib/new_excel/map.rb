@@ -1,5 +1,7 @@
 module NewExcel
   class Map < Sheet
+    extend Memoist
+
     def parse
       set_process_state do
         return if @parsed
