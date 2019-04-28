@@ -81,6 +81,18 @@ describe NewExcel::BuiltInFunctions do
     end
   end
 
+  context "square" do
+    it "should be able to square a number" do
+      square(1).should == 1
+      square(2).should == 4
+      square(3).should == 9
+    end
+
+    it "should be able to square a list of numbers" do
+      square([1, 2, 3]).should == [1, 4, 9]
+    end
+  end
+
   context "concat" do
     it "should be able to concat two strings" do
       concat("a", "b").should == "ab"

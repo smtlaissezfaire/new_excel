@@ -62,6 +62,12 @@ module NewExcel
       end
     end
 
+    def square(*list)
+      each_item(list) do |item|
+        item ** 2
+      end
+    end
+
     def count(*args)
       args.flatten.length
     end
@@ -304,12 +310,6 @@ module NewExcel
     def any?(*list)
       zipped_lists(list) do |list|
         list.any?
-      end
-    end
-
-    def square(*list)
-      each_item(list) do |item|
-        item ** 2
       end
     end
 
