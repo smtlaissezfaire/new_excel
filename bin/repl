@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << "./lib"
+
+require "bundler/setup"
+require "new_excel"
+require 'byebug'
+
+extend NewExcel::Console
+
+NewExcel::ProcessState.strict_error_mode = false
+
+# You can add fixtures and/or initialization code here to make experimenting
+# with your gem easier. You can also use a different console, if you like.
+
+# (If you use this, don't forget to add pry to your Gemfile!)
+# require "pry"
+# Pry.start
+
+# require "irb"
+# IRB.start(__FILE__)
+
+env = NewExcel::Runtime.base_environment
+parser = NewExcel::Parser.new
+evaluator = NewExcel::Evaluator.new
+
+# TODO: store keys in map / reuse map
+
+print "ne>: "
+
+ARGF.each_line do |expr|
+  begin
+    expr = parser.parse(expr)
+    value = evaluator.evaluate(expr, env)
+    # puts "ENV is: #{env}"
+
+    if value.is_a?(Hash)
+      env = env.merge(value)
+    end
+
+    print value
+    print "\n"
+  rescue => e
+    puts "ERROR: #{e}"
+  end
+
+  print "ne>>: "
+end
