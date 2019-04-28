@@ -103,6 +103,9 @@ end
 ---- inner
 
   def parse(str)
+    # set to true for debugging
+    # http://i.loveruby.net/en/projects/racc/doc/debug.html
+    @yydebug=false
     @q = Tokenizer.get_tokens(str)
     do_parse
   end
