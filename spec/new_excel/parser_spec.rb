@@ -274,4 +274,61 @@ CODE
       val.formal_arguments[1].symbol.should == :y
     end
   end
+
+  describe "misc function parsing" do
+    it "should be able to parse a map with a function" do
+      # lambda((x) add(x, 1))
+      str = "plus: (x, y) = +(x, y)"
+
+      val = @obj.parse(str)
+      val.should be_a_kind_of(NewExcel::AST::Map)
+    end
+
+    it "should be able to set a simple function" do
+      str = "foo := 1"
+      val = @obj.parse(str)
+      val.should be_a_kind_of(NewExcel::AST::Map)
+      val.to_hash.keys.should include(:foo)
+      val.to_hash[:foo].should be_a_kind_of(NewExcel::AST::Function)
+    end
+
+    it "should be able to parse a define" do
+      str = "define(one, 1)"
+
+      val = @obj.parse(str)
+      val.should be_a_kind_of(NewExcel::AST::FunctionCall)
+    end
+
+    it "should be able to pass a function as an anonymous function as an argument" do
+      str = "define(one, = 1)"
+
+      val = @obj.parse(str)
+      val.should be_a_kind_of(NewExcel::AST::FunctionCall)
+    end
+
+    it "should be able to pass a function as an anonymous function with params as an argument" do
+      str = "define(one, (x) = 1)"
+
+      val = @obj.parse(str)
+      val.should be_a_kind_of(NewExcel::AST::FunctionCall)
+    end
+
+    it "should be able to wrap an annonymous function in parens and call it (part 2)" do
+      str = "(= 1)()"
+
+      NewExcel::Tokenizer.tokenize(str).should == [
+        [:OPEN_PAREN, "("],
+        [:EQ, "="],
+        [:INTEGER, "1"],
+        [:CLOSE_PAREN, ")"],
+        [:OPEN_PAREN, "("],
+        [:CLOSE_PAREN, ")"],
+        [false, false]
+      ]
+
+      val = @obj.parse(str)
+      val.should be_a_kind_of(NewExcel::AST::FunctionCall)
+    end
+
+  end
 end

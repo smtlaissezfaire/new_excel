@@ -28,7 +28,7 @@ module NewExcel
           fn = evaluate(function_name, env)
           raise "Can't find function with name: #{function_name.inspect}" unless fn
           evaluated_arguments = evaluate_list(cdr(expr), env)
-          apply(fn, evaluated_arguments, env)
+          apply_with_explicit_environment(fn, evaluated_arguments, env)
         end
       when Symbol
         lookup(expr, env)
@@ -91,14 +91,14 @@ module NewExcel
       end
     end
 
-    def apply(fn, arguments, env)
+    def apply_with_explicit_environment(fn, arguments, env)
       if primitive_function?(fn)
         apply_primitive(fn, arguments, env)
       elsif fn.is_a?(Runtime::Closure)
         evaluate(fn.body, bind(fn.formal_arguments, arguments, env))
       elsif fn.is_a?(Array) && fn[0] == :lambda
         bound_function = evaluate(fn, env)
-        apply(bound_function, arguments, env)
+        apply_with_explicit_environment(bound_function, arguments, env)
       else
         raise "Not sure how to apply function: #{fn.inspect}"
       end
@@ -160,7 +160,13 @@ module NewExcel
       when AST::Function
         [:lambda, quote_list(obj.formal_arguments)] + quote_list(obj.body)
       when AST::FunctionCall
-        [quote(obj.name)] + quote_list(obj.arguments)
+        [quote(obj.reference)] + quote_list(obj.arguments)
+      when AST::FunctionReference
+        if obj.anonymous?
+          quote(obj.function)
+        else
+          quote(obj.name)
+        end
       when AST::KeyValuePair
         [:define, quote(obj.key), quote(obj.value)]
       when AST::FileReference

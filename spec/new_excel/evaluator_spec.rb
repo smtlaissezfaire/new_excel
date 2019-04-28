@@ -290,4 +290,27 @@ describe NewExcel::Evaluator do
     @evaluator.evaluate(foo: 1).should == { foo: 1 }
     @evaluator.evaluate(ast).should == { foo: 1 }
   end
+
+  it "should be able to evaluate an anonymous function" do
+    parser = NewExcel::Parser.new
+    ast = parser.parse("(= 1)()")
+
+    ast.should be_a_kind_of(NewExcel::AST::FunctionCall)
+    # ast.name.should be_nil
+
+    ast.for_printing.should == "(= 1)()"
+
+    @evaluator.evaluate([:quote, ast]).should == [[:lambda, [], 1]]
+  end
+
+  it "should be able to evaluate an anonymous function without calling it" do
+    parser = NewExcel::Parser.new
+    ast = parser.parse("= 1")
+
+    ast.should be_a_kind_of(NewExcel::AST::Function)
+
+    ast.for_printing.should == "= 1"
+
+    @evaluator.evaluate([:quote, ast]).should == [:lambda, [], 1]
+  end
 end

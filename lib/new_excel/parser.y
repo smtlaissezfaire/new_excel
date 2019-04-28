@@ -1,6 +1,6 @@
 class NewExcel::Parser
 rule
-  root: assignments | expression | value
+  root: assignments | expressions
 
   assignments:
     assignments assignment {
@@ -15,9 +15,9 @@ rule
     }
 
   assignment:
-    KEY_WITH_COLON value {
+    KEY_WITH_COLON expression {
       key_with_colon = val[0]
-      key_without_colon = key_with_colon[0..(key_with_colon.length-2)]
+      key_without_colon = key_with_colon[0..(key_with_colon.length-2)].strip
 
       hash_key = key_without_colon.to_sym
       hash_value = val[1]
@@ -25,7 +25,35 @@ rule
       result = AST::KeyValuePair.new(hash_key, hash_value)
     }
 
-  value: function_definition | primitive
+  expressions:
+    expression expressions |
+    expression
+
+  expression:
+    assignment | function_call | function_definition | cell_reference | primitive
+
+  function_call:
+    function_reference OPEN_PAREN optional_function_arguments CLOSE_PAREN {
+      function_reference = val[0]
+      arguments = Array(val[2]).compact.flatten
+
+      result = AST::FunctionCall.new(function_reference, arguments)
+    }
+
+  function_reference:
+    OPEN_PAREN function_definition CLOSE_PAREN { result = AST::FunctionReference.new(val[1]) } |
+    function_definition                        { result = AST::FunctionReference.new(val[0]) } |
+    ID                                         { result = AST::FunctionReference.new(val[0]) }
+
+  optional_function_arguments:
+    |
+    function_arguments { result = val }
+
+  function_arguments:
+    function_arguments COMMA function_argument  { result = [val[0], val[2]] } |
+    function_argument { result = val[0] }
+
+  function_argument: expression
 
   function_definition:
     OPEN_PAREN formal_function_arguments CLOSE_PAREN formula {
@@ -50,31 +78,9 @@ rule
     }
 
   formula:
-    EQ formula_body {
+    EQ expression {
       result = val[1]
     }
-
-  formula_body: expression
-
-  expression: function_call | cell_reference | primitive
-
-  function_call:
-    ID OPEN_PAREN function_body CLOSE_PAREN {
-      name = val[0].to_sym
-      arguments = Array(val[2]).compact.flatten
-
-      result = AST::FunctionCall.new(name, arguments)
-    }
-
-  function_body:
-    |
-    function_arguments { result = val }
-
-  function_arguments:
-    function_arguments COMMA function_argument  { result = [val[0], val[2]] } |
-    function_argument { result = val[0] }
-
-  function_argument: expression
 
   cell_reference: remote_cell_reference | local_cell_reference
 

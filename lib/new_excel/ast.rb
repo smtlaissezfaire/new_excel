@@ -17,16 +17,68 @@ module NewExcel
     end
 
     class FunctionCall < AstBase
-      attr_reader :name
       attr_reader :arguments
 
-      def initialize(name, arguments=[])
-        @name = name
+      def initialize(function_reference, arguments=[])
+        @function_reference = function_reference
         @arguments = arguments
       end
 
+      def reference
+        @function_reference
+      end
+
+      def name
+        @function_reference.name
+      end
+
+      def function_reference_string
+        @function_reference.for_printing
+      end
+
       def for_printing
-        "#{name}(#{arguments.map(&:for_printing).join(", ")})"
+        "#{function_reference_string}(#{arguments.map(&:for_printing).join(", ")})"
+      end
+    end
+
+    class FunctionReference < AstBase
+      def initialize(reference)
+        ref = case reference
+        when Function
+          @anonymous = true
+          reference
+        when ::String, ::Symbol
+          reference.to_sym
+        else
+          raise "Unknown type of FunctionReference: #{reference.inspect}"
+        end
+
+        @reference = ref
+      end
+
+      def anonymous?
+        @anonymous ? true : false
+      end
+
+      def named?
+        !anonymous?
+      end
+
+      def name
+        @reference if named?
+      end
+
+      def function
+        @reference if anonymous?
+      end
+
+      def for_printing
+        case @reference
+        when Function
+          "(" + @reference.for_printing + ")"
+        else
+          @reference.to_s
+        end
       end
     end
 
