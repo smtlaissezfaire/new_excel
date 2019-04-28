@@ -78,7 +78,13 @@ module NewExcel
       end
 
       def add_pair(pair)
-        @hash[pair.key] = pair.value
+        key, value = pair.key, pair.value
+
+        if @hash.has_key?(key)
+          raise "Map already has key: #{key}"
+        end
+
+        @hash[key] = value
       end
     end
 

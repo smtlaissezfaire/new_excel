@@ -203,7 +203,6 @@ describe NewExcel::Map do
     end
 
     it "should only allow unique columns" do
-      pending "FIXME"
       lambda {
         @obj.parse
       }.should raise_error(RuntimeError)
