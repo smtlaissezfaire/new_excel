@@ -1,6 +1,8 @@
 module NewExcel
   class Evaluator
-    def evaluate(expr, env = {})
+    def evaluate(expr, env = @env || {})
+      @env = env
+
       if ProcessState.debug
         begin
           puts "evaluate: #{quote(expr)}"
@@ -15,55 +17,56 @@ module NewExcel
 
         case function_name
         when :lambda
-          Runtime::Closure.new(expr[1], expr[2], env)
+          #TODO: pretty sure @env should be dupped here?
+          Runtime::Closure.new(expr[1], expr[2], @env)
         when :define
-          env[expr[1]] = evaluate(expr[2], env)
+          env[expr[1]] = evaluate(expr[2])
         when :if
-          eval_if(cdr(expr), env)
+          eval_if(cdr(expr))
         when :quote
           quote(expr[1])
         when :lookup_cell
-          lookup_cell(expr[1], expr[2], env)
+          lookup_cell(expr[1], expr[2])
         else
-          fn = evaluate(function_name, env)
+          fn = evaluate(function_name)
           raise "Can't find function with name: #{function_name.inspect}" unless fn
-          evaluated_arguments = evaluate_list(cdr(expr), env)
-          apply_with_explicit_environment(fn, evaluated_arguments, env)
+          evaluated_arguments = evaluate_list(cdr(expr))
+          apply_with_explicit_environment(fn, evaluated_arguments)
         end
       when Symbol
-        lookup(expr, env)
+        lookup(expr)
       when Integer, Float, TrueClass, FalseClass, String, NewExcel::Runtime::Closure, Hash
         expr
       when AST::AstBase
-        evaluate(quote(expr), env)
+        evaluate(quote(expr))
       else
         raise "Unknown expression type!, expr: #{expr.inspect}"
       end
     end
 
-    def evaluate_list(list, env)
+    def evaluate_list(list)
       list.map do |item|
-        evaluate(item, env)
+        evaluate(item)
       end
     end
 
-    def eval_if(clauses, env)
+    def eval_if(clauses)
       cond, true_expr, false_expr = clauses
 
-      if evaluate(cond, env)
-        evaluate(true_expr, env)
+      if evaluate(cond)
+        evaluate(true_expr)
       else
-        evaluate(false_expr, env)
+        evaluate(false_expr)
       end
     end
 
-    def lookup(expr, env)
-      val ||= env[expr]
-      val ||= lookup_cell(expr, NewExcel::ProcessState.current_sheet_name, env) if expr.is_a?(Symbol)
+    def lookup(expr)
+      val ||= @env[expr]
+      val ||= lookup_cell(expr, NewExcel::ProcessState.current_sheet_name) if expr.is_a?(Symbol)
       val
     end
 
-    def lookup_cell(cell_name, sheet_name, env)
+    def lookup_cell(cell_name, sheet_name)
       file = NewExcel::ProcessState.current_file
 
       return if !file
@@ -78,7 +81,7 @@ module NewExcel
           # if it's arity = 0 (aka no arguments, we evaluate it - otherwise, we return the function)
           # to be called later
           if column_function[1].length == 0
-            evaluate([column_function], env)
+            evaluate([column_function])
           else
             column_function
           end
@@ -91,27 +94,37 @@ module NewExcel
       end
     end
 
-    def apply_with_explicit_environment(fn, arguments, env)
-      if primitive_function?(fn)
-        apply_primitive(fn, arguments, env)
-      elsif fn.is_a?(Runtime::Closure)
-        evaluate(fn.body, bind(fn.formal_arguments, arguments, env))
-      elsif fn.is_a?(Array) && fn[0] == :lambda
-        bound_function = evaluate(fn, env)
-        apply_with_explicit_environment(bound_function, arguments, env)
-      else
-        raise "Not sure how to apply function: #{fn.inspect}"
+    def apply_with_explicit_environment(fn, arguments)
+      with_env(@env) do
+        if primitive_function?(fn)
+          apply_primitive(fn, arguments)
+        elsif fn.is_a?(Runtime::Closure)
+          evaluate(fn.body, bind(fn.formal_arguments, arguments))
+        elsif fn.is_a?(Array) && fn[0] == :lambda
+          bound_function = evaluate(fn)
+          apply_with_explicit_environment(bound_function, arguments)
+        else
+          raise "Not sure how to apply function: #{fn.inspect}"
+        end
       end
     end
 
-    def bind(formal_arguments, evaluated_arguments, env)
+    def with_env(env)
+      old_env = @env
+      @env = env
+      yield
+    ensure
+      @env = old_env
+    end
+
+    def bind(formal_arguments, evaluated_arguments)
       new_env = {}
 
       formal_arguments.zip(evaluated_arguments) do |l1, l2|
         new_env[l1] = l2
       end
 
-      merge_envs(env, new_env)
+      merge_envs(@env, new_env)
     end
 
     def merge_envs(old_env, new_env)
@@ -134,7 +147,7 @@ module NewExcel
       fn.is_a?(Proc) || fn.is_a?(Method) || fn.is_a?(UnboundMethod)
     end
 
-    def apply_primitive(fn, arguments, env)
+    def apply_primitive(fn, arguments)
       if fn.is_a?(UnboundMethod)
         fn = fn.bind(self)
       end

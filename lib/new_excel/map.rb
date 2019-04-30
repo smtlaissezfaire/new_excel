@@ -72,7 +72,7 @@ module NewExcel
         key = key.to_sym
         env = environment
 
-        val = evaluate([:lookup, [:quote, key], environment], environment)
+        val = evaluate([:lookup, [:quote, key]], environment)
         val = [val] unless val.is_a?(Array)
 
         val
