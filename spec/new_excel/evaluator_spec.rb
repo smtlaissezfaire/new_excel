@@ -313,4 +313,69 @@ describe NewExcel::Evaluator do
 
     @evaluator.evaluate([:quote, ast]).should == [:lambda, [], 1]
   end
+
+  it "should not retain a local variable in the environment" do
+    parser = NewExcel::Parser.new
+    ast = parser.parse("((n) = add(n, n))(10)")
+    env = NewExcel::Runtime.base_environment
+
+    lambda {
+      @evaluator.evaluate(ast, env).should == 20
+    }.should_not change { env.keys }
+  end
+
+  it "should be able to parse an anonymous function with new lines" do
+    parser = NewExcel::Parser.new
+
+    ast = parser.parse <<-CODE
+      ((n) =
+        n
+      )(10)
+    CODE
+
+    @evaluator.evaluate(ast).should == 10
+  end
+
+  it "should allow implicit progn support in lambdas" do
+    pending "TODO"
+    parser = NewExcel::Parser.new
+
+    ast = parser.parse <<-CODE
+      ((n) =
+        1
+        2
+        3
+        n
+      )(10)
+    CODE
+
+    @evaluator.evaluate(ast).should == 10
+  end
+
+  # it "should not retain a defined variable outside of a scoped lambda" do
+  #   # parser = NewExcel::Parser.new
+  #   # ast = parser.parse <<- CODE
+  #   #   lambda(x) x()
+  #   # CODE
+  #   # env = NewExcel::Runtime.base_environment
+  #   #
+  #   # lambda {
+  #   #   @evaluator.evaluate(ast, env).should == 20
+  #   # }.should_not change { env.keys }
+  # end
+  #
+  # it "should not retain a defined variable outside of a scoped lambda" do
+  #   parser = NewExcel::Parser.new
+  #
+  #   ast = parser.parse <<-CODE
+  #     ((n) =
+  #       n
+  #     )(10)
+  #   CODE
+  #
+  #   lambda {
+  #     @evaluator.evaluate(ast).should == 10
+  #   }.should_not change { env.keys }
+  #
+  # end
 end
