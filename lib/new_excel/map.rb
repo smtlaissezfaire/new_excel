@@ -20,7 +20,11 @@ module NewExcel
       end
     end
 
-    def evaluate(obj, env)
+    def default_environment
+      Runtime.base_environment
+    end
+
+    def evaluate(obj, env = default_environment)
       evaluator.evaluate(obj, env)
     end
 
@@ -41,17 +45,10 @@ module NewExcel
       end
     end
 
-    def environment
-      @environment ||= begin
-        parse
-        Runtime.base_environment
-      end
-    end
-
     def evaluated_with_unevaluated_columns
       @evaluated_with_unevaluated_columns ||= begin
         parse
-        evaluate(@ast, environment)
+        evaluate(@ast)
       end
     end
 
@@ -70,9 +67,8 @@ module NewExcel
 
       values_by_column = keys_for_selection.map do |key|
         key = key.to_sym
-        env = environment
 
-        val = evaluate([:lookup, [:quote, key]], environment)
+        val = evaluate([:lookup, [:quote, key]])
         val = [val] unless val.is_a?(Array)
 
         val

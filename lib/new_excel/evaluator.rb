@@ -1,6 +1,6 @@
 module NewExcel
   class Evaluator
-    def evaluate(expr, env = @env || {})
+    def evaluate(expr, env = @env || Runtime.base_environment)
       @env = env
 
       if ProcessState.debug

@@ -323,8 +323,8 @@ STR
 
       @obj.evaluate(:Value, @obj.evaluated_with_unevaluated_columns).should == lambda_expression
       @obj.evaluate(lambda_expression, @obj.evaluated_with_unevaluated_columns).should be_a_kind_of(NewExcel::Runtime::Closure)
-      @obj.evaluate([lambda_expression], @obj.evaluated_with_unevaluated_columns.merge(@obj.environment)).should == range_list
-      @obj.evaluate([:Value], @obj.evaluated_with_unevaluated_columns.merge(@obj.environment)).should == range_list
+      @obj.evaluate([lambda_expression], @obj.evaluated_with_unevaluated_columns.merge(@obj.default_environment)).should == range_list
+      @obj.evaluate([:Value], @obj.evaluated_with_unevaluated_columns.merge(@obj.default_environment)).should == range_list
     end
 
     it "should be able to get a count of the values" do
