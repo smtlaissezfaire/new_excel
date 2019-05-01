@@ -20,11 +20,12 @@ module NewExcel
       def initialize(formal_arguments, body, env)
         @formal_arguments = formal_arguments
         @body = body
-        @env = env
+        @env = env.dup
       end
 
       attr_reader :formal_arguments
       attr_reader :body
+      attr_reader :env
     end
   end
 end

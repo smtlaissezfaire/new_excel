@@ -123,7 +123,7 @@ module NewExcel
         if primitive_function?(fn)
           apply_primitive(fn, arguments)
         elsif fn.is_a?(Runtime::Closure)
-          evaluate(fn.body, bind(fn.formal_arguments, arguments))
+          evaluate(fn.body, bind(fn.formal_arguments, arguments, fn.env))
         elsif fn.is_a?(Array) && fn[0] == :lambda
           bound_function = evaluate(fn)
           apply_with_explicit_environment(bound_function, arguments)
@@ -141,20 +141,18 @@ module NewExcel
       @env = old_env
     end
 
-    def bind(formal_arguments, evaluated_arguments)
+    def bind(formal_arguments, evaluated_arguments, function_binding)
       new_env = {}
 
       formal_arguments.zip(evaluated_arguments) do |l1, l2|
         new_env[l1] = l2
       end
 
-      merge_envs(@env, new_env)
+      merge_envs(@env, function_binding, new_env)
     end
 
-    def merge_envs(old_env, new_env)
-      old_env = extract_primitive_hash(old_env)
-      new_env = extract_primitive_hash(new_env)
-      old_env.merge(new_env)
+    def merge_envs(*envs)
+      envs.inject(&:merge)
     end
 
     def extract_primitive_hash(obj)

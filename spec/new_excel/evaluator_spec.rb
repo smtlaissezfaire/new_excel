@@ -411,14 +411,14 @@ describe NewExcel::Evaluator do
 
       y: = x
 
-      define(y_value_before_binding, y())
+      define(y_value_before_redefinition, y())
       define(x, 20)
-      define(y_value_after_binding, y())
+      define(y_value_after_redefinition, y())
 
-      list(y_value_before_binding, y_value_after_binding)
+      list(y_value_before_redefinition, y_value_after_redefinition)
     CODE
 
-    @evaluator.evaluate(ast).should == [10, 20]
+    @evaluator.evaluate(ast).should == [10, 10]
   end
 
   it "should not retain a local variable in the environment" do
