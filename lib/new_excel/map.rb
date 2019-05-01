@@ -21,7 +21,20 @@ module NewExcel
     end
 
     def default_environment
-      Runtime.base_environment.merge(@ast.map.to_hash)
+      env = Runtime.base_environment.dup
+
+      @ast.declarations.each do |declaration|
+        evaluate(@ast, env)
+      end
+
+      env.merge(@ast.map.to_hash)
+    end
+
+    attr_reader :ast
+
+    def statements
+      parse
+      @ast.statements
     end
 
     def evaluate(obj, env = default_environment)
@@ -52,6 +65,15 @@ module NewExcel
       end
     end
 
+    def evaluate_column(column_name)
+      key = column_name.to_sym
+
+      val = evaluate([:lookup, [:quote, key]])
+      val = [val] unless val.is_a?(Array)
+
+      val
+    end
+
     def get_body_values(column_indexes, row_indexes)
       index = 0
 
@@ -66,12 +88,7 @@ module NewExcel
       end
 
       values_by_column = keys_for_selection.map do |key|
-        key = key.to_sym
-
-        val = evaluate([:lookup, [:quote, key]])
-        val = [val] unless val.is_a?(Array)
-
-        val
+        evaluate_column(key)
       end
 
       Event.fire(Event::DEBUG_MAP, self, keys_for_selection, values_by_column)

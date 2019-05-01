@@ -1,0 +1,10 @@
+include("simple_text")
+
+BasicIntDirect:
+  = simple_text.Integer
+
+BasicIntIncludedNotCalled:
+  = Integer
+
+AddIntegerAndFloat:
+  = add(Integer, Float)

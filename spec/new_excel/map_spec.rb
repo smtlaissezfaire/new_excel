@@ -479,4 +479,22 @@ STR
       end
     end
   end
+
+  context "including other files" do
+    before do
+      @obj = basic_file.get_sheet("inclusion")
+    end
+
+    it "should work when indirectly referenced" do
+      @obj.get_column("BasicIntDirect").should == [123]
+    end
+
+    it "should be able to include columns from other files" do
+      @obj.get_column("BasicIntIncludedNotCalled").should == [123]
+    end
+
+    it "should be able to include columns from other files" do
+      @obj.get_column("AddIntegerAndFloat").should == [123 + 123.456]
+    end
+  end
 end

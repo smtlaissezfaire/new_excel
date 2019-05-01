@@ -19,7 +19,7 @@ module NewExcel
         when :lambda
           Runtime::Closure.new(expr[1], expr[2], @env)
         when :define
-          env[expr[1]] = evaluate(expr[2])
+          env[expr[1].to_sym] = evaluate(expr[2])
         when :if
           eval_if(cdr(expr))
         when :quote
@@ -229,6 +229,30 @@ module NewExcel
 
     def hash_map(args)
       Hash[*args]
+    end
+
+    # TODO: This current evaluates all columns. That sucks.
+    # Would also be nice to unify the behavior of NewExcel::AST::Function
+    # in lookup() so that all function types act the same way.  A call to:
+    # = foo should evaluate the function foo().  If you wanted the raw function,
+    # you could use function(foo).  And overall, functions / columns should
+    # all be lazy, not eager.  This also includes included columns
+    def include(sheet_name)
+      file = NewExcel::ProcessState.current_file
+
+      return if !file
+
+      if sheet_name && ProcessState.current_sheet_name == sheet_name
+        raise "Can't include() from the current file!"
+      end
+
+      sheet = file.get_sheet(sheet_name.to_s)
+
+      sheet.parse
+      sheet.column_names.each do |column_name|
+        statement = [:define, column_name, [:lookup_cell, quote(column_name), quote(sheet_name)]]
+        evaluate(statement)
+      end
     end
   end
 end
