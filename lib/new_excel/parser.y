@@ -1,18 +1,17 @@
 class NewExcel::Parser
 rule
-  root: assignments | expressions
+  root: expressions {
+    statement_list = AST::StatementList.new
+    statement_list.statements = val.flatten
+    result = statement_list
+  }
 
-  assignments:
-    assignments assignment {
-      ref = val[0]
-      ref.add_pair(val[1])
-      result = ref
-    } |
-    assignment {
-      ref = AST::Map.new()
-      ref.add_pair(val[0])
-      result = ref
-    }
+  expressions:
+    expression expressions { result = [val[0], val[1]] } |
+    expression
+
+  expression:
+    assignment | function_call | function_definition | cell_reference | primitive
 
   assignment:
     KEY_WITH_COLON expression {
@@ -24,13 +23,6 @@ rule
 
       result = AST::KeyValuePair.new(hash_key, hash_value)
     }
-
-  expressions:
-    expression expressions |
-    expression
-
-  expression:
-    assignment | function_call | function_definition | cell_reference | primitive
 
   function_call:
     function_reference OPEN_PAREN optional_function_arguments CLOSE_PAREN {

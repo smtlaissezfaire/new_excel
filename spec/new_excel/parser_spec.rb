@@ -5,9 +5,33 @@ describe NewExcel::Parser do
     @obj = NewExcel::Parser.new
   end
 
+  def parse(str)
+    @obj.parse(str)
+  end
+
+  def parse_statement(str)
+    obj = parse(str)
+
+    if obj
+      obj.declarations.first
+    else
+      raise "Couldn't parse str: #{str}"
+    end
+  end
+
+  def parse_map(str)
+    obj = parse(str)
+
+    if obj
+      obj.map
+    else
+      raise "Couldn't parse str: #{str}"
+    end
+  end
+
   context "functions" do
     it "should be able to parse a function" do
-      res = @obj.parse("= add()")
+      res = parse_statement("= add()")
       res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body[0]
@@ -18,7 +42,7 @@ describe NewExcel::Parser do
     end
 
     it "should be able to parse functions with question marks" do
-      res = @obj.parse("= any?(true, false)")
+      res = parse_statement("= any?(true, false)")
       res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body[0]
@@ -28,7 +52,7 @@ describe NewExcel::Parser do
     end
 
     it "should be able to parse a function with an argument" do
-      res = @obj.parse("=add(1)")
+      res = parse_statement("=add(1)")
       res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body[0]
@@ -44,7 +68,7 @@ describe NewExcel::Parser do
     end
 
     it "should be able to parse a function with multiple arguments" do
-      res = @obj.parse("=add(1, 2, 3)")
+      res = parse_statement("=add(1, 2, 3)")
       res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body[0]
@@ -67,7 +91,7 @@ describe NewExcel::Parser do
     end
 
     it "should be able to evaluate the function" do
-      ast = @obj.parse("add(1, 2)")
+      ast = parse_statement("add(1, 2)")
       evaluator = NewExcel::Evaluator.new
 
       env = NewExcel::Runtime.base_environment
@@ -86,7 +110,7 @@ describe NewExcel::Parser do
         [false, false],
       ]
 
-      res = @obj.parse("= other_sheet.other_column")
+      res = parse_statement("= other_sheet.other_column")
       res.should be_a_kind_of(NewExcel::AST::Function)
 
       body = res.body[0]
@@ -107,7 +131,7 @@ describe NewExcel::Parser do
         [false, false],
       ]
 
-      res = @obj.parse("= other_sheet.other_column")
+      res = parse_statement("= other_sheet.other_column")
 
       res.should be_a_kind_of(NewExcel::AST::Function)
       body = res.body[0]
@@ -125,7 +149,7 @@ describe NewExcel::Parser do
         [false, false],
       ]
 
-      res = @obj.parse("= other_column")
+      res = parse_statement("= other_column")
 
       res.should be_a_kind_of(NewExcel::AST::Function)
       body = res.body[0]
@@ -136,7 +160,7 @@ describe NewExcel::Parser do
     it "should allow strings passed to arguments" do
       str = "= trim(\" foo \")"
 
-      res = @obj.parse(str)
+      res = parse_statement(str)
       res.should be_a_kind_of(NewExcel::AST::Function)
       body = res.body[0]
       body.should be_a_kind_of(NewExcel::AST::FunctionCall)
@@ -153,7 +177,7 @@ One:
   1
 CODE
 
-      res = @obj.parse(str)
+      res = parse_map(str)
       res.should be_a_kind_of(NewExcel::AST::Map)
       res.to_hash.keys.should == [:One]
       res.to_hash[:One].value.should == 1
@@ -165,13 +189,14 @@ CODE
       # NewExcel::Tokenizer.get_tokens(str).should == []
 
       res = @obj.parse(str)
-      res.should be_a_kind_of(NewExcel::AST::Map)
+      res.should be_a_kind_of(NewExcel::AST::StatementList)
+      res.map.should be_a_kind_of(NewExcel::AST::Map)
     end
 
     it "should be able to parse a function that calls another column" do
       str = File.read("spec/fixtures/file.ne/function_on_column.map")
 
-      res = @obj.parse(str)
+      res = parse_map(str)
       res.should be_a_kind_of(NewExcel::AST::Map)
       res.to_hash.keys.should == [:String1, :String2]
 
@@ -184,7 +209,7 @@ CODE
     end
 
     it "should be able to call a one letter function " do
-      res = @obj.parse "= c()"
+      res = parse_statement "= c()"
       res.should be_a_kind_of(NewExcel::AST::Function)
       res.body[0].should be_a_kind_of(NewExcel::AST::FunctionCall)
     end
@@ -192,7 +217,7 @@ CODE
     it "should be able to define a one character key" do
       str = "X: 1"
 
-      res = @obj.parse(str)
+      res = parse_map(str)
 
       res.should be_a_kind_of(NewExcel::AST::Map)
       res.to_hash.keys.should == [:X]
@@ -201,37 +226,37 @@ CODE
 
   context "primitives - evaluating" do
     it "should be able to parse text" do
-      @obj.parse("\"string\"").value.should == "string"
+      parse_statement("\"string\"").value.should == "string"
     end
 
     it "should parse an integer" do
-      @obj.parse("123").value.should == 123
+      parse_statement("123").value.should == 123
     end
 
     it "should parse a floating point" do
-      @obj.parse("123.456").value.should == 123.456
+      parse_statement("123.456").value.should == 123.456
     end
 
     it "should parse a negative number" do
-      @obj.parse("-123").value.should == -123
+      parse_statement("-123").value.should == -123
     end
 
     it "should parse true as true" do
-      @obj.parse("true").value.should == true
+      parse_statement("true").value.should == true
     end
 
     it "should parse false as false" do
-      @obj.parse("false").value.should == false
+      parse_statement("false").value.should == false
     end
   end
 
   context "Functions" do
     it "should parse a function with an equal sign" do
-      @obj.parse("= 1").should be_a_kind_of(NewExcel::AST::Function)
+      parse_statement("= 1").should be_a_kind_of(NewExcel::AST::Function)
     end
 
     it "should parse a function with an equal sign as having zero arguments" do
-      val = @obj.parse("= 1")
+      val = parse_statement("= 1")
       val.should be_a_kind_of(NewExcel::AST::Function)
       val.formal_arguments.should == []
     end
@@ -247,7 +272,7 @@ CODE
         [false, false],
       ]
 
-      val = @obj.parse(str)
+      val = parse_statement(str)
       val.should be_a_kind_of(NewExcel::AST::Function)
       val.formal_arguments.should == []
     end
@@ -255,7 +280,7 @@ CODE
     it "should parse a function with an argument" do
       str = "(x) = 1"
 
-      val = @obj.parse(str)
+      val = parse_statement(str)
       val.should be_a_kind_of(NewExcel::AST::Function)
       val.formal_arguments.length.should == 1
       val.formal_arguments[0].should be_a_kind_of(NewExcel::AST::Symbol)
@@ -265,7 +290,7 @@ CODE
     it "should parse multiple function arguments" do
       str = "(x, y) = 1"
 
-      val = @obj.parse(str)
+      val = parse_statement(str)
       val.should be_a_kind_of(NewExcel::AST::Function)
       val.formal_arguments.length.should == 2
       val.formal_arguments[0].should be_a_kind_of(NewExcel::AST::Symbol)
@@ -280,13 +305,13 @@ CODE
       # lambda((x) add(x, 1))
       str = "plus: (x, y) = +(x, y)"
 
-      val = @obj.parse(str)
+      val = parse_map(str)
       val.should be_a_kind_of(NewExcel::AST::Map)
     end
 
     it "should be able to set a simple function" do
       str = "foo := 1"
-      val = @obj.parse(str)
+      val = parse_map(str)
       val.should be_a_kind_of(NewExcel::AST::Map)
       val.to_hash.keys.should include(:foo)
       val.to_hash[:foo].should be_a_kind_of(NewExcel::AST::Function)
@@ -295,21 +320,21 @@ CODE
     it "should be able to parse a define" do
       str = "define(one, 1)"
 
-      val = @obj.parse(str)
+      val = parse_statement(str)
       val.should be_a_kind_of(NewExcel::AST::FunctionCall)
     end
 
     it "should be able to pass a function as an anonymous function as an argument" do
       str = "define(one, = 1)"
 
-      val = @obj.parse(str)
+      val = parse_statement(str)
       val.should be_a_kind_of(NewExcel::AST::FunctionCall)
     end
 
     it "should be able to pass a function as an anonymous function with params as an argument" do
       str = "define(one, (x) = 1)"
 
-      val = @obj.parse(str)
+      val = parse_statement(str)
       val.should be_a_kind_of(NewExcel::AST::FunctionCall)
     end
 
@@ -326,7 +351,7 @@ CODE
         [false, false]
       ]
 
-      val = @obj.parse(str)
+      val = parse_statement(str)
       val.should be_a_kind_of(NewExcel::AST::FunctionCall)
     end
 

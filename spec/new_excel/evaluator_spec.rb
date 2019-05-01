@@ -284,34 +284,141 @@ describe NewExcel::Evaluator do
   end
 
   it "should be able to evaluate a map with the right hash_map" do
-    ast = NewExcel::AST::Map.new(foo: 1)
+    ast = NewExcel::AST::Map.new
+    ast.add_pair(NewExcel::AST::KeyValuePair.new(:foo, 1))
 
-    @evaluator.evaluate([:quote, ast]).should == { foo: 1 }
-    @evaluator.evaluate(foo: 1).should == { foo: 1 }
-    @evaluator.evaluate(ast).should == { foo: 1 }
+    @evaluator.evaluate([:quote, ast]).should == [:progn, [:define, :foo, 1]]
+    @evaluator.evaluate([:quote, { foo: 1 }]).should == [:progn, [:define, :foo, 1]]
+    @evaluator.evaluate(foo: 1).should == 1
+    @evaluator.evaluate(ast).should == 1
   end
 
   it "should be able to evaluate an anonymous function" do
     parser = NewExcel::Parser.new
     ast = parser.parse("(= 1)()")
 
-    ast.should be_a_kind_of(NewExcel::AST::FunctionCall)
-    # ast.name.should be_nil
+    ast.should be_a_kind_of(NewExcel::AST::StatementList)
+    ast.statements[0].should be_a_kind_of(NewExcel::AST::FunctionCall)
+    ast.statements[0].name.should be_nil
 
-    ast.for_printing.should == "(= 1)()"
+    ast.for_printing.should == "((= 1)())()"
 
-    @evaluator.evaluate([:quote, ast]).should == [[:lambda, [], 1]]
+    @evaluator.evaluate([:quote, ast]).should ==
+      [:progn,
+        [[:lambda, [], 1]]]
+
   end
 
   it "should be able to evaluate an anonymous function without calling it" do
     parser = NewExcel::Parser.new
     ast = parser.parse("= 1")
 
-    ast.should be_a_kind_of(NewExcel::AST::Function)
+    ast.should be_a_kind_of(NewExcel::AST::StatementList)
+    ast.statements[0].should be_a_kind_of(NewExcel::AST::Function)
 
-    ast.for_printing.should == "= 1"
+    ast.for_printing.should == "(= 1)()"
 
-    @evaluator.evaluate([:quote, ast]).should == [:lambda, [], 1]
+    @evaluator.evaluate([:quote, ast]).should == [:progn, [:lambda, [], 1]]
+  end
+
+  it "should be able to quote an anonymous function that is called" do
+    parser = NewExcel::Parser.new
+    ast = parser.parse("((n) = add(n, n))(10)")
+    env = NewExcel::Runtime.base_environment
+
+    @evaluator.quote(ast).should ==
+      [:progn,
+        [
+          [:lambda, [:n],
+            [:add, :n, :n]
+          ],
+          10
+        ]
+      ]
+  end
+
+  it "should not retain a local variable in the environment" do
+    parser = NewExcel::Parser.new
+    ast = parser.parse("((n) = add(n, n))(10)")
+    env = NewExcel::Runtime.base_environment
+
+    lambda {
+      @evaluator.evaluate(ast, env).should == 20
+    }.should_not change { env.keys }
+  end
+
+  it "should be able to parse an anonymous function with new lines" do
+    parser = NewExcel::Parser.new
+
+    ast = parser.parse <<-CODE
+      ((n) =
+        n
+      )(10)
+    CODE
+
+    @evaluator.evaluate(ast).should == 10
+  end
+
+  it "should allow progn support in lambdas" do
+    parser = NewExcel::Parser.new
+
+    ast = parser.parse <<-CODE
+      ((n) =
+        progn(
+          1,
+          2,
+          3,
+          n)
+      )(10)
+    CODE
+
+    @evaluator.evaluate(ast).should == 10
+  end
+
+  it "should be able to define a named function with multiple statements (with progn)" do
+    parser = NewExcel::Parser.new
+
+    ast = parser.parse <<-CODE
+      x: (n)
+        = progn(
+            define(x, 10),
+            add(x, n))
+
+      x(50)
+    CODE
+
+    @evaluator.evaluate(ast).should == 60
+  end
+
+  it "should not retain a defined variable outside of a scoped lambda" do
+    parser = NewExcel::Parser.new
+    env = {}
+
+    ast = parser.parse <<-CODE
+      ((n) = n)(20)
+    CODE
+
+    lambda {
+      @evaluator.evaluate(ast, env).should == 20
+    }.should_not change { env.keys }
+  end
+
+  it "should use a bound version of the environment" do
+    parser = NewExcel::Parser.new
+
+    ast = parser.parse <<-CODE
+      define(x, 10)
+
+      y: = x
+
+      define(y_value_before_binding, y())
+      define(x, 20)
+      define(y_value_after_binding, y())
+
+      list(y_value_before_binding, y_value_after_binding)
+    CODE
+
+    @evaluator.evaluate(ast).should == [10, 20]
   end
 
   it "should not retain a local variable in the environment" do

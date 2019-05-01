@@ -17,7 +17,6 @@ module NewExcel
 
         case function_name
         when :lambda
-          #TODO: pretty sure @env should be dupped here?
           Runtime::Closure.new(expr[1], expr[2], @env)
         when :define
           env[expr[1]] = evaluate(expr[2])
@@ -27,6 +26,8 @@ module NewExcel
           quote(expr[1])
         when :lookup_cell
           lookup_cell(expr[1], expr[2])
+        when :progn
+          progn(cdr(expr))
         else
           fn = evaluate(function_name)
           raise "Can't find function with name: #{function_name.inspect}" unless fn
@@ -35,13 +36,37 @@ module NewExcel
         end
       when Symbol
         lookup(expr)
-      when Integer, Float, TrueClass, FalseClass, String, NewExcel::Runtime::Closure, Hash
+      when Hash
+        statements = expr.map do |key, value|
+          [:define, key, value]
+        end
+
+        call(:progn, statements)
+      when Integer, Float, TrueClass, FalseClass, String, NewExcel::Runtime::Closure
         expr
       when AST::AstBase
         evaluate(quote(expr))
       else
         raise "Unknown expression type!, expr: #{expr.inspect}"
       end
+    end
+
+    # TODO: merge this...
+    def apply(fn, arguments)
+      method(fn).call(*arguments)
+    end
+
+    # TODO: merge this...
+    def call(fn, arguments)
+      method(fn).call(arguments)
+    end
+
+    def progn(expressions=[])
+      last_value = nil
+      expressions.each do |expression|
+        last_value = evaluate(expression)
+      end
+      last_value
     end
 
     def evaluate_list(list)
@@ -60,10 +85,22 @@ module NewExcel
       end
     end
 
+    def get(expr)
+      @env[expr]
+    end
+
     def lookup(expr)
-      val ||= @env[expr]
-      val ||= lookup_cell(expr, NewExcel::ProcessState.current_sheet_name) if expr.is_a?(Symbol)
-      val
+      val = get(expr)
+
+      if val.is_a?(NewExcel::AST::Function)
+        if val.formal_arguments == []
+          evaluate([val])
+        else
+          evaluate(val)
+        end
+      else
+        val
+      end
     end
 
     def lookup_cell(cell_name, sheet_name)
@@ -72,26 +109,13 @@ module NewExcel
       return if !file
 
       if sheet_name && ProcessState.current_sheet_name == sheet_name
-        sheet = ProcessState.current_sheet
-        sheet.parse
-
-        if sheet.column_names.include?(cell_name.to_s)
-          column_function = sheet.evaluated_with_unevaluated_columns[cell_name]
-
-          # if it's arity = 0 (aka no arguments, we evaluate it - otherwise, we return the function)
-          # to be called later
-          if column_function[1].length == 0
-            evaluate([column_function])
-          else
-            column_function
-          end
-        end
-      else
-        sheet = file.get_sheet(sheet_name.to_s)
-
-        sheet.parse
-        sheet.get_column(cell_name.to_s)
+        raise "Shouldn't have gotten here. Call lookup(expr)"
       end
+
+      sheet = file.get_sheet(sheet_name.to_s)
+
+      sheet.parse
+      sheet.get_column(cell_name.to_s)
     end
 
     def apply_with_explicit_environment(fn, arguments)
@@ -164,8 +188,13 @@ module NewExcel
 
     def quote(obj)
       case obj
-      when Symbol, Array, Integer, Float, TrueClass, FalseClass, String, Hash
+      when Symbol, Array, Integer, Float, TrueClass, FalseClass, String
         obj
+      when Hash
+        statements = obj.map do |key, value|
+          [:define, quote(key), quote(value)]
+        end
+        [:progn, *statements]
       when AST::Symbol
         obj.symbol
       when AST::Primitive
@@ -186,11 +215,9 @@ module NewExcel
         [:lookup_cell, quote(obj.symbol),
                        quote(obj.file_reference)]
       when AST::Map
-        hash = {}
-        obj.to_hash.each do |key, value|
-          hash[quote(key)] = quote(value)
-        end
-        hash
+        quote(obj.to_hash)
+      when AST::StatementList
+        [:progn, *quote_list(obj.statements)]
       when Method, UnboundMethod
         obj
       else

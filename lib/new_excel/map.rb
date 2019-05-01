@@ -8,7 +8,7 @@ module NewExcel
 
         @ast = parser.parse(raw_content)
 
-        @ast.to_hash.keys.map { |col| col.to_s }.each do |column_name|
+        @ast.map.to_hash.keys.map { |col| col.to_s }.each do |column_name|
           if @column_names.include?(column_name)
             raise "Duplicate column name: #{column_name.inspect}"
           end
@@ -21,7 +21,7 @@ module NewExcel
     end
 
     def default_environment
-      Runtime.base_environment
+      Runtime.base_environment.merge(@ast.map.to_hash)
     end
 
     def evaluate(obj, env = default_environment)
@@ -41,7 +41,7 @@ module NewExcel
         end
       else
         column_name = column_or_column_names
-        @ast.to_hash[column_name.to_sym].for_printing
+        @ast.map.to_hash[column_name.to_sym].for_printing
       end
     end
 

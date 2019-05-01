@@ -2,6 +2,58 @@ module NewExcel
   module AST
     class AstBase; end
 
+    class StatementList < AstBase
+      def initialize
+        @map = Map.new
+        @statements = []
+        @declarations = []
+      end
+
+      attr_reader :statements
+      attr_reader :map
+      attr_reader :declarations
+
+      def statements=(val)
+        @statements = val
+
+        val.each do |item|
+          if item.is_a?(KeyValuePair)
+            @map.add_pair(item)
+          else
+            @declarations << item
+          end
+        end
+      end
+
+      def for_printing
+        str = "(#{statements.map(&:for_printing).join("\n")})()"
+      end
+    end
+
+    class Map < AstBase
+      def initialize
+        @map = {}
+        @key_value_pairs = []
+      end
+
+      attr_reader :key_value_pairs
+
+      def to_hash
+        @map
+      end
+
+      def add_pair(pair)
+        @key_value_pairs << pair
+        key, value = pair.key, pair.value
+
+        if @map.has_key?(key)
+          raise "Map already has key: #{key}"
+        end
+
+        @map[key] = value
+      end
+    end
+
     class KeyValuePair < AstBase
       attr_reader :key
       attr_reader :value
@@ -118,26 +170,6 @@ module NewExcel
       end
 
       attr_reader :symbol
-    end
-
-    class Map < AstBase
-      def initialize(hash={})
-        @hash = hash
-      end
-
-      def to_hash
-        @hash
-      end
-
-      def add_pair(pair)
-        key, value = pair.key, pair.value
-
-        if @hash.has_key?(key)
-          raise "Map already has key: #{key}"
-        end
-
-        @hash[key] = value
-      end
     end
 
     class Primitive < AstBase
