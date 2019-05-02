@@ -3,11 +3,6 @@ module NewExcel
     def self.base_environment
       env = {}
 
-      mod = NewExcel::BuiltInFunctions
-      mod.public_instance_methods.each do |method_name|
-        env[method_name] = mod.method(method_name)
-      end
-
       mod = NewExcel::Evaluator
       mod.public_instance_methods.each do |method_name|
         env[method_name] = mod.instance_method(method_name)
