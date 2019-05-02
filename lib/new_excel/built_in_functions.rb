@@ -280,9 +280,14 @@ module NewExcel
 
     # "regular" functions
 
+    def inject(list, symbol_or_proc)
+      # primitive_method_call(list, :inject, &symbol_or_proc)
+      list.inject(&symbol_or_proc)
+    end
+
     def add(*list)
       zipped_lists(list) do |list|
-        list.inject(&:+)
+        inject(list, :+)
       end
     end
 
@@ -290,30 +295,30 @@ module NewExcel
 
     def subtract(*list)
       zipped_lists(list) do |list|
-        list.inject(&:-)
+        inject(list, :-)
       end
     end
 
     def multiply(*list)
       zipped_lists(list) do |list|
-        list.inject(&:*)
+        inject(list, :*)
       end
     end
 
     def divide(*list)
       zipped_lists(list) do |num, denom|
-        num / denom.to_f
+        primitive_infix(:/, num, primitive_method_call(denom, :to_f))
       end
     end
 
     def square(*list)
       each_item(list) do |item|
-        item ** 2
+        multiply(item, item)
       end
     end
 
     def count(*args)
-      args.flatten.length
+      primitive_method_call(primitive_method_call(args, :flatten), :length)
     end
 
     alias_method :length, :count
@@ -326,9 +331,9 @@ module NewExcel
       if str.is_a?(Numeric)
         str
       elsif str.is_a?(String) && str.include?(".")
-        str.to_f
+        primitive_method_call(str, :to_f)
       else
-        str.to_i
+        primitive_method_call(str, :to_i)
       end
     end
 
@@ -404,13 +409,13 @@ module NewExcel
 
     def reverse(list)
       each_list(list) do |array|
-        array.reverse
+        primitive_method_call(array, :reverse)
       end
     end
 
     def first(list)
       each_list(list) do |array|
-        array.first
+        primitive_method_call(array, :first)
       end
     end
 
@@ -420,13 +425,13 @@ module NewExcel
 
     def compact(list)
       each_list(list) do |list|
-        list.compact
+        primitive_method_call(list, :compact)
       end
     end
 
     def last(list)
       each_list(list) do |list|
-        list.last
+        primitive_method_call(list, :last)
       end
     end
 
@@ -488,36 +493,36 @@ module NewExcel
 
     def abs(*list)
       each_item(list) do |item|
-        item.abs
+        primitive_method_call(item, :abs)
       end
     end
 
     def max(*list)
       zipped_lists(list) do |list|
-        list.max
+        primitive_method_call(list, :max)
       end
     end
 
     def min(*list)
       zipped_lists(list) do |list|
-        list.min
+        primitive_method_call(list, :min)
       end
     end
 
     def flatten(list)
-      list.flatten
+      primitive_method_call(list, :flatten)
     end
 
     def eq(*list)
       zipped_lists(list) do |vals|
-        vals.inject(&:==)
+        inject(vals, :==)
       end
     end
 
     def gt(*list)
       zipped_lists(list) do |val1, val2|
         begin
-          val1 > val2
+          primitive_infix(:>, val1, val2)
         rescue => e
         end
       end
@@ -525,40 +530,50 @@ module NewExcel
 
     def gte(*list)
       zipped_lists(list) do |val1, val2|
-        val1 >= val2
+        primitive_infix(:>=, val1, val2)
       end
     end
 
     def lte(*list)
       zipped_lists(list) do |val1, val2|
-        val1 <= val2
+        primitive_infix(:<=, val1, val2)
       end
     end
 
     def lt(*list)
       zipped_lists(list) do |val1, val2|
-        val1 < val2
+        primitive_infix(:<, val1, val2)
       end
     end
 
     def hour(*list)
       each_item(list) do |time|
-        time.hour
+        primitive_method_call(time, :hour)
       end
     end
 
     def any?(*list)
       zipped_lists(list) do |list|
-        list.any?
+        primitive_method_call(list, :any?)
       end
     end
 
     def append(list, *values)
-      values.each do |value|
-        list.append(value)
+      each_list(values) do |value|
+        primitive_method_call(list, :append, [value])
       end
 
       list
+    end
+
+    # primitives
+
+    def primitive_method_call(obj, method, arguments=[])
+      obj.public_send(method, *arguments)
+    end
+
+    def primitive_infix(method, val1, val2)
+      primitive_method_call(val1, method, [val2])
     end
   end
 end
