@@ -355,5 +355,24 @@ CODE
       val.should be_a_kind_of(NewExcel::AST::FunctionCall)
     end
 
+    it "should be able to parse a lambda with an explicit list" do
+      str = <<-CODE
+        lambda(arguments(x1, y1),
+          plus(x, y))
+      CODE
+
+      val = parse_statement(str)
+      val.should be_a_kind_of(NewExcel::AST::FunctionCall)
+    end
+
+    it "should be able to parse a lambda with an implicit list" do
+      str = <<-CODE
+        lambda(arguments,
+          apply("plus", arguments))
+      CODE
+
+      val = parse_statement(str)
+      val.should be_a_kind_of(NewExcel::AST::FunctionCall)
+    end
   end
 end

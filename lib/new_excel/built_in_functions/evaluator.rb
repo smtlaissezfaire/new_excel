@@ -141,8 +141,12 @@ module NewExcel
       def bind(formal_arguments, evaluated_arguments, function_binding)
         new_env = {}
 
-        formal_arguments.zip(evaluated_arguments) do |l1, l2|
-          new_env[l1] = l2
+        if formal_arguments.is_a?(Array)
+          formal_arguments.zip(evaluated_arguments) do |l1, l2|
+            new_env[l1] = l2
+          end
+        else
+          new_env[formal_arguments] = evaluated_arguments
         end
 
         merge_envs(@env, function_binding, new_env)

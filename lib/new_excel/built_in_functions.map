@@ -5,3 +5,15 @@ built_in_functions: true
 #
 # average: (args)
 #   = divide(sum(args), length(args))
+
+
+# def add(*list)
+#   zipped_lists(list) do |list|
+#     inject(list, :+)
+#   end
+# end
+
+add: (list)
+  = zipped_lists(list,
+    lambda(l2,
+      inject(l2, quote(+))))

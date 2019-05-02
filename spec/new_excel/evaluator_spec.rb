@@ -439,4 +439,18 @@ describe NewExcel::Evaluator do
       10
     ]
   end
+
+  it "should be able to define a lambda with explicit args" do
+    parser = NewExcel::Parser.new
+
+    ast = parser.parse <<-CODE
+      define(fn,
+        lambda(list,
+          list))
+
+      fn(1, 2, 3)
+    CODE
+
+    @evaluator.evaluate(ast).should == [1, 2, 3]
+  end
 end
