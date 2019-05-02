@@ -154,16 +154,6 @@ module NewExcel
       envs.inject(&:merge)
     end
 
-    def extract_primitive_hash(obj)
-      if obj.is_a?(Array) && obj[0] == :hash_map
-        obj[1]
-      elsif obj.is_a?(Hash)
-        obj
-      else
-        raise "Data error! Not sure how extract hash from obj: #{obj.inspect}"
-      end
-    end
-
     def primitive_function?(fn)
       fn.is_a?(Proc) || fn.is_a?(Method) || fn.is_a?(UnboundMethod)
     end
