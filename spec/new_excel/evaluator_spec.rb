@@ -420,4 +420,23 @@ describe NewExcel::Evaluator do
 
     @evaluator.evaluate(ast).should == [10, 10]
   end
+
+  it "should be able to be parsed + evaluated" do
+    parser = NewExcel::Parser.new
+
+    ast = parser.parse <<-CODE
+      str: "define(x, 10)"
+
+      parsed_code: parse("define(x, 10)")
+
+      result: evaluate(parsed_code)
+      list(parsed_code, result)
+    CODE
+
+    @evaluator.evaluate(ast).should == [
+      [:progn,
+        [:define, :x, 10]],
+      10
+    ]
+  end
 end

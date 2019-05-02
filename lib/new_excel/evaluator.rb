@@ -251,5 +251,9 @@ module NewExcel
       sheet.parse
       evaluate(sheet.ast)
     end
+
+    def parse(str)
+      quote(NewExcel::Parser.new.parse(str))
+    end
   end
 end
