@@ -31,9 +31,6 @@ module NewExcel
     end
 
     def zipped_lists(list, options={}, &block)
-      unless options[:evaluate] == false
-        list = list.map { |l| _evaluate(l) }
-      end
       list = to_list(*list)
 
       if list.any? { |list| list.is_a?(Array) }

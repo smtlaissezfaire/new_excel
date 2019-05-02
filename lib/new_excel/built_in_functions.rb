@@ -246,7 +246,7 @@ module NewExcel
     def if(*args)
       conds, truthy_expressions, falsy_expressions = args
 
-      zipped_lists([_evaluate(conds), truthy_expressions, falsy_expressions], evaluate: false) do |cond, truthy_expression, falsy_expression|
+      zipped_lists([_evaluate(conds), truthy_expressions, falsy_expressions]) do |cond, truthy_expression, falsy_expression|
         cond ? _evaluate(truthy_expression) : _evaluate(falsy_expression)
       end
     end
