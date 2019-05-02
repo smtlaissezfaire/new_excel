@@ -1,0 +1,7 @@
+built_in_functions: true
+
+# square: (x)
+#   = multiply(x, x)
+#
+# average: (args)
+#   = divide(sum(args), length(args))

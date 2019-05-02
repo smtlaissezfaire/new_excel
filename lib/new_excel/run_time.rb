@@ -8,6 +8,15 @@ module NewExcel
         env[method_name] = mod.instance_method(method_name)
       end
 
+      file_path = ::File.dirname(__FILE__)
+      file = NewExcel::File.new(file_path)
+      sheet = file.get_sheet("built_in_functions")
+      sheet.parse
+
+      sheet.ast.map.to_hash.each do |key, value|
+        env[key] = value
+      end
+
       env.dup
     end
 

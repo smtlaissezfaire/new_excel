@@ -35,7 +35,7 @@ module NewExcel
           fn = evaluate(function_name)
           raise "Can't find function with name: #{function_name.inspect}" unless fn
           evaluated_arguments = evaluate_list(cdr(expr))
-          apply_with_explicit_environment(fn, evaluated_arguments)
+          apply(fn, evaluated_arguments)
         end
       when Symbol
         lookup(expr)
@@ -115,15 +115,17 @@ module NewExcel
       sheet.get_column(cell_name.to_s)
     end
 
-    def apply_with_explicit_environment(fn, arguments)
+    def apply(fn, arguments)
+      fn = fn.to_sym if fn.is_a?(String)
+
       with_env(@env) do
         if primitive_function?(fn)
           apply_primitive(fn, arguments)
         elsif fn.is_a?(Runtime::Closure)
           evaluate(fn.body, bind(fn.formal_arguments, arguments, fn.env))
-        elsif fn.is_a?(Array) && fn[0] == :lambda
+        elsif (fn.is_a?(Array) && fn[0] == :lambda) || fn.is_a?(Symbol)
           bound_function = evaluate(fn)
-          apply_with_explicit_environment(bound_function, arguments)
+          apply(bound_function, arguments)
         else
           raise "Not sure how to apply function: #{fn.inspect}"
         end
@@ -478,10 +480,6 @@ module NewExcel
 
     def fold(fn, list, initial=nil)
       apply(fn, list)
-    end
-
-    def apply(fn, arguments)
-      method(fn).call(*arguments)
     end
 
     def call(fn, arguments)

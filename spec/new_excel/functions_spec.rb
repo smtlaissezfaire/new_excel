@@ -3,6 +3,10 @@ require 'spec_helper'
 describe NewExcel::BuiltInFunctions do
   include NewExcel::BuiltInFunctions
 
+  def parse_eval(str)
+    evaluate(parse(str))
+  end
+
   context "add" do
     it "should add two numbers" do
       add(1, 2).should == 3
@@ -83,13 +87,13 @@ describe NewExcel::BuiltInFunctions do
 
   context "square" do
     it "should be able to square a number" do
-      square(1).should == 1
-      square(2).should == 4
-      square(3).should == 9
+      parse_eval("square(1)").should == 1
+      parse_eval("square(2)").should == 4
+      parse_eval("square(3)").should == 9
     end
 
     it "should be able to square a list of numbers" do
-      square([1, 2, 3]).should == [1, 4, 9]
+      parse_eval("square(list(1, 2, 3))").should == [1, 4, 9]
     end
   end
 
@@ -209,11 +213,11 @@ describe NewExcel::BuiltInFunctions do
 
   context "average" do
     it "should work with a simple list" do
-      average(1, 2, 3).should == 2
+      parse_eval("average(1, 2, 3)").should == 2
     end
 
     it "should work with floats" do
-      average(1, 4).should == 2.5
+      parse_eval("average(1, 4)").should == 2.5
     end
   end
 
