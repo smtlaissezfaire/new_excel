@@ -20,14 +20,12 @@ module NewExcel
       end
     end
 
-    def default_environment
-      env = Runtime.base_environment.dup
-
+    def default_environment(base_env = Runtime.base_environment.dup)
       @ast.declarations.each do |declaration|
-        evaluate(@ast, env)
+        evaluate(@ast, base_env)
       end
 
-      env.merge(@ast.map.to_hash)
+      base_env.merge(@ast.map.to_hash)
     end
 
     attr_reader :ast
@@ -65,10 +63,13 @@ module NewExcel
       end
     end
 
-    def evaluate_column(column_name)
+    def evaluate_field(column_name, env = default_environment)
       key = column_name.to_sym
+      evaluate([:lookup, [:quote, key]])
+    end
 
-      val = evaluate([:lookup, [:quote, key]])
+    def evaluate_column(column_name)
+      val = evaluate_field(column_name)
       val = [val] unless val.is_a?(Array)
 
       val

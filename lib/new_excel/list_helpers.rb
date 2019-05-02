@@ -31,7 +31,6 @@ module NewExcel
     end
 
     def zipped_lists(list, options={}, &block)
-      debugger
       list = to_list(*list)
 
       if list.any? { |list| list.is_a?(Array) }

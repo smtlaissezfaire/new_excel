@@ -453,4 +453,18 @@ describe NewExcel::Evaluator do
 
     @evaluator.evaluate(ast).should == [1, 2, 3]
   end
+
+  it "should be able to define a function with lambda and hash keys" do
+    parser = NewExcel::Parser.new
+
+    ast = parser.parse <<-CODE
+      fn:
+        lambda(list,
+          subtract(list, 1))
+
+      fn(1, 2, 3)
+    CODE
+
+    @evaluator.evaluate(ast).should == [0, 1, 2]
+  end
 end

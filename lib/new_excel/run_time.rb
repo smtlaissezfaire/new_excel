@@ -1,11 +1,11 @@
 module NewExcel
   module Runtime
     def self.base_environment
-      env = {}
+      minimal_env = {}
 
       mod = NewExcel::Evaluator
       mod.public_instance_methods.each do |method_name|
-        env[method_name] = mod.instance_method(method_name)
+        minimal_env[method_name] = mod.instance_method(method_name)
       end
 
       file_path = ::File.dirname(__FILE__)
@@ -13,11 +13,10 @@ module NewExcel
       sheet = file.get_sheet("built_in_functions")
       sheet.parse
 
-      sheet.ast.map.to_hash.each do |key, value|
-        env[key] = value
-      end
+      # TODO: shouldn't need to use keys mapped to functions mapped to lambdas
+      sheet_env = sheet.default_environment(minimal_env)
 
-      env.dup
+      sheet_env.dup
     end
 
     class Closure

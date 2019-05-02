@@ -1,19 +1,19 @@
 module NewExcel
   module BuiltInFunctions
     module Math
-      def add(*list)
-        zipped_lists(list) do |list|
-          inject(list, :+)
-        end
-      end
+      # def add(*list)
+      #   zipped_lists(list) do |list|
+      #     inject(list, :+)
+      #   end
+      # end
+      #
+      # alias_method :sum, :add
 
-      alias_method :sum, :add
-
-      def subtract(*list)
-        zipped_lists(list) do |list|
-          inject(list, :-)
-        end
-      end
+      # def subtract(*list)
+      #   zipped_lists(list) do |list|
+      #     inject(list, :-)
+      #   end
+      # end
 
       def multiply(*list)
         zipped_lists(list) do |list|
@@ -95,7 +95,9 @@ module NewExcel
       end
 
       def average(*args)
-        divide(sum(*args), length(*args))
+        divide(
+          apply("sum", args),
+          length(*args))
       end
     end
   end

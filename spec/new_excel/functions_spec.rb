@@ -9,11 +9,11 @@ describe NewExcel::BuiltInFunctions do
 
   context "add" do
     it "should add two numbers" do
-      add(1, 2).should == 3
+      parse_eval("add(1, 2)").should == 3
     end
 
     it "should add many numbers" do
-      add(1, 2, 3).should == 1 + 2 + 3
+      parse_eval("add(1, 2, 3)").should == 1 + 2 + 3
     end
 
     it "should be able to add a list of numbers" do
@@ -21,29 +21,29 @@ describe NewExcel::BuiltInFunctions do
     end
 
     it "should be able to add columns of numbers" do
-      add([1, 2, 3], [4, 5, 6]).should == [1+4, 2+5, 3+6]
+      parse_eval("add(list(1, 2, 3), list(4, 5, 6))").should == [1+4, 2+5, 3+6]
     end
 
     it "should be able to add 3 columns of numbers" do
-      add([1, 2, 3], [4, 5, 6], [7, 8, 9]).should == [1+4+7, 2+5+8, 3+6+9]
+      parse_eval("add(list(1, 2, 3), list(4, 5, 6), list(7, 8, 9))").should == [1+4+7, 2+5+8, 3+6+9]
     end
 
     it "should be able to add two lists of numbers" do
-      add([1, 2, 3], [4, 5, 6]).should == [1+4, 2+5, 3+6]
+      parse_eval("add(list(1, 2, 3), list(4, 5, 6))").should == [1+4, 2+5, 3+6]
     end
   end
 
   context "subtract" do
     it "should be able to subtract two numbers" do
-      subtract(2, 1).should == 2-1
+      parse_eval("subtract(2, 1)").should == 2-1
     end
 
     it "should be able to subtract two vectors" do
-      subtract([10, 20], [1, 2]).should == [9, 18]
+      parse_eval("subtract(list(10, 20), list(1, 2))").should == [9, 18]
     end
 
     it "should be able to subtract three numbers" do
-      subtract(10, 3, 1).should == 10 - 3 - 1
+      parse_eval("subtract(10, 3, 1)").should == 10 - 3 - 1
     end
   end
 

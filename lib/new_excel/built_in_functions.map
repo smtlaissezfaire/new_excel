@@ -2,18 +2,21 @@ built_in_functions: true
 
 # square: (x)
 #   = multiply(x, x)
-#
 # average: (args)
 #   = divide(sum(args), length(args))
 
+# TODO: shouldn't need to use functions mapped to functions here
 
-# def add(*list)
-#   zipped_lists(list) do |list|
-#     inject(list, :+)
-#   end
-# end
+add: =
+  lambda(list,
+    zipped_lists(list,
+      lambda(list,
+        inject(list, quote(+)))))
 
-add: (list)
-  = zipped_lists(list,
-    lambda(l2,
-      inject(l2, quote(+))))
+sum: = add
+
+subtract: =
+  lambda(list,
+    zipped_lists(list,
+      lambda(list,
+        inject(list, quote(-)))))

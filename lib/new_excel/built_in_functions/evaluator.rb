@@ -168,7 +168,13 @@ module NewExcel
         if fn.is_a?(UnboundMethod)
           fn = fn.bind(self)
         end
-        fn.call(*arguments)
+
+        if arguments.last.is_a?(NewExcel::Runtime::Closure)
+          old_closure = arguments.pop
+          block = lambda { |*args| apply(old_closure, *args) }
+        end
+
+        fn.call(*arguments, &block)
       end
 
       def car(list)
