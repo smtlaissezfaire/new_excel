@@ -249,10 +249,7 @@ module NewExcel
       sheet = file.get_sheet(sheet_name.to_s)
 
       sheet.parse
-      sheet.column_names.each do |column_name|
-        statement = [:define, column_name, [:lookup_cell, quote(column_name), quote(sheet_name)]]
-        evaluate(statement)
-      end
+      evaluate(sheet.ast)
     end
   end
 end

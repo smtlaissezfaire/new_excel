@@ -490,11 +490,15 @@ STR
     end
 
     it "should be able to include columns from other files" do
-      @obj.get_column("BasicIntIncludedNotCalled").should == [123]
+      @obj.get_column("BasicIntIncludedCalled").should == [123]
     end
 
     it "should be able to include columns from other files" do
       @obj.get_column("AddIntegerAndFloat").should == [123 + 123.456]
+    end
+
+    it "should be able to call a one argument function" do
+      @obj.get_column("OneArgumentFunctionCalled").should == [10]
     end
   end
 end

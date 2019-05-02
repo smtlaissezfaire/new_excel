@@ -1,10 +1,14 @@
 include("simple_text")
+include("one_arg_function")
 
 BasicIntDirect:
   = simple_text.Integer
 
-BasicIntIncludedNotCalled:
-  = Integer
+BasicIntIncludedCalled:
+  = Integer()
 
 AddIntegerAndFloat:
-  = add(Integer, Float)
+  = add(Integer(), Float())
+
+OneArgumentFunctionCalled:
+  = OneArgFunction(10)
