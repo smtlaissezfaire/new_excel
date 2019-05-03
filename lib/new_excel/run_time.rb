@@ -10,7 +10,7 @@ module NewExcel
 
       file_path = ::File.dirname(__FILE__)
       file = NewExcel::File.new(file_path)
-      sheet = file.get_sheet("built_in_functions")
+      sheet = file.get_sheet("stdlib")
 
       sheet.parse
 
