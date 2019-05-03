@@ -516,29 +516,6 @@ describe NewExcel::BuiltInFunctions do
     end
   end
 
-  context "and" do
-    it "should be true if both arguments are true" do
-      self.send(:and, true, true).should == true
-    end
-
-    it "should be false if any arguments are false" do
-      self.send(:and, true, false).should == false
-      self.send(:and, false, false).should == false
-    end
-
-    it "should take multiple arguments" do
-      self.send(:and, true, true, true).should == true
-      self.send(:and, true, false, true).should == false
-      self.send(:and, false, false, true).should == false
-    end
-
-    it "should take lists of arguments" do
-      self.send(:and, [true, true, true], [true, false, false]).should == [true, false, false]
-      self.send(:and, [true, false, true], [true, false, false]).should == [true, false, false]
-      self.send(:and, [false, false, true], [true, false, false]).should == [false, false, false]
-    end
-  end
-
   context "hour" do
     it "should return the hour of a datetime" do
       t = Time.parse("2019-01-01 2:05PM")
@@ -594,8 +571,19 @@ describe NewExcel::BuiltInFunctions do
       parse_eval('and(list(true, true), list(true, false))').should == [true, false]
     end
 
+    it "should take multiple arguments" do
+      parse_eval('and(true, true, true)').should == true
+      parse_eval('and(true, false, true)').should == false
+      parse_eval('and(false, false, true)').should == false
+    end
+
+    it "should take lists of arguments" do
+      parse_eval('and(list(true, true, true), list(true, false, false))').should == [true, false, false]
+      parse_eval('and(list(true, false, true), list(true, false, false))').should == [true, false, false]
+      parse_eval('and(list(false, false, true), list(true, false, false))').should == [false, false, false]
+    end
+
     it "should not evaluate the second argument if the first argument is false" do
-      pending "FIXME"
       parse_eval('and(false, RAISE_GOT_HERE)').should == false
     end
   end

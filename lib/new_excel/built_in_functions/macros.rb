@@ -9,9 +9,23 @@ module NewExcel
         end
       end
 
-      def and(*list)
-        zipped_lists(list) do |list|
-          list.inject { |v1, v2| v1 && v2 }
+      def and(expressions)
+        values = []
+        got_false_value = false
+
+        expressions.each do |expression|
+          if got_false_value
+            values << false
+          else
+            res = evaluate(expression)
+            got_false_value = true if !res
+            values << res
+          end
+        end
+
+        zipped_lists(values) do |list|
+          # list.all?
+          list.all?
         end
       end
 

@@ -29,6 +29,8 @@ module NewExcel
             lookup_cell(expr[1], expr[2])
           when :progn
             progn(cdr(expr))
+          when :and
+            self.send(:and, cdr(expr))
           else
             fn = evaluate(function_name)
             raise "Can't find function with name: #{function_name.inspect}" unless fn
