@@ -12,6 +12,7 @@ module NewExcel
       file = NewExcel::File.new(file_path)
 
       [
+        "list",
         "math"
       ].each do |sheet|
         sheet = file.get_sheet(sheet)

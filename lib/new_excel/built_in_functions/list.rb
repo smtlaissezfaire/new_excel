@@ -12,9 +12,9 @@ module NewExcel
 
       alias_method :length, :count
 
-      def concat(*args)
-        zipped_lists(args, &:join)
-      end
+      # def concat(*args)
+      #   zipped_lists(args, &:join)
+      # end
 
       def list(*args)
         args

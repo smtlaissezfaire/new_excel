@@ -1,0 +1,9 @@
+# def concat(*args)
+#   zipped_lists(args, &:join)
+# end
+
+concat:
+  lambda(args,
+    # would be nice to use symbol_to_proc() here
+    zipped_lists(args, lambda(list,
+      primitive_method_call(list, quote(join)))))

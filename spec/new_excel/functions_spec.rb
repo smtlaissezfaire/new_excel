@@ -99,15 +99,15 @@ describe NewExcel::BuiltInFunctions do
 
   context "concat" do
     it "should be able to concat two strings" do
-      concat("a", "b").should == "ab"
+      parse_eval('concat("a", "b")').should == "ab"
     end
 
     it "should be able to concat many arguments" do
-      concat("a", "b", "c").should == "abc"
+      parse_eval('concat("a", "b", "c")').should == "abc"
     end
 
     it "should be able to concat two lists" do
-      concat(["one", "two"], [" dog", " cat"]).should == ["one dog", "two cat"]
+      parse_eval('concat(list("one", "two"), list(" dog", " cat"))').should == ["one dog", "two cat"]
     end
   end
 
