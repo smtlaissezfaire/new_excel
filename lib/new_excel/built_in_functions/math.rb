@@ -15,24 +15,24 @@ module NewExcel
       #   end
       # end
 
-      def multiply(*list)
-        zipped_lists(list) do |list|
-          inject(list, :*)
-        end
-      end
+      # def multiply(*list)
+      #   zipped_lists(list) do |list|
+      #     inject(list, :*)
+      #   end
+      # end
 
-      def divide(*list)
-        zipped_lists(list) do |num, denom|
-          primitive_infix(:/, num, primitive_method_call(denom, :to_f))
-        end
-      end
+      # def divide(*list)
+      #   zipped_lists(list) do |num, denom|
+      #     primitive_infix(:/, num, primitive_method_call(denom, :to_f))
+      #   end
+      # end
 
-      def square(*list)
-        each_item(list) do |item|
-          multiply(item, item)
-        end
-      end
-
+      # def square(*list)
+      #   each_item(list) do |item|
+      #     multiply(item, item)
+      #   end
+      # end
+      #
       def abs(*list)
         each_item(list) do |item|
           primitive_method_call(item, :abs)
@@ -94,11 +94,11 @@ module NewExcel
         end
       end
 
-      def average(*args)
-        divide(
-          apply("sum", args),
-          length(*args))
-      end
+      # def average(*args)
+      #   divide(
+      #     apply("sum", args),
+      #     length(*args))
+      # end
     end
   end
 end

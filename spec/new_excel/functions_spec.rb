@@ -49,39 +49,39 @@ describe NewExcel::BuiltInFunctions do
 
   context "multiply" do
     it "should be able to multiply two numbers" do
-      multiply(3, 4).should == 3 * 4
+      parse_eval("multiply(3, 4)").should == 3 * 4
     end
 
     it "should be able to multiply multiple numbers" do
-      multiply(3, 4, 10).should == 3 * 4 * 10
+      parse_eval("multiply(3, 4, 10)").should == 3 * 4 * 10
     end
 
     it "should be able to multiply vectors" do
-      multiply([10, 20, 30], [1, 2, 3]).should == [10, 40, 90]
+      parse_eval("multiply(list(10, 20, 30), list(1, 2, 3))").should == [10, 40, 90]
     end
 
     it "should be able to multiply a vector by a number" do
-      multiply([1, 2, 3], 2).should == [2, 4, 6]
+      parse_eval("multiply(list(1, 2, 3), 2)").should == [2, 4, 6]
     end
   end
 
   context "divide" do
     it "should be able to divide two numbers" do
-      divide(10, 2).should == 5
+      parse_eval("divide(10, 2)").should == 5
     end
 
     it "should not raise an error when dividing by zero" do
       lambda {
-        divide(10, 0)
+        parse_eval("divide(10, 0)")
       }.should_not raise_error
     end
 
     it "should work with decimals" do
-      divide(1, 2).should == 0.5
+      parse_eval("divide(1, 2)").should == 0.5
     end
 
     it "should work with two lists" do
-      divide([10, 20], [10, 30]).should == [1, 2/3.to_f]
+      parse_eval("divide(list(10, 20), list(10, 30))").should == [1, 2/3.to_f]
     end
   end
 
