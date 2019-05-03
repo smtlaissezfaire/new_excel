@@ -3,23 +3,19 @@ built_in_functions: true
 square: (x)
   = multiply(x, x)
 
-add: lambda(list,
-  zipped_lists(list,
-    lambda(list,
-      inject(list, quote(+)))))
+inject_zipped_list_symbol: (symbol)
+  = lambda(list,
+      zipped_lists(list,
+        lambda(list,
+          inject(list, symbol))))
+
+add: inject_zipped_list_symbol(quote(+))
 
 sum: add
 
-subtract: lambda(list,
-  zipped_lists(list,
-    lambda(list,
-      inject(list, quote(-)))))
+subtract: inject_zipped_list_symbol(quote(-))
 
-multiply: lambda(list,
-  zipped_lists(list,
-    lambda(list,
-      inject(list, quote(*)))))
-
+multiply: inject_zipped_list_symbol(quote(*))
 
 # def divide(*list)
 #   zipped_lists(list) do |num, denom|
