@@ -576,4 +576,27 @@ describe NewExcel::BuiltInFunctions do
       any?([true, false, false], [false, false, true]).should == [true, false, true]
     end
   end
+
+  context "and" do
+    it "should be true if both are true" do
+      parse_eval('and(true, true)').should == true
+    end
+
+    it "should be false if the first is false" do
+      parse_eval('and(false, true)').should == false
+    end
+
+    it "should be false if the last is false" do
+      parse_eval('and(true, false)').should == false
+    end
+
+    it "should be able to use two lists" do
+      parse_eval('and(list(true, true), list(true, false))').should == [true, false]
+    end
+
+    it "should not evaluate the second argument if the first argument is false" do
+      pending "FIXME"
+      parse_eval('and(false, RAISE_GOT_HERE)').should == false
+    end
+  end
 end
