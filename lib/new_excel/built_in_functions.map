@@ -5,18 +5,14 @@ built_in_functions: true
 # average: (args)
 #   = divide(sum(args), length(args))
 
-# TODO: shouldn't need to use functions mapped to functions here
+add: lambda(list,
+  zipped_lists(list,
+    lambda(list,
+      inject(list, quote(+)))))
 
-add: =
-  lambda(list,
-    zipped_lists(list,
-      lambda(list,
-        inject(list, quote(+)))))
+sum: add
 
-sum: = add
-
-subtract: =
-  lambda(list,
-    zipped_lists(list,
-      lambda(list,
-        inject(list, quote(-)))))
+subtract: lambda(list,
+  zipped_lists(list,
+    lambda(list,
+      inject(list, quote(-)))))

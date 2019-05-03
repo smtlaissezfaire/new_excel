@@ -11,12 +11,23 @@ module NewExcel
       file_path = ::File.dirname(__FILE__)
       file = NewExcel::File.new(file_path)
       sheet = file.get_sheet("built_in_functions")
+
       sheet.parse
 
-      # TODO: shouldn't need to use keys mapped to functions mapped to lambdas
-      sheet_env = sheet.default_environment(minimal_env)
+      # TODO: shouldn't this be the same as sheet.evaluated_with_unevaluated_columns ?
+      evaluator = Evaluator.new
 
-      sheet_env.dup
+      sheet.statements.each do |statement|
+        sheet.evaluate(statement, minimal_env)
+      end
+
+      map_hash = sheet.ast.map.to_hash
+
+      map_hash.each do |key, value|
+        evaluator.evaluate(key, minimal_env)
+      end
+
+      minimal_env
     end
 
     class Closure
