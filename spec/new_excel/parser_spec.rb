@@ -374,5 +374,21 @@ CODE
       val = parse_statement(str)
       val.should be_a_kind_of(NewExcel::AST::FunctionCall)
     end
+
+    it "should be able to define a key starting with an underscore" do
+      str = <<-CODE
+        _foo: = 1
+      CODE
+
+      NewExcel::Tokenizer.tokenize(str).should == [
+        [:KEY_WITH_COLON, "_foo:"],
+        [:EQ, "="],
+        [:INTEGER, "1"],
+        [false, false],
+      ]
+
+      val = parse_map(str)
+      val.should be_a_kind_of(NewExcel::AST::Map)
+    end
   end
 end
