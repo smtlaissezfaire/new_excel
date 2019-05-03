@@ -8,23 +8,14 @@ module NewExcel
         minimal_env[method_name] = mod.instance_method(method_name)
       end
 
-      file_path = ::File.dirname(__FILE__)
+      file_path = ::File.join(::File.dirname(__FILE__), "stdlib")
       file = NewExcel::File.new(file_path)
-      sheet = file.get_sheet("stdlib")
 
-      sheet.parse
-
-      # TODO: shouldn't this be the same as sheet.evaluated_with_unevaluated_columns ?
-      evaluator = Evaluator.new
-
-      sheet.statements.each do |statement|
-        sheet.evaluate(statement, minimal_env)
-      end
-
-      map_hash = sheet.ast.map.to_hash
-
-      map_hash.each do |key, value|
-        evaluator.evaluate(key, minimal_env)
+      [
+        "math"
+      ].each do |sheet|
+        sheet = file.get_sheet(sheet)
+        sheet.evaluate_as_hash_map_without_evaluating_columns(minimal_env)
       end
 
       minimal_env

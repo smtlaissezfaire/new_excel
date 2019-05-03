@@ -1,0 +1,35 @@
+built_in_functions: true
+
+square: (x)
+  = multiply(x, x)
+
+inject_zipped_list_symbol: (symbol)
+  = lambda(list,
+      zipped_lists(list,
+        lambda(list,
+          inject(list, symbol))))
+
+add: inject_zipped_list_symbol(quote(+))
+
+sum: add
+
+subtract: inject_zipped_list_symbol(quote(-))
+
+multiply: inject_zipped_list_symbol(quote(*))
+
+# def divide(*list)
+#   zipped_lists(list) do |num, denom|
+#     primitive_infix(:/, num, primitive_method_call(denom, :to_f))
+#   end
+# end
+
+divide: lambda(list,
+  zipped_lists(list,
+    (num, denom)
+      = primitive_infix(quote(/),
+                      num,
+                      primitive_method_call(denom, quote(to_f)))))
+
+average: lambda(args,
+  divide(apply("sum", args),
+         length(args)))

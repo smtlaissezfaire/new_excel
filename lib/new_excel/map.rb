@@ -125,5 +125,25 @@ module NewExcel
 
       body_values
     end
+
+    # need a better name!
+    def evaluate_as_hash_map_without_evaluating_columns(env = base_env)
+      parse
+
+      # TODO: shouldn't this be the same as sheet.evaluated_with_unevaluated_columns ?
+      # evaluator = Evaluator.new
+
+      statements.each do |statement|
+        evaluate(statement, env)
+      end
+
+      map_hash = ast.map.to_hash
+
+      map_hash.each do |key, value|
+        evaluate(key, env)
+      end
+
+      env
+    end
   end
 end
