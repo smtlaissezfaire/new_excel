@@ -104,19 +104,33 @@ module NewExcel
         end
       end
 
+      def get_as_string_name(reference)
+        case reference
+        when ::String
+          reference
+        when Symbol
+          reference.to_s
+        when Array
+          ref = evaluate(reference)
+          # it's a function / column
+          ref = ref.first
+          # sometimes this comes back as AST::String?
+          evaluate(ref)
+        else
+          raise "Invalid sheet_name: #{sheet_name.inspect}, class: #{sheet_name.class}"
+        end
+      end
+
       def lookup_cell(cell_name, sheet_name)
         file = NewExcel::ProcessState.current_file
-
         return if !file
 
-        if sheet_name && ProcessState.current_sheet_name == sheet_name
-          raise "Shouldn't have gotten here. Call lookup(expr)"
-        end
+        sheet_name = get_as_string_name(sheet_name)
+        cell_name = get_as_string_name(cell_name)
 
-        sheet = file.get_sheet(sheet_name.to_s)
-
+        sheet = file.get_sheet(sheet_name)
         sheet.parse
-        sheet.get_column(cell_name.to_s)
+        sheet.get_column(cell_name)
       end
 
       def apply(fn, arguments)

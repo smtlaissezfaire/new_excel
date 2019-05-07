@@ -1,0 +1,5 @@
+data_sheet_function_quoted: = "simple_high_low"
+data_sheet_directly_quoted: "simple_high_low"
+
+lookup_cell_directly_quoted: "high"
+lookup_cell_function_quoted: = "high"

@@ -501,4 +501,34 @@ STR
       @obj.get_column("OneArgumentFunctionCalled").should == [10]
     end
   end
+
+  context "lookup_cell" do
+    before do
+      @obj = basic_file.get_sheet("ohlc")
+    end
+
+    it "should be indirectly lookup cell in another sheet with two quoted values and lookup_value" do
+      @obj.get_column("HighWithBothValuesQuoted").should == ["100"]
+    end
+
+    it "should be indirectly lookup cell in another sheet with dotted values" do
+      @obj.get_column("HighDotted").should == ["100"]
+    end
+
+    it "should be able to evaluate looking up a cell in another sheet indirectly with lookup_value when the sheet is a direct string in another field" do
+      @obj.get_column("HighWithQuotedIndirectSheet").should == ["100"]
+    end
+
+    it "should be able to evaluate looking up a cell in another sheet indirectly with lookup_value when the sheet is " do
+      @obj.get_column("HighWithQuotedIndirectSheetInFunction").should == ["100"]
+    end
+
+    it "should be able to lookup a dynamic cell name" do
+      @obj.get_column("HighWithQuotedIndirectField").should == ["100"]
+    end
+
+    it "should be able to lookup a dynamic cell name in a function" do
+      @obj.get_column("HighWithQuotedIndirectFieldInFunction").should == ["100"]
+    end
+  end
 end

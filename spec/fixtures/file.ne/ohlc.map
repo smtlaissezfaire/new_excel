@@ -1,0 +1,17 @@
+HighWithBothValuesQuoted:
+  = lookup_cell("high", "simple_high_low")
+
+HighDotted:
+  = simple_high_low.high
+
+HighWithQuotedIndirectSheet:
+  = lookup_cell("high", main_variables.data_sheet_directly_quoted)
+
+HighWithQuotedIndirectSheetInFunction:
+  = lookup_cell("high", main_variables.data_sheet_function_quoted)
+
+HighWithQuotedIndirectField:
+  = lookup_cell(main_variables.lookup_cell_directly_quoted, "simple_high_low")
+
+HighWithQuotedIndirectFieldInFunction:
+  = lookup_cell(main_variables.lookup_cell_function_quoted, "simple_high_low")
