@@ -391,4 +391,20 @@ CODE
       val.should be_a_kind_of(NewExcel::AST::Map)
     end
   end
+
+  it "should be able to have a column with a question mark" do
+    str = <<-CODE
+      SomeCondition?:
+        true
+    CODE
+
+    NewExcel::Tokenizer.tokenize(str).should == [
+      [:KEY_WITH_COLON, "SomeCondition?:"],
+      [:BOOLEAN, "true"],
+      [false, false],
+    ]
+
+    val = parse_map(str)
+    val.should be_a_kind_of(NewExcel::AST::Map)
+  end
 end

@@ -27,7 +27,7 @@ module NewExcel
           @q << [:QUOTED_STRING, match]
         when comments = tokens_for_comments(scanner)
           # ignore comments for now
-        when match = scanner.scan(/[a-zA-Z\_][a-zA-Z0-9\_\- ]*\:/)
+        when match = scanner.scan(/[a-zA-Z\_][a-zA-Z0-9\_\-\? ]*\:/)
           @q << [:KEY_WITH_COLON, match]
         when match = scanner.scan(/\=/)
           @q << [:EQ, match]
