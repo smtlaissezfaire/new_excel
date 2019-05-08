@@ -13,7 +13,8 @@ module NewExcel
 
       [
         "list",
-        "math"
+        "math",
+        "logical",
       ].each do |sheet|
         sheet = file.get_sheet(sheet)
         sheet.evaluate_as_hash_map_without_evaluating_columns(minimal_env)

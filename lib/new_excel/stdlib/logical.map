@@ -1,0 +1,5 @@
+define(not,
+  lambda(x,
+    each_item(x,
+      lambda(y,
+        if(y, false, true)))))

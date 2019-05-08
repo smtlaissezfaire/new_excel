@@ -485,37 +485,6 @@ describe NewExcel::BuiltInFunctions do
     end
   end
 
-  context "if" do
-    it "should return the first value if true" do
-      self.send("if", true, 1, 2).should == 1
-    end
-
-    it "should return the second value if false" do
-      self.send("if", false, 1, 2).should == 2
-    end
-
-    it "should work with lists" do
-      self.send("if", [true, false], [1, 2], [3, 4]).should == [1, 4]
-    end
-
-    it "should not evaluate the second condition when true" do
-      evaluated = false
-      self.send("if", true, true, lambda { evaluated = true })
-      evaluated.should == false
-    end
-
-    it "should not evaluate the first condition when false" do
-      evaluated = false
-      self.send("if", false, lambda { evaluated = true }, "not important")
-      evaluated.should == false
-    end
-
-    it "should call the block" do
-      value = self.send("if", true, lambda { true }, "not important")
-      value.should == true
-    end
-  end
-
   context "hour" do
     it "should return the hour of a datetime" do
       t = Time.parse("2019-01-01 2:05PM")
@@ -585,6 +554,50 @@ describe NewExcel::BuiltInFunctions do
 
     it "should not evaluate the second argument if the first argument is false" do
       parse_eval('and(false, RAISE_GOT_HERE)').should == false
+    end
+  end
+
+  context "if" do
+    it "should return the first value if true" do
+      parse_eval("if(true, 1, 2)").should == 1
+    end
+
+    it "should return the second value if false" do
+      parse_eval("if(false, 1, 2)").should == 2
+    end
+
+    it "should evaluate the first argument if true" do
+      parse_eval("if(true, eq(true, true), false)").should == true
+    end
+
+    it "should evaluate the second argument if true" do
+      parse_eval("if(false, 1, eq(2, 2))").should == true
+    end
+
+    it "should not eval the first argument if false" do
+      parse_eval("if(false, BLAHBLAH, eq(2, 2))").should == true
+    end
+
+    it "should not eval the second argument if true" do
+      parse_eval("if(true, true, BLAHBLAH)").should == true
+    end
+
+    it "should work with lists" do
+      parse_eval("if(list(true, false), list(1, 2), list(3, 4))").should == [1, 4]
+    end
+  end
+
+  context "not" do
+    it "should make a true value false" do
+      parse_eval('not(true)').should == false
+    end
+
+    it "should make a false value true" do
+      parse_eval('not(false)').should == true
+    end
+
+    it "should work with a list" do
+      parse_eval("not(list(true, false))").should == [false, true]
     end
   end
 end

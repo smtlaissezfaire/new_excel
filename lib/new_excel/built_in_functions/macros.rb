@@ -1,14 +1,6 @@
 module NewExcel
   module BuiltInFunctions
     module Macros
-      def if(*args)
-        conds, truthy_expressions, falsy_expressions = args
-
-        zipped_lists([_evaluate(conds), truthy_expressions, falsy_expressions]) do |cond, truthy_expression, falsy_expression|
-          cond ? _evaluate(truthy_expression) : _evaluate(falsy_expression)
-        end
-      end
-
       def and(expressions)
         values = []
         got_false_value = false

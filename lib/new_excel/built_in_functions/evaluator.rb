@@ -22,7 +22,7 @@ module NewExcel
           when :define
             env[expr[1].to_sym] = evaluate(expr[2])
           when :if
-            eval_if(cdr(expr))
+            self.send(:if, cdr(expr))
           when :quote
             quote(expr[1])
           when :lookup_cell
@@ -79,6 +79,32 @@ module NewExcel
           evaluate(true_expr)
         else
           evaluate(false_expr)
+        end
+      end
+
+      def if(args)
+        conds, truthy_expressions, falsy_expressions = args
+
+        conds = evaluate(conds)
+
+        if conds.is_a?(Array)
+          index = 0
+          conds.map do |cond|
+            value = if cond
+              evaluate(truthy_expressions)[index]
+            else
+              evaluate(falsy_expressions)[index]
+            end
+
+            index += 1
+            value
+          end
+        else
+          if conds
+            evaluate(truthy_expressions)
+          else
+            evaluate(falsy_expressions)
+          end
         end
       end
 
