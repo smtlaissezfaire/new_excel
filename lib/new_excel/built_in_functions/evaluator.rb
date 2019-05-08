@@ -88,12 +88,18 @@ module NewExcel
         conds = evaluate(conds)
 
         if conds.is_a?(Array)
+          truthy_expressions = evaluate(truthy_expressions)
+          falsy_expressions = evaluate(falsy_expressions)
+
+          truthy_is_array = truthy_expressions.is_a?(Array)
+          falsy_is_array = falsy_expressions.is_a?(Array)
+
           index = 0
           conds.map do |cond|
             value = if cond
-              evaluate(truthy_expressions)[index]
+              truthy_is_array ? truthy_expressions[index] : truthy_expressions
             else
-              evaluate(falsy_expressions)[index]
+              falsy_is_array ? falsy_expressions[index] : falsy_expressions
             end
 
             index += 1
@@ -195,11 +201,7 @@ module NewExcel
           new_env[formal_arguments] = evaluated_arguments
         end
 
-        merge_envs(@env, function_binding, new_env)
-      end
-
-      def merge_envs(*envs)
-        envs.inject(&:merge)
+        @env.merge(function_binding).merge(new_env)
       end
 
       def primitive_function?(fn)

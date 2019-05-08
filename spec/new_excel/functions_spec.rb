@@ -585,6 +585,18 @@ describe NewExcel::BuiltInFunctions do
     it "should work with lists" do
       parse_eval("if(list(true, false), list(1, 2), list(3, 4))").should == [1, 4]
     end
+
+    it "should work with single values that get evaluated" do
+      parse_eval("if(evaluate(true), 1, 0)").should == 1
+    end
+
+    it "should return a single value in the true branch if only one given (but a list given in the conditions)" do
+      parse_eval("if(list(true, true), true, false)").should == [true, true]
+    end
+
+    it "should return a single value in the true branch if only one given (but a list given in the conditions)" do
+      parse_eval("if(list(false, false), true, false)").should == [false, false]
+    end
   end
 
   context "not" do
