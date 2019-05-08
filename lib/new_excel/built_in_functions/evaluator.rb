@@ -83,11 +83,11 @@ module NewExcel
       end
 
       def get(expr)
-        val = @env[expr]
-        if !val
+        if !@env.has_key?(expr)
           raise "Couldn't get object: #{expr.inspect}"
         end
-        val
+
+        @env[expr]
       end
 
       def lookup(expr)

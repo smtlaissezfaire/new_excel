@@ -467,4 +467,15 @@ describe NewExcel::Evaluator do
 
     @evaluator.evaluate(ast).should == [0, 1, 2]
   end
+
+  it "should be able to evaluate a false variable" do
+    parser = NewExcel::Parser.new
+
+    ast = parser.parse <<-CODE
+      var: false
+      var
+    CODE
+
+    @evaluator.evaluate(ast).should == false
+  end
 end
