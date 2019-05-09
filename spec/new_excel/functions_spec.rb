@@ -83,6 +83,11 @@ describe NewExcel::BuiltInFunctions do
     it "should work with two lists" do
       parse_eval("divide(list(10, 20), list(10, 30))").should == [1, 2/3.to_f]
     end
+
+    it "should work with a list and one number" do
+      parse_eval("divide(list(0.015625, 0.0078125), 0.0078125)").should == [2, 1]
+    end
+
   end
 
   context "square" do

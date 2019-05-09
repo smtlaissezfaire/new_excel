@@ -27,8 +27,8 @@ divide: lambda(list,
   zipped_lists(list,
     (num, denom)
       = primitive_infix(quote(/),
-                      num,
-                      primitive_method_call(denom, quote(to_f)))))
+                        primitive_method_call(num, quote(to_f)),
+                        primitive_method_call(denom, quote(to_f)))))
 
 average: lambda(args,
   divide(apply("sum", args),
