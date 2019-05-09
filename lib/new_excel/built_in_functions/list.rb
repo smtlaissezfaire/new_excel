@@ -89,7 +89,9 @@ module NewExcel
       end
 
       def index(list, val1=nil, val2=nil)
-        if val1 || val2
+        if val1 && !val2
+          list[val1-1]
+        elsif val1 || val2
           val1 ||= 1
           list[val1-1..val2-1]
         else

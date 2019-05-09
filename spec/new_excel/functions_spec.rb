@@ -240,6 +240,10 @@ describe NewExcel::BuiltInFunctions do
     it "should be able to indexes everything up until current index" do
       index(range(10, 50), nil, 3).should == [10, 11, 12]
     end
+
+    it "should be able to index with a specific integer" do
+      index([10, 20, 30], 2).should == 20
+    end
   end
 
   context "each" do
