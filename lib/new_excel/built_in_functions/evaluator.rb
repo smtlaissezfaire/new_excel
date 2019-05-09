@@ -20,7 +20,9 @@ module NewExcel
           when :lambda
             Runtime::Closure.new(expr[1], expr[2], @env)
           when :define
-            env[expr[1].to_sym] = evaluate(expr[2])
+            @env.define(expr[1].to_sym, evaluate(expr[2]))
+          when :set!
+            @env.set!(expr[1].to_sym, evaluate(expr[2]))
           when :if
             self.send(:if, cdr(expr))
           when :quote
@@ -115,11 +117,7 @@ module NewExcel
       end
 
       def get(expr)
-        if !@env.has_key?(expr)
-          raise "Couldn't get object: #{expr.inspect}"
-        end
-
-        @env[expr]
+        @env.get(expr)
       end
 
       def lookup(expr)
@@ -201,7 +199,7 @@ module NewExcel
           new_env[formal_arguments] = evaluated_arguments
         end
 
-        @env.merge(function_binding).merge(new_env)
+        function_binding.merge(new_env)
       end
 
       def primitive_function?(fn)

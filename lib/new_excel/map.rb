@@ -65,7 +65,7 @@ module NewExcel
 
     def evaluate_field(column_name, env = default_environment)
       key = column_name.to_sym
-      evaluate([:lookup, [:quote, key]])
+      evaluate([:lookup, [:quote, key]], env)
     end
 
     def evaluate_column(column_name)

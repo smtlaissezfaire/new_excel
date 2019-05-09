@@ -43,15 +43,15 @@ describe NewExcel::Evaluator do
   # TODO: additional types
   # TODO: checking types convert properly
   it "should evaluate a symbol in the environment"  do
-    env = { x: 1 }
+    env = NewExcel::Runtime::Environment.new({ x: 1 })
     symbol = NewExcel::AST::Symbol.new(:x)
     @evaluator.evaluate(symbol, env).should == 1
 
-    env = { x: 2 }
+    env = NewExcel::Runtime::Environment.new({ x: 2 })
     symbol = NewExcel::AST::Symbol.new(:x)
     @evaluator.evaluate(symbol, env).should == 2
 
-    env = { x: 3 }
+    env = NewExcel::Runtime::Environment.new({ x: 3 })
     symbol = NewExcel::AST::Symbol.new(:x)
     @evaluator.evaluate(symbol, env).should == 3
   end
@@ -62,6 +62,7 @@ describe NewExcel::Evaluator do
         0
       }
     }
+    env = NewExcel::Runtime::Environment.new(env)
 
     symbol = NewExcel::AST::Symbol.new(:+)
     function = NewExcel::AST::FunctionCall.new(symbol)
@@ -74,6 +75,7 @@ describe NewExcel::Evaluator do
         x + y
       }
     }
+    env = NewExcel::Runtime::Environment.new(env)
 
     symbol = NewExcel::AST::Symbol.new(:+)
     int1 = NewExcel::AST::PrimitiveInteger.new(1)
@@ -89,12 +91,14 @@ describe NewExcel::Evaluator do
         x + y
       }
     }
+    env = NewExcel::Runtime::Environment.new(env)
 
     @evaluator.evaluate([:+, 1, 2], env).should == 3
   end
 
   it "should be able to define a function" do
     env = {}
+    env = NewExcel::Runtime::Environment.new(env)
 
     lambda {
       @evaluator.evaluate([:lambda, [:x, :y], [:+, :x, :y]], env)
@@ -107,6 +111,7 @@ describe NewExcel::Evaluator do
         x + y
       },
     }
+    env = NewExcel::Runtime::Environment.new(env)
 
     res = @evaluator.evaluate([
       [:lambda, [:x, :y], [:+, :x, :y]],
@@ -119,9 +124,10 @@ describe NewExcel::Evaluator do
 
   it "should be able to define, modifying the environment" do
     env = {}
+    env = NewExcel::Runtime::Environment.new(env)
 
     @evaluator.evaluate([:define, :x, 1], env)
-    env[:x].should == 1
+    env.to_hash[:x].should == 1
   end
 
   it "should be able to call a defined function" do
@@ -130,6 +136,7 @@ describe NewExcel::Evaluator do
         x + y
       }
     }
+    env = NewExcel::Runtime::Environment.new(env)
 
     @evaluator.evaluate(
       [:define, :+, [:lambda, [:x, :y],
@@ -154,6 +161,7 @@ describe NewExcel::Evaluator do
         2
       }
     }
+    env = NewExcel::Runtime::Environment.new(env)
 
     res = @evaluator.evaluate(
       [:if, true,
@@ -180,6 +188,7 @@ describe NewExcel::Evaluator do
         2
       }
     }
+    env = NewExcel::Runtime::Environment.new(env)
 
     res = @evaluator.evaluate(
       [:if, false,
@@ -198,6 +207,7 @@ describe NewExcel::Evaluator do
         x + y
       }
     }
+    env = NewExcel::Runtime::Environment.new(env)
 
     function_call = NewExcel::AST::FunctionCall.new(
       NewExcel::AST::Symbol.new(:primitive_plus),
@@ -219,7 +229,7 @@ describe NewExcel::Evaluator do
   end
 
   it "should define a key value pair as a define" do
-    env = {}
+    env = NewExcel::Runtime::Environment.new
 
     key = NewExcel::AST::Symbol.new(:x)
     value = NewExcel::AST::PrimitiveInteger.new(1)
@@ -227,11 +237,11 @@ describe NewExcel::Evaluator do
     kv_pair = NewExcel::AST::KeyValuePair.new(key, value)
 
     @evaluator.evaluate(kv_pair, env)
-    env[:x].should == 1
+    env.to_hash[:x].should == 1
   end
 
   it "should define a key value pair as a define with the right key + value" do
-    env = {}
+    env = NewExcel::Runtime::Environment.new
 
     key = NewExcel::AST::Symbol.new(:y)
     value = NewExcel::AST::PrimitiveInteger.new(2)
@@ -239,7 +249,7 @@ describe NewExcel::Evaluator do
     kv_pair = NewExcel::AST::KeyValuePair.new(key, value)
 
     @evaluator.evaluate(kv_pair, env)
-    env[:y].should == 2
+    env.to_hash[:y].should == 2
   end
 
   it "should be able to quote a symbol" do
@@ -392,7 +402,7 @@ describe NewExcel::Evaluator do
 
   it "should not retain a defined variable outside of a scoped lambda" do
     parser = NewExcel::Parser.new
-    env = {}
+    env = NewExcel::Runtime::Environment.new
 
     ast = parser.parse <<-CODE
       ((n) = n)(20)
@@ -409,7 +419,8 @@ describe NewExcel::Evaluator do
     ast = parser.parse <<-CODE
       define(x, 10)
 
-      y: = x
+      y:
+        = x
 
       define(y_value_before_redefinition, y())
       define(x, 20)
@@ -418,7 +429,7 @@ describe NewExcel::Evaluator do
       list(y_value_before_redefinition, y_value_after_redefinition)
     CODE
 
-    @evaluator.evaluate(ast).should == [10, 10]
+    @evaluator.evaluate(ast).should == [10, 20]
   end
 
   it "should be able to be parsed + evaluated" do
@@ -477,5 +488,39 @@ describe NewExcel::Evaluator do
     CODE
 
     @evaluator.evaluate(ast).should == false
+  end
+
+  it "should retain a defined variable outside of a scoped lambda" do
+    parser = NewExcel::Parser.new
+    env = NewExcel::Runtime::Environment.new
+
+    ast = parser.parse <<-CODE
+      define(x, 10)
+
+      fn: ()
+        = define(x, 20)
+
+      fn()
+      x
+    CODE
+
+    @evaluator.evaluate(ast, env).should == 10
+  end
+
+  it "should change a defined variable with set! inside a function" do
+    parser = NewExcel::Parser.new
+    env = NewExcel::Runtime::Environment.new
+
+    ast = parser.parse <<-CODE
+      define(x, 10)
+
+      fn: 
+        = set!(x, 20)
+
+      fn()
+      x
+    CODE
+
+    @evaluator.evaluate(ast, env).should == 20
   end
 end

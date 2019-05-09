@@ -323,7 +323,7 @@ STR
 
       @obj.parse
 
-      @obj.default_environment[:Value].should be_a_kind_of(NewExcel::AST::Function)
+      @obj.default_environment.get(:Value).should be_a_kind_of(NewExcel::AST::Function)
 
       @obj.evaluate([:get, [:quote, :Value]], @obj.default_environment).should be_a_kind_of(NewExcel::AST::Function)
       @obj.evaluate(:Value, @obj.default_environment).should == range_list
