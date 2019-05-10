@@ -229,7 +229,7 @@ module NewExcel
 
       def quote(obj)
         case obj
-        when Symbol, Array, Integer, Float, TrueClass, FalseClass, ::String
+        when Symbol, Array, Integer, Float, TrueClass, FalseClass, ::String, Method, UnboundMethod
           obj
         when Hash
           statements = obj.map do |key, value|
@@ -259,8 +259,6 @@ module NewExcel
           quote(obj.to_hash)
         when AST::StatementList
           [:progn, *quote_list(obj.statements)]
-        when Method, UnboundMethod
-          obj
         else
           raise "Not sure how to quote: #{obj.inspect}"
         end
