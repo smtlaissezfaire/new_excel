@@ -7,3 +7,13 @@ concat:
     # would be nice to use symbol_to_proc() here
     zipped_lists(args, lambda(list,
       primitive_method_call(list, quote(join)))))
+
+countif: (list, item)
+  = sum(
+      if(eq(list, item),
+         1,
+         0))
+
+# TODO:
+# is_list: (list)
+#   = primitive_method_call(list, quote(is_a?), primitive_class(quote(Array)))

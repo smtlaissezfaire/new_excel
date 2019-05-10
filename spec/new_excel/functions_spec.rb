@@ -269,8 +269,8 @@ describe NewExcel::BuiltInFunctions do
       second_val = each_call[1]
       second_val.should == [10, 20]
 
-      fold("sum", first_val).should == 10
-      fold("sum", second_val).should == 30
+      fold("add", first_val).should == 10
+      fold("add", second_val).should == 30
     end
 
     it "should be able to sum" do
@@ -283,7 +283,7 @@ describe NewExcel::BuiltInFunctions do
         [1, 2, 3, 4],
       ]
 
-      map("sum", each_values).should == [
+      map("add", each_values).should == [
         1,
         1+2,
         1+2+3,
@@ -294,7 +294,7 @@ describe NewExcel::BuiltInFunctions do
     it "should be able to map the sums of an each call" do
       each_call = each([10, 20, 30])
 
-      map("sum", each_call).should == [
+      map("add", each_call).should == [
         10,
         10+20,
         10+20+30,
@@ -605,6 +605,26 @@ describe NewExcel::BuiltInFunctions do
 
     it "should return a single value in the true branch if only one given (but a list given in the conditions)" do
       parse_eval("if(list(false, false), true, false)").should == [false, false]
+    end
+  end
+
+  context "sum" do
+    it "should be able to sum two lists" do
+      parse_eval('sum(list(1, 2, 3), list(4, 5, 6))').should == [1+4, 2+5, 3+6]
+    end
+
+    it "should be able to sum a list and a value" do
+      parse_eval('sum(list(1, 2, 3), 1)').should == [1+1, 2+1, 3+1]
+    end
+
+    it "should be able to sum a list into a single value" do
+      parse_eval('sum(list(1, 2, 3))').should == 6
+    end
+  end
+
+  context "countif" do
+    it "should work with a simple list" do
+      parse_eval('countif(list("hi", "bye", "hi"), "hi")').should == 2
     end
   end
 

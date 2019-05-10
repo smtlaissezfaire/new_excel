@@ -10,7 +10,9 @@ module NewExcel
         primitive_method_call(primitive_method_call(args, :flatten), :length)
       end
 
-      alias_method :length, :count
+      def length(args)
+        primitive_method_call(args, :length)
+      end
 
       # def concat(*args)
       #   zipped_lists(args, &:join)
@@ -97,6 +99,10 @@ module NewExcel
         else
           1.upto(list.length).to_a
         end
+      end
+
+      def is_list(list)
+        list.is_a?(Array)
       end
     end
   end
