@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << "./lib"
+
+require "bundler/setup"
+require "new_excel"
+require 'byebug'
+require 'pp'
+
+# NewExcel::ProcessState.strict_error_mode = false
+NewExcel::ProcessState.max_rows_to_load = 100
+NewExcel::ProcessState.debug = false
+
+file_path = ARGV[0]
+
+if !file_path
+  raise "Need the file path as the first arg".red
+end
+
+file_name = ::File.dirname(file_path)
+sheet_name = ::File.basename(file_path, ::File.extname(file_path))
+
+file = NewExcel::File.new(file_name)
+sheet = file.get_sheet(sheet_name)
+
+puts sheet.for_printing
