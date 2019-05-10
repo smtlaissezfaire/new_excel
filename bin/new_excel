@@ -8,7 +8,7 @@ require 'byebug'
 require 'pp'
 
 # NewExcel::ProcessState.strict_error_mode = false
-NewExcel::ProcessState.max_rows_to_load = 100
+NewExcel::ProcessState.max_rows_to_load = ARGV[1] ? ARGV[1].to_i : 100
 NewExcel::ProcessState.debug = false
 
 file_path = ARGV[0]
