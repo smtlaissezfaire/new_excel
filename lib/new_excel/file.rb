@@ -3,6 +3,7 @@ module NewExcel
     TYPES = [
       CSV = "csv",
       MAP = "map",
+      ADHOC = "adhoc"
     ]
 
     class << self
@@ -55,6 +56,8 @@ module NewExcel
           Map.new(file)
         elsif type == CSV
           Data.new(file)
+        elsif type == ADHOC
+          Adhoc.new(file)
         end
 
         sheet_cache[sheet_name] = obj
