@@ -121,17 +121,7 @@ module NewExcel
       end
 
       def lookup(expr)
-        val = get(expr)
-
-        if val.is_a?(NewExcel::AST::Function)
-          if val.formal_arguments == []
-            evaluate([val])
-          else
-            evaluate(val)
-          end
-        else
-          val
-        end
+        @env.lookup(expr, self)
       end
 
       def get_as_string_name(reference)

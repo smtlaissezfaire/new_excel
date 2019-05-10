@@ -35,6 +35,7 @@ module NewExcel
       def initialize(hash = {}, parent = nil)
         @hash = hash
         @parent = parent
+        @lookup_cache = {}
       end
 
       def set!(key, value)
@@ -56,6 +57,26 @@ module NewExcel
           @parent.get(key)
         else
           raise "Couldn't find variable: #{key.inspect}"
+        end
+      end
+
+      def lookup(expr, evaluator)
+        if @hash.has_key?(expr)
+          val = @hash[expr]
+
+          if val.is_a?(NewExcel::AST::Function)
+            @lookup_cache[expr] ||= if val.formal_arguments == []
+              evaluator.evaluate([val])
+            else
+              evaluator.evaluate(val)
+            end
+          else
+            val
+          end
+        elsif @parent
+          @parent.lookup(expr, evaluator)
+        else
+          raise "Couldn't lookup: #{expr.inspect}"
         end
       end
 
