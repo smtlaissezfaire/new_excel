@@ -75,6 +75,28 @@ describe NewExcel::Adhoc do
     end
   end
 
+  describe "with an array of data" do
+    before do
+      @obj = basic_file.get_sheet("adhoc_array_of_data")
+    end
+
+    it "should be able to get all of the raw content" do
+      @obj.raw_content.should == "array of data | = list(1, 2, 3)\n"
+    end
+
+    it "should be able to get all of the parsed_content" do
+      @obj.parsed_content.should == [
+        ['array of data', '= list(1, 2, 3)'],
+      ]
+    end
+
+    it "should be able to evaluate formulas" do
+      @obj.read.should == [
+        ['array of data', '1 2 3']
+      ]
+    end
+  end
+
   context "printing" do
     it "should print" do
       @obj = basic_file.get_sheet("adhoc_simple_formula")

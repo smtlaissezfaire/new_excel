@@ -85,7 +85,17 @@ module NewExcel
     def evaluate_cell(expr)
       if expr =~ /^[\s]*\=.*/
         closure = evaluator.evaluate(evaluator.parse(expr))
-        evaluator.evaluate([closure])
+        value = evaluator.evaluate([closure])
+
+        if value.is_a?(Array)
+          if value.length == 1
+            value[0]
+          else
+            value.join(" ")
+          end
+        else
+          value
+        end
       else
         expr
       end
