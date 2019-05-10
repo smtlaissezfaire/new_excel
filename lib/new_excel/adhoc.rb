@@ -5,7 +5,7 @@ module NewExcel
     def parse
       return if @parsed_content
 
-      parsed_content = CSV.parse(raw_content, :col_sep => "|", quote_char: "\\")
+      parsed_content = CSV.parse(raw_content, col_sep: "|", quote_char: "\\")
       # parsed_content = raw_content.split("\n").map do |line|
       #   line.split("|")
       # end
