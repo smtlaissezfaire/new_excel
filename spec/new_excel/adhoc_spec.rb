@@ -15,7 +15,7 @@ describe NewExcel::Adhoc do
     end
 
     it "should be able to get the csv content" do
-      @obj.csv_content.should == [
+      @obj.parsed_content.should == [
         ['one','two','three'],
         ['four','five'],
         [],
@@ -52,8 +52,8 @@ describe NewExcel::Adhoc do
       @obj.raw_content.should == "number of files | = add(1, 1)\n"
     end
 
-    it "should be able to get all of the raw csv" do
-      @obj.csv_content.should == [
+    it "should be able to get all of the parsed_content" do
+      @obj.parsed_content.should == [
         ['number of files', '= add(1, 1)'],
       ]
     end

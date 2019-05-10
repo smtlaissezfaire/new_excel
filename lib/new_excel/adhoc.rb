@@ -3,21 +3,41 @@ module NewExcel
     extend Memoist
 
     def parse
-      return if @parsed
+      return if @parsed_content
+
+      parsed_content = CSV.parse(raw_content, :col_sep => "|")
+
+      # @ast = AST::DataFile.new(@sheet_file_path)
+      parsed_content = parsed_content.map do |line|
+        line.map do |element|
+          element.strip
+        end
+      end
+
+      @parsed_content = parsed_content
+    end
+
+    def parsed_content
+      parse
+      @parsed_content
+    end
+
+    def evaluate
+      return if @evaluated
 
       set_process_state do
-        @body = csv_content.map do |row|
-          row = row.map do |item|
-            evaluate(item)
+        @body = parsed_content.map do |row|
+          row = row.map do |cell|
+            evaluate_cell(cell)
           end
         end
 
-        @parsed = true
+        @evaluated = true
       end
     end
 
     def get_body_values(column_indexes, row_indexes)
-      body_values = body_csv
+      body_values = body
 
       if max_rows_to_load = NewExcel::ProcessState.max_rows_to_load
         count = 1
@@ -48,24 +68,10 @@ module NewExcel
       body_values
     end
 
-    def csv_content
-      return @csv_content if @csv_content_parsed
-
-      @csv_content = CSV.parse(raw_content, :col_sep => "|")
-
-      # @ast = AST::DataFile.new(@sheet_file_path)
-      @csv_content = @csv_content.map do |line|
-        line.map do |element|
-          element.strip
-        end
-      end
-
-      @csv_content_parsed = true
-      @csv_content
+    def body
+      evaluate
+      @body
     end
-
-    attr_accessor :body
-    alias_method :body_csv, :body
 
   private
 
@@ -73,7 +79,7 @@ module NewExcel
       @evaluator ||= NewExcel::Evaluator.new
     end
 
-    def evaluate(expr)
+    def evaluate_cell(expr)
       if expr =~ /^[\s]*\=.*/
         closure = evaluator.evaluate(evaluator.parse(expr))
         evaluator.evaluate([closure])
