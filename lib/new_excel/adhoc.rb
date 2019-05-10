@@ -5,7 +5,10 @@ module NewExcel
     def parse
       return if @parsed_content
 
-      parsed_content = CSV.parse(raw_content, :col_sep => "|")
+      parsed_content = CSV.parse(raw_content, :col_sep => "|", quote_char: "\\")
+      # parsed_content = raw_content.split("\n").map do |line|
+      #   line.split("|")
+      # end
 
       # @ast = AST::DataFile.new(@sheet_file_path)
       parsed_content = parsed_content.map do |line|

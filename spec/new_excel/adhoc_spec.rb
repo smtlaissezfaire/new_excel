@@ -65,6 +65,16 @@ describe NewExcel::Adhoc do
     end
   end
 
+  describe "with quoted data" do
+    it "should parse" do
+      @obj = NewExcel::Adhoc.new('tmp.txt')
+      @obj.stub(:raw_content).and_return "Strong | = countif(adx.TrendStrength, \"Strong\") | = count(ohlc.DateTime) | 59.42%"
+      @obj.parsed_content.should == [
+        ["Strong", "= countif(adx.TrendStrength, \"Strong\")", "= count(ohlc.DateTime)", "59.42%"]
+      ]
+    end
+  end
+
   context "printing" do
     it "should print" do
       @obj = basic_file.get_sheet("adhoc_simple_formula")
