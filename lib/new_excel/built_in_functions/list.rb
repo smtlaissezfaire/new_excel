@@ -104,6 +104,18 @@ module NewExcel
       def is_list(list)
         list.is_a?(Array)
       end
+
+      # def includes?(list, item)
+      #   if is_list(item)
+      #     list.map do |lst|
+      #       item.include?(lst)
+      #     end
+      #   else
+      #     list.any? do |list_item|
+      #       eq(list_item, item)
+      #     end
+      #   end
+      # end
     end
   end
 end

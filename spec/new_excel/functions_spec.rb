@@ -224,6 +224,10 @@ describe NewExcel::BuiltInFunctions do
     it "should work with floats" do
       parse_eval("average(1, 4)").should == 2.5
     end
+
+    it "should work with lists" do
+      parse_eval("average(list(1, 2), list(3, 4))").should == [2, 3]
+    end
   end
 
   context "apply" do
@@ -299,6 +303,16 @@ describe NewExcel::BuiltInFunctions do
         10+20,
         10+20+30,
       ]
+    end
+  end
+
+  context "map" do
+    it "should be able to map a function onto a list" do
+      parse_eval("map((x) = add(x, x), list(1, 2, 3))").should == [2, 4, 6]
+    end
+
+    it "should be able to map a function onto a list of lists" do
+      parse_eval("map(\"add\", list(list(1, 2, 3), list(4, 5, 6)))").should == [6, 15]
     end
   end
 
@@ -639,6 +653,20 @@ describe NewExcel::BuiltInFunctions do
 
     it "should work with a list" do
       parse_eval("not(list(true, false))").should == [false, true]
+    end
+  end
+
+  context "includes?" do
+    it "should be true if the item is in the list" do
+      parse_eval("includes?(list(1, 2, 3), 1)").should == true
+    end
+
+    it "should be false if the item is not in the list" do
+      parse_eval("includes?(list(1, 2, 3), 0)").should == false
+    end
+
+    it "should work with two lists" do
+      parse_eval("includes?(list(1, 2, 3), list(1, 3))").should == [true, false, true]
     end
   end
 end

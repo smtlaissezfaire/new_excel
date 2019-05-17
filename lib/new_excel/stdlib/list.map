@@ -17,3 +17,21 @@ countif: (list, item)
 # TODO:
 # is_list: (list)
 #   = primitive_method_call(list, quote(is_a?), primitive_class(quote(Array)))
+
+empty?: (lst)
+  = eq(length(lst), 0)
+
+in?: (lst, item)
+  = if (empty?(lst),
+       false,
+       if (eq(car(lst), item), true,
+           in?(cdr(lst), item)))
+
+includes?: (lst, item)
+  = if(is_list(item),
+       progn(
+         define(fn, (lst_item)
+            = in?(item, lst_item)),
+         map(fn, lst)
+       ),
+       in?(lst, item))

@@ -1,12 +1,17 @@
 module NewExcel
   module BuiltInFunctions
     module Functions
-      def map(fn, lists)
-        return [] if lists.empty?
+      def map(fn, items)
+        return [] if items.empty?
+
         values = []
 
-        lists.each_with_index do |list|
-          values << apply(fn, list)
+        items.each_with_index do |item|
+          if item.is_a?(Array)
+            values << apply(fn, item)
+          else
+            values << apply(fn, [item])
+          end
         end
 
         values
