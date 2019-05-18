@@ -56,3 +56,8 @@ vlookup: (list1, match, list2)
           val: indexOf(list1, match),
           if(val, index(list2, val), "")
         ))
+
+
+last: lambda(list,
+  each_list(list, lambda(list,
+    primitive_method_call(list, quote(last)))))

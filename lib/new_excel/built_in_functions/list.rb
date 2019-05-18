@@ -56,11 +56,11 @@ module NewExcel
         end
       end
 
-      def last(*list)
-        each_list(list) do |list|
-          primitive_method_call(list, :last)
-        end
-      end
+      # def last(*list)
+      #   each_list(list) do |list|
+      #     primitive_method_call(list, :last)
+      #   end
+      # end
 
       def each(list)
         vals = []
