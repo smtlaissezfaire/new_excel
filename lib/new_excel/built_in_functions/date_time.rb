@@ -2,10 +2,14 @@ module NewExcel
   module BuiltInFunctions
     module DateTime
       def date(strs)
-        each_list(strs) do |list|
-          list.map do |str|
-            Date.parse(str)
+        if strs.is_a?(Array)
+          each_list(strs) do |list|
+            list.map do |str|
+              date(str)
+            end
           end
+        else
+          Date.parse(strs)
         end
       end
 

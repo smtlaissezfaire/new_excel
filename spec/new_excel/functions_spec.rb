@@ -669,4 +669,42 @@ describe NewExcel::BuiltInFunctions do
       parse_eval("includes?(list(1, 2, 3), list(1, 3))").should == [true, false, true]
     end
   end
+
+  context "vlookup" do
+    it "should be able to lookup a value in a list" do
+      parse_eval("vlookup(list(1, 2, 3), 1, list(4, 5, 6))").should == 4
+      parse_eval("vlookup(list(1, 2, 3), 2, list(4, 5, 6))").should == 5
+      parse_eval("vlookup(list(1, 2, 3), 3, list(4, 5, 6))").should == 6
+    end
+
+    it "should with with (1, 2, 3), 3" do
+      parse_eval("vlookup(list(1, 2, 3), 3, list(4, 5, 6))").should == 6
+    end
+
+    it "should with with two sets of lists" do
+      parse_eval("vlookup(list(1, 2, 3), list(2, 3, 1), list(4, 5, 6))").should == [5, 6, 4]
+    end
+
+    it "should work when the lists aren't the same length" do
+      parse_eval("vlookup(list(1, 2, 3, 4, 5, 6), list(2, 3, 1), list(4, 5, 6, 1, 1, 1, 1))").should == [5, 6, 4]
+    end
+
+    it "should return an empty string when an item isn't found" do
+      parse_eval("vlookup(list(1, 2, 3), 4, list(1, 2, 3))").should == ""
+    end
+
+    it "should work with dates" do
+      val = parse_eval(<<-CODE)
+        vlookup(
+          list(date("2018-01-01"),
+               date("2018-01-02"),
+               date("2018-01-03")),
+          list(date("2018-01-02")),
+          list(1, 2, 3)
+        )
+      CODE
+
+      val.should == [2]
+    end
+  end
 end

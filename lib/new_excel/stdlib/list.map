@@ -35,3 +35,24 @@ includes?: (lst, item)
          map(fn, lst)
        ),
        in?(lst, item))
+
+indexOf: (list, match)
+  = progn(
+    val: primitive_method_call(list, quote(index), match),
+    if(val, add(val, 1), false))
+
+
+vlookup: (list1, match, list2)
+  = if (is_list(match),
+        # TODO: This should work
+        # map(vlookup, match),
+        progn(
+          define(fn, (match)
+            = vlookup(list1, match, list2)
+          ),
+          map(fn, match)
+        ),
+        progn(
+          val: indexOf(list1, match),
+          if(val, index(list2, val), "")
+        ))
