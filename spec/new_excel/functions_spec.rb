@@ -707,4 +707,14 @@ describe NewExcel::BuiltInFunctions do
       val.should == [2]
     end
   end
+
+  context "last" do
+    it "should take a list and return the last item" do
+      parse_eval("last(1, 2, 3)").should == 3
+    end
+
+    it "should allow taking multiple lists" do
+      parse_eval("last(list(1, 2, 3), list(4, 5, 6))").should == [3, 6]
+    end
+  end
 end
