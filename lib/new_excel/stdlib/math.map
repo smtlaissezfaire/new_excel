@@ -39,3 +39,7 @@ divide: lambda(list,
 average: lambda(args,
   divide(sum(args),
          length(args)))
+
+floor: lambda(args,
+  each_item(args, lambda(item,
+    primitive_method_call(item, quote(floor)))))

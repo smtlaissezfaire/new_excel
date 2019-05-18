@@ -737,4 +737,11 @@ describe NewExcel::BuiltInFunctions do
       parse_eval("reverse_sort(list(3, 1, 2), list(4, 6, 1))").should == [[3, 2, 1], [6, 4, 1]]
     end
   end
+
+  context "floor" do
+    it "should round down to smallest int" do
+      parse_eval("floor(10.1)").should == 10
+      parse_eval("floor(10.9)").should == 10
+    end
+  end
 end
