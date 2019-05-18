@@ -717,4 +717,24 @@ describe NewExcel::BuiltInFunctions do
       parse_eval("last(list(1, 2, 3), list(4, 5, 6))").should == [3, 6]
     end
   end
+
+  context "sort" do
+    it "should sort items from first to last" do
+      parse_eval("sort(3, 1, 2)").should == [1,2,3]
+    end
+
+    it "should be able to sort many lists" do
+      parse_eval("sort(list(3, 1, 2), list(4, 6, 1))").should == [[1, 2, 3], [1, 4, 6]]
+    end
+  end
+
+  context "reverse_sort" do
+    it "should sort items from last to first" do
+      parse_eval("reverse_sort(3, 1, 2)").should == [3, 2, 1]
+    end
+
+    it "should be able to sort many lists" do
+      parse_eval("reverse_sort(list(3, 1, 2), list(4, 6, 1))").should == [[3, 2, 1], [6, 4, 1]]
+    end
+  end
 end

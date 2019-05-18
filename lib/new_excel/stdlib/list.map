@@ -61,3 +61,11 @@ vlookup: (list1, match, list2)
 last: lambda(list,
   each_list(list, lambda(list,
     primitive_method_call(list, quote(last)))))
+
+sort: lambda(list,
+  each_list(list, lambda(list,
+    primitive_method_call(list, quote(sort)))))
+
+reverse_sort: lambda(list,
+  each_list(list, lambda(list,
+    apply(reverse, sort(list)))))
